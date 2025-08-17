@@ -181,13 +181,13 @@
         <h1>Code Generator</h1>
       </div>
       <div class="nav" id="nav">
-        <div class="tab active" data-target="panel-code"><span class="emoji">🎰</span> Code Generator</div>
-        <div class="tab" data-target="panel-names"><span class="emoji">🎮</span> Name Generators</div>
-        <div class="tab" data-target="panel-project"><span class="emoji">💡</span> Project Names</div>
-        <div class="tab" data-target="panel-rules"><span class="emoji">📜</span> Rules Generator</div>
-        <div class="tab" data-target="panel-ideas"><span class="emoji">✨</span> Random Ideas</div>
-        <div class="tab" data-target="panel-colors"><span class="emoji">🎨</span> Color Palettes</div>
-        <div class="tab" data-target="panel-webhook"><span class="emoji">🔗</span> Discord Webhook JSON</div>
+        <div class="tab active" data-target="panel-code"><span class="emoji"></span> Code Generator</div>
+        <div class="tab" data-target="panel-names"><span class="emoji"></span> Name Generators</div>
+        <div class="tab" data-target="panel-project"><span class="emoji"></span> Project Names</div>
+        <div class="tab" data-target="panel-rules"><span class="emoji"></span> Rules Generator</div>
+        <div class="tab" data-target="panel-ideas"><span class="emoji"></span> Random Ideas</div>
+        <div class="tab" data-target="panel-colors"><span class="emoji"></span> Color Palettes</div>
+        <div class="tab" data-target="panel-webhook"><span class="emoji"></span> Discord Webhook JSON</div>
       </div>
     </aside>
 
@@ -512,8 +512,66 @@
     $('ng-generate').addEventListener('click', ()=>{
       const type = readStr('ng-type','username');
       const base = readStr('ng-base','');
-      const adjectives = ["Swift","Dark","Crimson","Silent","Pixel","Lunar","Violet","Neon","Mystic","Prime"];
-      const nouns = ["Wolf","Ninja","Dragon","Shadow","Knight","Ghost","Nova","Falcon","Phantom","Rider"];
+      const adjectives = [
+  "Abyssal", "Alpha", "Ancient", "Arcane", "Astral", "Azure", "Berserk", "Binary", "Black", "Blazing",
+  "Bleak", "Blitz", "Blood", "Bone", "Brutal", "Celestial", "Chaos", "Chrome", "Cobalt", "Corrupt",
+  "Cosmic", "Crimson", "Cursed", "Cyber", "Dark", "Deadly", "Death", "Deep", "Demonic", "Desolate",
+  "Digital", "Doom", "Dread", "Ebon", "Eclipse", "Eldritch", "Electric", "Elemental", "Elite", "Ember",
+  "Enchanted", "Endless", "Eternal", "Fallen", "Feral", "Fiendish", "Fierce", "Final", "Frozen", "Fury",
+  "Ghostly", "Glacial", "Gloom", "Grim", "Hallow", "Hateful", "Haunted", "Hellish", "Hex", "Hollow",
+  "Hyper", "Ice", "Infernal", "Infinite", "Iron", "Jagged", "Killer", "Lich", "Lunar", "Lurking",
+  "Mad", "Magma", "Malevolent", "Malicious", "Merciless", "Midnight", "Mighty", "Mystic", "Nebula", "Necro",
+  "Nether", "Neon", "Night", "Oblivion", "Obsidian", "Omega", "Onyx", "Phantom", "Plague", "Prime",
+  "Quantum", "Radiant", "Rage", "Raven", "Reaper", "Relentless", "Rogue", "Ruin", "Rust", "Sable",
+  "Savage", "Scarlet", "Scorched", "Shadow", "Sharp", "Shifting", "Silent", "Silver", "Sinister", "Solar",
+  "Soul", "Specter", "Steel", "Storm", "Strange", "Sulfur", "Swift", "Thorn", "Thunder", "Titan",
+  "Twilight", "Umbral", "Unholy", "Vengeful", "Venom", "Vicious", "Vile", "Void", "Volt", "Warp",
+  "Wicked", "Wild", "Wither", "Wraith", "Xeno", "Zero", "Abyssal", "Aether", "Ashen", "Baleful",
+  "Beastly", "Blackened", "Blistering", "Bloody", "Blight", "Brimstone", "Carnal", "Cataclysmic", "Cephalic", "Chilling",
+  "Crawling", "Cryptic", "Damned", "Darksome", "Deathly", "Defiled", "Demonic", "Diabolic", "Dire", "Dismal",
+  "Dreaded", "Dusk", "Eerie", "Enraged", "Ethereal", "Execrated", "Fabled", "Fearsome", "Feral", "Fetid",
+  "Flayed", "Forbidden", "Forsaken", "Foul", "Frenzied", "Frostbitten", "Ghastly", "Ghoulish", "Gory", "Grave",
+  "Grisly", "Grotesque", "Haggard", "Hateful", "Havoc", "Hideous", "Horrid", "Howling", "Hungering", "Husk",
+  "Ill", "Impure", "Infernal", "Insane", "Jinxed", "Lacerated", "Languid", "Lethal", "Livid", "Lurid",
+  "Macabre", "Malefic", "Mangled", "Mephitic", "Monstrous", "Morbid", "Murderous", "Nefarious", "Nihil", "Nocturnal",
+  "Obscene", "Occult", "Ominous", "Painful", "Pale", "Pestilent", "Petrified", "Phantasmal", "Plagued", "Profane",
+  "Putrid", "Rabid", "Rancid", "Ravenous", "Repulsive", "Rotted", "Ruthless", "Sanguine", "Screaming", "Severed",
+  "Shambling", "Shriek", "Sickly", "Sinic", "Skeletal", "Slavering", "Soulless", "Spasmic", "Stalking", "Stench",
+  "Stricken", "Tainted", "Terrifying", "Throbbing", "Tormented", "Tortured", "Twisted", "Unclean", "Undying", "Unholy",
+  "Verminous", "Vile", "Violent", "Virulent", "Viscous", "Voidborn", "Wailing", "Warped", "Wasting", "Wretched"
+];
+      const nouns = [
+  "Abyss", "Alpha", "Angel", "Annihilator", "Apostle", "Armageddon", "Assassin", "Atrocity", "Avatar", "Bane",
+  "Beast", "Berserker", "Betrayer", "Blackout", "Blade", "Blight", "Bloodletter", "Bonebreaker", "Brute", "Butcher",
+  "Carnage", "Centurion", "Champion", "Chimera", "Colossus", "Conqueror", "Corruptor", "Corsair", "Creature", "Crusher",
+  "Crypt", "Cyclops", "Dagger", "Darkness", "Death", "Defiler", "Demon", "Desecrator", "Destroyer", "Devastator",
+  "Devil", "Diablo", "Dismember", "Dominator", "Doom", "Dragon", "Draugr", "Dreadnought", "Drifter", "Eclipse",
+  "Emperor", "Enforcer", "Entity", "Eradicator", "Eviscerator", "Executioner", "Exile", "Fallen", "Fang", "Fate",
+  "Fiend", "Fist", "Flayer", "Forsaken", "Frostbite", "Fury", "Gargoyle", "Ghoul", "Gladiator", "Glaive",
+  "Golem", "Goliath", "Grave", "Grimoire", "Guardian", "Harbinger", "Hate", "Hatred", "Hellion", "Herald",
+  "Horror", "Hunter", "Husk", "Hydra", "Hyena", "Immortal", "Impaler", "Incarnate", "Inferno", "Inquisitor",
+  "Juggernaut", "Katana", "Killer", "King", "Knight", "Kraken", "Lament", "Legion", "Leviathan", "Lich",
+  "Lord", "Lurker", "Mace", "Machine", "Maelstrom", "Mage", "Maggot", "Marauder", "Maw", "Menace",
+  "Mercenary", "Monarch", "Monster", "Mortal", "Mutilator", "Necro", "Nemesis", "Nightmare", "Oblivion", "Ogre",
+  "Omega", "Omen", "Onslaught", "Oracle", "Overlord", "Paladin", "Paragon", "Phantom", "Phoenix", "Pit",
+  "Predator", "Priest", "Prince", "Prodigy", "Prophet", "Psycho", "Punisher", "Pyre", "Queen", "Rage",
+  "Raider", "Ranger", "Ravager", "Reaper", "Revenant", "Rider", "Ripper", "Rogue", "Ruiner", "Saber",
+  "Sage", "Samurai", "Savage", "Scar", "Scourge", "Seeker", "Sentinel", "Serpent", "Shadow", "Shaman",
+  "Shard", "Shield", "Shogun", "Sickle", "Skull", "Slayer", "Soul", "Specter", "Spell", "Spine",
+  "Stalker", "Storm", "Stranger", "Sunder", "Surgeon", "Sword", "Talon", "Terror", "Thief", "Thorn",
+  "Thunder", "Titan", "Torment", "Torturer", "Toxin", "Tyrant", "Undead", "Valkyrie", "Vandal", "Vanguard",
+  "Vengeance", "Venom", "Vermin", "Viper", "Void", "Vortex", "Warden", "Warlock", "Warlord", "Warrior",
+  "Watcher", "Wendigo", "Whisper", "Widow", "Wight", "Witch", "Wolf", "Wraith", "Wyrm", "Zealot",
+  "Abomination", "Acolyte", "Adept", "Adversary", "Alchemist", "Arbiter", "Archfiend", "Archon", "Artificer", "Behemoth",
+  "Berserker", "Blackguard", "Bloodmage", "Bonecollector", "Brawler", "Butcher", "Cannibal", "Chosen", "Crusader", "Cultist",
+  "Deathcaller", "Deathdealer", "Defender", "Demonhunter", "Despoiler", "Dreadknight", "Dreadlord", "Duelist", "Elder", "Enchanter",
+  "Exarch", "Executioner", "Farseer", "Fleshrender", "Frostmage", "Geist", "Gladiator", "Gorefiend", "Gravekeeper", "Harbinger",
+  "Hellcaller", "Hexblade", "Highborn", "Hollow", "Huntress", "Ironclad", "Judicator", "Keeper", "Lich", "Marksman",
+  "Mistwalker", "Moonstalker", "Necromancer", "Nightblade", "Outcast", "Plaguebearer", "Possessed", "Ravenshade", "Riftwalker", "Runeblade",
+  "Sanguine", "Shadowdancer", "Skullcrusher", "Slayer", "Soulbinder", "Soulreaper", "Spellblade", "Stormcaller", "Sunchaser", "Swordmaster",
+  "Tempest", "Thunderborn", "Trickster", "Voidcaller", "Voidwalker", "Warbringer", "Warmonger", "Warpath", "Witchblade", "Witchhunter",
+  "Wolfsbane", "Wrathborn", "Zealot"
+];
 
       function pickBase(){
         return base || (randomOf(adjectives) + randomOf(nouns));
@@ -552,8 +610,71 @@
     /* ===== PROJECT NAMES ===== */
     $('pg-generate').addEventListener('click', ()=>{
       const base = readStr('pg-base','');
-      const words = ["Galaxy","Pixel","Shadow","Crystal","Echo","Storm","Aurora","Neon","Quantum","Vertex","Pulse","Zenith"];
-      const suffixes = ["Network","United","Studios","Collective","Group","Systems","Labs","Works","Alliance"];
+      const words = [
+  "Galaxy", "Pixel", "Shadow", "Crystal", "Echo", "Storm", "Aurora", "Neon", "Quantum", "Vertex",
+  "Pulse", "Zenith", "Nova", "Vortex", "Hyper", "Orbit", "Phantom", "Infinity", "Cosmic", "Nebula",
+  "Lunar", "Solar", "Titan", "Void", "Obsidian", "Blitz", "Frost", "Ember", "Rift", "Chrome",
+  "Cyber", "Prism", "Hologram", "Synapse", "Mirage", "Catalyst", "Apex", "Horizon", "Terra", "Flux",
+  "Ion", "Zephyr", "Onyx", "Matrix", "Drift", "Cipher", "Pinnacle", "Abyss", "Eon", "Spectra",
+  "Titan", "Vector", "Astral", "Radiance", "Eclipse", "Serpent", "Warp", "Fusion", "Dynamo", "Photon",
+  "Tundra", "Inferno", "Celestial", "Paragon", "Mythic", "Sable", "Vanguard", "Talon", "Rune", "Ether",
+  "Crimson", "Viper", "Spectral", "Obelisk", "Nexus", "Kaleido", "Quasar", "Stratos", "Monolith", "Helix",
+  "Umbra", "Lumen", "Tesseract", "Fractal", "Aegis", "Chronos", "Daemon", "Echelon", "Forge", "Goliath",
+  "Havoc", "Juggernaut", "Kinetix", "Legacy", "Maelstrom", "Nether", "Oculus", "Pandora", "Quill", "Ragnarok",
+  "Sable", "Tyrant", "Umbral", "Valkyrie", "Warden", "Xenon", "Yonder", "Zero", "Aether", "Bolt",
+  "Cinder", "Doom", "Elysium", "Fable", "Gale", "Hex", "Iron", "Jade", "Karma", "Lich",
+  "Mantle", "Nyx", "Omen", "Pylon", "Quartz", "Rook", "Sapphire", "Thorn", "Urchin", "Vex",
+  "Wisp", "Xero", "Ymir", "Zodiac", "Arc", "Blight", "Core", "Dusk", "Edge", "Fang",
+  "Glyph", "Halo", "Icon", "Jinx", "Kilo", "Latch", "Muse", "Node", "Onyx", "Pact",
+  "Quill", "Rust", "Shard", "Trace", "Unity", "Vow", "Warp", "Xen", "Yield", "Zest",
+  "Alpha", "Beta", "Coda", "Dune", "Elixir", "Frost", "Grit", "Hush", "Ivory", "Jolt",
+  "Kestrel", "Luxe", "Mirth", "Nadir", "Opal", "Pique", "Quell", "Rime", "Sable", "Trove",
+  "Ultra", "Vivid", "Whorl", "Xylo", "Yare", "Zing", "Axiom", "Byte", "Cove", "Drape",
+  "Elan", "Fervor", "Glint", "Harpy", "Ink", "Jade", "Kismet", "Lustre", "Mote", "Noble",
+  "Oath", "Pique", "Quest", "Reverie", "Scribe", "Tide", "Utopia", "Verve", "Whet", "Xenith",
+  "Yare", "Zephyr", "Aegis", "Baron", "Crest", "Dew", "Epoch", "Fervor", "Gleam", "Hymn",
+  "Iota", "Jinx", "Kernel", "Loom", "Mirth", "Nectar", "Ogle", "Pith", "Quip", "Rune",
+  "Saga", "Tome", "Umbrage", "Vex", "Wile", "Xenon", "Yowl", "Zest", "Aureate", "Byss",
+  "Clemency", "Dew", "Ether", "Fleck", "Gambit", "Hue", "Ire", "Jot", "Knell", "Lilt",
+  "Muse", "Nix", "Ogle", "Pith", "Quirk", "Rill", "Sere", "Tint", "Umbral", "Vex",
+  "Wold", "Xeric", "Yare", "Zany", "Ablaze", "Benthic", "Cove", "Dew", "Erode", "Flux"
+];
+      const suffixes = [
+  "Network", "United", "Studios", "Collective", "Group", "Systems", "Labs", "Works", "Alliance",
+  "Technologies", "Digital", "Ventures", "Enterprises", "Solutions", "Dynamics", "Industries", "Corp", "Inc",
+  "Interactive", "Media", "Software", "Hardware", "Robotics", "AI", "Cloud", "Data", "Cybernetics", "Nanotech",
+  "Biotech", "Synth", "Automata", "Machina", "Foundry", "Forge", "Fabrications", "Construct", "Mechanics", "Engine",
+  "Design", "Creations", "Innovations", "Inventions", "Patents", "Logic", "Circuit", "Mainframe", "Server", "Node",
+  "Grid", "Mesh", "Web", "Net", "Link", "Chain", "Protocol", "Code", "Script", "Algorithm",
+  "Syntax", "Command", "Terminal", "Interface", "Console", "Module", "Unit", "Division", "Sector", "Domain",
+  "Realm", "Sphere", "Continuum", "Expanse", "Frontier", "Horizon", "Odyssey", "Voyage", "Mission", "Expedition",
+  "Operation", "Project", "Program", "Initiative", "Campaign", "Movement", "Order", "Guild", "Syndicate", "Federation",
+  "Confederation", "Coalition", "Consortium", "Conglomerate", "Empire", "Dynasty", "Regime", "Authority", "Directorate", "Administration",
+  "Bureau", "Agency", "Department", "Ministry", "Commission", "Council", "Assembly", "Parliament", "Senate", "Chamber",
+  "Institute", "Academy", "University", "College", "School", "Faculty", "Thinktank", "Observatory", "Laboratory", "Clinic",
+  "Factory", "Mill", "Plant", "Refinery", "Depot", "Warehouse", "Hub", "Terminal", "Station", "Port",
+  "Harbor", "Dock", "Yard", "Complex", "Facility", "Center", "Base", "Outpost", "Colony", "Settlement",
+  "Village", "Town", "City", "Metropolis", "Megalopolis", "Nation", "State", "Republic", "Kingdom", "Commonwealth",
+  "Territory", "Province", "County", "District", "Zone", "Sector", "Quadrant", "Galaxy", "Universe", "Multiverse",
+  "Reality", "Dimension", "Plane", "Existence", "Entity", "Being", "Lifeform", "Organism", "Species", "Genus",
+  "Family", "Order", "Class", "Phylum", "Kingdom", "Domain", "Ecosystem", "Biome", "Habitat", "Environment",
+  "Atmosphere", "Stratosphere", "Ionosphere", "Magnetosphere", "Lithosphere", "Hydrosphere", "Cryosphere", "Biosphere", "Noosphere", "Psychosphere",
+  "Logistics", "Operations", "Management", "Consulting", "Advisory", "Analytics", "Intelligence", "Security", "Defense", "Offense",
+  "Tactics", "Strategy", "Warfare", "Combat", "Conflict", "Struggle", "Competition", "Challenge", "Quest", "Adventure",
+  "Discovery", "Exploration", "Research", "Development", "Engineering", "Manufacturing", "Production", "Distribution", "Supply", "Demand",
+  "Economy", "Commerce", "Trade", "Exchange", "Market", "Bazaar", "Emporium", "Store", "Shop", "Boutique",
+  "Atelier", "Studio", "Gallery", "Exhibit", "Museum", "Library", "Archive", "Repository", "Database", "Registry",
+  "Ledger", "Record", "Document", "File", "Folder", "Directory", "Catalog", "Index", "Register", "Inventory",
+  "Stock", "Assets", "Holdings", "Portfolio", "Investments", "Capital", "Wealth", "Fortune", "Treasure", "Resource",
+  "Reserve", "Cache", "Stockpile", "Hoard", "Collection", "Compendium", "Anthology", "Omnibus", "Lexicon", "Glossary",
+  "Thesaurus", "Encyclopedia", "Almanac", "Atlas", "Gazetteer", "Chronicle", "Annals", "History", "Heritage", "Legacy",
+  "Tradition", "Culture", "Civilization", "Society", "Community", "Fellowship", "Brotherhood", "Sisterhood", "Alliance", "Pact",
+  "Covenant", "Treaty", "Accord", "Compact", "Contract", "Agreement", "Deal", "Bargain", "Promise", "Oath",
+  "Vow", "Pledge", "Commitment", "Dedication", "Devotion", "Fidelity", "Loyalty", "Allegiance", "Fealty", "Homage",
+  "Tribute", "Offering", "Sacrifice", "Gift", "Boon", "Blessing", "Curse", "Hex", "Charm", "Spell",
+  "Incantation", "Ritual", "Ceremony", "Rite", "Custom", "Practice", "Habit", "Routine", "Regimen", "Discipline",
+  "Doctrine", "Dogma", "Creed", "Tenet", "Principle", "Ideal", "Value", "Virtue", "Ethic", "Morality"
+];
       const root = base || randomOf(words);
       const project = root + " " + randomOf(suffixes);
       slotReveal($('pg-output'), project, { chars: lettersUpper+lettersLower });
@@ -571,16 +692,126 @@
       const topic = readStr('rg-custom','Server');
       const count = Math.max(3, Math.min(20, readInt('rg-count', 8)));
       const stock = [
-        `Respect all members in the ${topic}.`,
-        `No spamming, harassment, or hate speech.`,
-        `Keep content appropriate; follow platform TOS.`,
-        `No cheating, exploiting, or unauthorized mods.`,
-        `Follow instructions from staff and moderators.`,
-        `Use the correct channels/categories.`,
-        `No advertising without permission.`,
-        `Protect privacy—no doxxing or sharing personal info.`,
-        `Report bugs/issues to staff, don't abuse them.`,
-        `Have fun and help others.`
+  // **General Conduct**  
+  `Respect all members in the ${topic}.`,  
+  `No spamming, harassment, or hate speech.`,  
+  `Keep content appropriate; follow platform TOS.`,  
+  `No cheating, exploiting, or unauthorized mods.`,  
+  `Follow instructions from staff and moderators.`,  
+  `Use the correct channels/categories.`,  
+  `No advertising without permission.`,  
+  `Protect privacy—no doxxing or sharing personal info.`,  
+  `Report bugs/issues to staff, don't abuse them.`,  
+  `Have fun and help others.`,  
+
+  // **Behavior & Communication**  
+  `No trolling, baiting, or flame wars.`,  
+  `Avoid excessive drama or off-topic arguments.`,  
+  `No impersonation of staff or other users.`,  
+  `Use English (or the server's primary language) in public channels.`,  
+  `No excessive caps, emoji, or disruptive formatting.`,  
+  `Keep politics/religion discussions civil or avoid them if volatile.`,  
+  `No NSFW content in non-designated areas.`,  
+  `No begging, guilt-tripping, or manipulative behavior.`,  
+  `Do not backseat moderate (let staff handle rule enforcement).`,  
+  `Use constructive criticism, not personal attacks.`,  
+
+  // **Content & Posting**  
+  `No low-effort posts (e.g., "lol", "this").`,  
+  `No reposting deleted/removed content.`,  
+  `Cite sources for news/claims when possible.`,  
+  `No pirated/illegal content (warez, cracks, etc.).`,  
+  `No shock/gore content.`,  
+  `No misinformation or deliberate spreading of false info.`,  
+  `No unsolicited self-promotion (DM ads = ban).`,  
+  `No AI-generated spam (e.g., ChatGPT floods).`,  
+  `Keep memes in designated areas.`,  
+  `No "upvote farming" or karma manipulation.`,  
+
+  // **Gaming/Competitive**  
+  `No smurfing or account boosting.`,  
+  `No win-trading or match-fixing.`,  
+  `No toxic behavior (e.g., "gg ez", trash talk).`,  
+  `No sharing exploits/cheats.`,  
+  `Respect esports rules if competing.`,  
+  `No false reports against players.`,  
+  `Stream sniping is prohibited.`,  
+  `No account sharing (unless explicitly allowed).`,  
+  `Clans/guilds must follow recruitment rules.`,  
+  `No stat padding or artificial rank inflation.`,  
+
+  // **Tech & Security**  
+  `No sharing malware, phishing links, or IP grabbers.`,  
+  `Do not discuss/encourage illegal hacking.`,  
+  `No unauthorized bot usage.`,  
+  `No scraping/data harvesting without permission.`,  
+  `Report security vulnerabilities responsibly.`,  
+  `No DDoS threats or encouragement.`,  
+  `No bypassing bans (alt accounts = permaban).`,  
+  `No sharing others' work without credit.`,  
+  `Respect licenses (no pirated software talk).`,  
+  `No crypto scams/pyramid schemes.`,  
+
+  // **Moderation & Appeals**  
+  `Appeals must be submitted formally (no DMs).`,  
+  `Ban evasion will extend punishments.`,  
+  `Staff decisions are final (no public arguing).`,  
+  `False reports may result in penalties.`,  
+  `Deleted content is not to be reposted.`,  
+  `No retaliating against rule reports.`,  
+  `Do not @mention staff for trivial issues.`,  
+  `Private chats with staff remain confidential.`,  
+  `Mass-pinging (e.g., @everyone) is staff-only.`,  
+  `No encouraging others to break rules.`,  
+
+  // **Community & Culture**  
+  `New members must read rules before participating.`,  
+  `No elitism or gatekeeping.`,  
+  `Respect cultural differences.`,  
+  `No discriminatory language (even as "jokes").`,  
+  `Use trigger warnings for sensitive topics.`,  
+  `No glorifying self-harm or violence.`,  
+  `Support inclusivity (LGBTQ+, neurodiversity, etc.).`,  
+  `No "us vs. them" mentality (e.g., platform wars).`,  
+  `Be patient with newcomers.`,  
+  `Celebrate others' achievements—no envy.`,  
+
+  // **Voice/Video Chats**  
+  `No earrape, loud noises, or mic spam.`,  
+  `Respect speaking turns (no interruptions).`,  
+  `No voice changers to mislead/deceive.`,  
+  `Keep background noise minimal.`,  
+  `No recording without consent.`,  
+  `Screen-sharing must be appropriate.`,  
+  `Video chats require clothed participants.`,  
+  `No fake cam/avatar misuse.`,  
+  `Raise hands in large VC discussions.`,  
+  `Debates must stay civil (no shouting).`,  
+
+  // **Creators & Artists**  
+  `Credit original artists/creators.`,  
+  `No AI art claiming to be human-made.`,  
+  `Critique must be constructive, not cruel.`,  
+  `No art theft/tracing without permission.`,  
+  `Commissions must follow pricing transparency.`,  
+  `No fake "free reward" scams.`,  
+  `Reposts require artist consent.`,  
+  `No plagiarism of writing/code/designs.`,  
+  `WIPs (works in progress) are welcome!`,  
+  `Feedback should be actionable.`,  
+
+  // **Events & Giveaways**  
+  `No fake giveaways or scams.`,  
+  `Follow event-specific rules.`,  
+  `Winners must claim prizes within deadline.`,  
+  `No bribing judges/voters.`,  
+  `Event staff decisions are final.`,  
+  `No multi-accounting to enter contests.`,  
+  `Giveaways must be approved by staff.`,  
+  `No selling/trading giveaway prizes here.`,  
+  `Respect event time zones/schedules.`,  
+  `Have fun—no sabotage!`  
+];
       ];
       let items = [];
       while(items.length < count){
@@ -600,9 +831,83 @@
 
     /* ===== IDEAS ===== */
     $('ig-generate').addEventListener('click', ()=>{
-      const categories = ["Mini-game","Content series","Tool/Utility","Discord bot","Plugin","Challenge mode","Build theme","Event idea"];
-      const verbs = ["Auto","Hyper","Neo","Quantum","Solar","Pixel","Crystal","Echo","Shadow","Nova","Lunar"];
-      const nouns = ["Market","Tracker","Arena","Builder","Hunt","Rush","Dash","Tycoon","Craft","Defense","Portal","Studio"];
+      const categories = [
+  // Original
+  "Mini-game", "Content series", "Tool/Utility", "Discord bot", "Plugin", "Challenge mode", "Build theme", "Event idea",
+  
+  // Game Types
+  "Roguelike", "Metroidvania", "Battle Royale", "Sandbox", "RPG", "Simulator", "Tower Defense", "Idle Game", "Visual Novel", "Text Adventure",
+  "Rhythm Game", "Puzzle Game", "Horror Game", "FPS", "Platformer", "Open World", "Survival", "Stealth", "Racing", "Sports",
+  "Card Game", "Board Game", "Trivia", "MOBA", "MMO", "Tycoon", "Clicker", "Incremental", "Arcade", "Point-and-Click",
+  "Fighting", "Shooter", "Adventure", "Strategy", "Tactical", "VR Experience", "Escape Room", "Dating Sim", "God Game", "City Builder",
+  
+  // Content Types
+  "Tutorial series", "Speedrun", "Let's Play", "Machinima", "Mod Showcase", "Art Challenge", "Writing Prompt", "Cosplay Guide", "Music Album", "Podcast",
+  "Animation", "Comic", "Meme Compilation", "Theorycrafting", "Lore Deep Dive", "Behind-the-Scenes", "Interview", "Documentary", "Review", "Reaction",
+  "Parody", "Satire", "Sketch", "Short Film", "ARG", "Interactive Story", "Web Series", "Livestream", "Vlog", "TikTok Trend",
+  
+  // Tech/Utility
+  "API Wrapper", "Web App", "Mobile App", "Browser Extension", "CLI Tool", "AI Assistant", "Data Visualizer", "Code Library", "Framework", "Engine",
+  "Database", "Analytics Tool", "Automation Script", "Web Scraper", "File Converter", "Password Manager", "VPN", "Ad Blocker", "OCR Tool", "Image Editor",
+  "Video Editor", "Audio Tool", "3D Modeler", "Pixel Art Tool", "Chat Filter", "Spam Detector", "Grammar Checker", "Translation Tool", "Archive", "Backup System",
+  
+  // Community/Events
+  "Tournament", "Contest", "Giveaway", "Charity Stream", "Collaboration", "Jam", "Hackathon", "Awards", "Festival", "Convention",
+  "Meetup", "Workshop", "AMA", "Q&A", "Debate", "Book Club", "Game Night", "Movie Night", "Karaoke", "Trivia Night",
+  "Scavenger Hunt", "Bingo", "Secret Santa", "Roleplay", "Improv", "Writing Club", "Art Trade", "Photography Walk", "Cooking Stream", "Fitness Challenge"
+];
+      const verbs = [
+  // Original
+  "Auto", "Hyper", "Neo", "Quantum", "Solar", "Pixel", "Crystal", "Echo", "Shadow", "Nova", "Lunar",
+  
+  // Tech/Futuristic
+  "Cyber", "Digital", "Virtual", "Atomic", "Nano", "Bio", "Synth", "Robo", "Mecha", "Drone",
+  "AI", "Neural", "Deep", "Machine", "Algorithm", "Blockchain", "Crypto", "Data", "Cloud", "Edge",
+  "Holo", "VR", "AR", "Mixed", "Photon", "Plasma", "Tesla", "Gamma", "Omega", "Alpha",
+  "Beta", "Delta", "Sigma", "Zeta", "Ultra", "Mega", "Giga", "Tera", "Peta", "Exa",
+  
+  // Nature/Elemental
+  "Volt", "Flame", "Frost", "Terra", "Aero", "Aqua", "Geo", "Pyro", "Cryo", "Storm",
+  "Thunder", "Lightning", "Wind", "Quake", "Tide", "Magma", "Solar", "Lunar", "Stellar", "Cosmic",
+  "Galactic", "Orbital", "Astral", "Celestial", "Meteor", "Comet", "Nebula", "Pulsar", "Quasar", "Blackhole",
+  
+  // Abstract/Power
+  "Ultima", "Infinity", "Eternal", "Absolute", "Supreme", "Divine", "Chaos", "Order", "Void", "Abyss",
+  "Mystic", "Arcane", "Enigma", "Paradox", "Rune", "Glyph", "Sigil", "Chrono", "Temporal", "Epoch",
+  "Prime", "Proto", "Omni", "Pan", "Trans", "Meta", "Post", "Pre", "Anti", "Non",
+  
+  // Action
+  "Blitz", "Rush", "Dash", "Surge", "Burst", "Flash", "Zoom", "Warp", "Jump", "Leap",
+  "Boost", "Drive", "Launch", "Shoot", "Strike", "Slash", "Crash", "Smash", "Bash", "Clash",
+  "Fury", "Rage", "Wrath", "Vengeance", "Dominion", "Conquest", "Victory", "Triumph", "Glory", "Legend"
+];
+      const nouns = [
+  // Original
+  "Market", "Tracker", "Arena", "Builder", "Hunt", "Rush", "Dash", "Tycoon", "Craft", "Defense", "Portal", "Studio",
+  
+  // Places/Spaces
+  "Hub", "Nexus", "Core", "Node", "Terminal", "Gateway", "Dimension", "Realm", "Universe", "Multiverse",
+  "Sanctuary", "Temple", "Shrine", "Archive", "Library", "Museum", "Gallery", "Theater", "Colosseum", "Dojo",
+  "Academy", "University", "Lab", "Factory", "Forge", "Mill", "Mine", "Quarry", "Outpost", "Colony",
+  
+  // Game Concepts
+  "Quest", "Dungeon", "Loot", "Gear", "Inventory", "Skill", "Talent", "Perk", "Buff", "Debuff",
+  "Boss", "Minion", "NPC", "Pet", "Mount", "Vehicle", "Spaceship", "Mech", "Drone", "Turret",
+  "Resource", "Currency", "Token", "Coin", "Gem", "Crystal", "Ore", "Alloy", "Blueprint", "Recipe",
+  
+  // Tech Concepts
+  "Engine", "Framework", "API", "SDK", "Database", "Cache", "Server", "Client", "Network", "Protocol",
+  "Algorithm", "Function", "Variable", "Array", "Object", "Class", "Method", "Loop", "Conditional", "Event",
+  "Stream", "Packet", "Bit", "Byte", "Pixel", "Voxel", "Vertex", "Shader", "Texture", "Mesh",
+  
+  // Creative Concepts
+  "Canvas", "Palette", "Brush", "Pen", "Chisel", "Loom", "Anvil", "Kiln", "Potter's Wheel", "Spinning Wheel",
+  "Manuscript", "Novel", "Poem", "Lyrics", "Script", "Screenplay", "Storyboard", "Concept Art", "Mood Board", "Style Guide",
+  
+  // Abstract Concepts
+  "Harmony", "Balance", "Infinity", "Eternity", "Destiny", "Fate", "Karma", "Zen", "Nirvana", "Enlightenment",
+  "Innovation", "Creation", "Destruction", "Evolution", "Revolution", "Liberation", "Salvation", "Damnation", "Ascension", "Transcendence"
+];
       const idea = randomOf(categories)+": "+randomOf(verbs)+" "+randomOf(nouns);
       slotReveal($('ig-output'), idea, { chars: lettersUpper+lettersLower+digits });
     });
