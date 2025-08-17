@@ -3,9 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>All-in-One Generator</title>
+  <title>All-in-One Generator Hub</title>
   <link rel="icon" href="favicon.png" type="image/png">
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
   <style>
     /* ===== THEME DEFINITIONS ===== */
@@ -86,7 +85,6 @@
     .panel h2 { margin: 0 0 6px; color:hsl(var(--foreground)); letter-spacing:.3px; font-size: 24px; }
     .muted { color: hsl(var(--muted-foreground)); margin: 0 0 12px; font-size: 15px; }
     .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
-    .grid-col-1 { grid-template-columns: 1fr; }
     .field { display:flex; flex-direction:column; gap:6px; background:transparent; border:none; padding: 0; }
     .field label { font-size: 13px; color: hsl(var(--muted-foreground)); font-weight: 500; }
     .field input, .field select, .field textarea { width:100%; border-radius:calc(var(--radius) - 2px); border:1px solid hsl(var(--border)); padding:10px 12px; background:hsl(var(--input)); color:hsl(var(--foreground)); outline:none; resize: vertical; font-size: 15px; }
@@ -98,17 +96,17 @@
     .btn:active { transform: translateY(1px); }
     .codebox { min-height: 70px; display:flex; align-items:center; justify-content:center; text-align:center; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: clamp(14px, 1.6vw + 10px, 24px); letter-spacing:1px; background:hsl(var(--input)); border:1px solid hsl(var(--border)); border-radius:var(--radius); padding:16px; margin-top: 10px; white-space: pre-wrap; word-break: break-all; }
     .codebox.left-align { text-align: left; justify-content: flex-start; align-items: flex-start; font-size: 1rem; letter-spacing: normal; }
-    .swatches, .tints-shades { display:flex; gap:10px; flex-wrap: wrap; margin-top: 10px; }
-    .swatch, .tint-shade-box { width:100px; height:70px; border-radius:var(--radius); border:1px solid hsl(var(--border)); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:8px; font-family: ui-monospace; font-size:12px; }
-    #qr-canvas { background: white; border-radius: var(--radius); border: 1px solid hsl(var(--border)); }
     .toast{ position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: hsl(var(--foreground)); color: hsl(var(--background)); padding: 10px 14px; border-radius: 999px; border: 1px solid hsl(var(--border)); box-shadow: 0 10px 20px rgba(0,0,0,.4); opacity: 0; transition: opacity .2s ease, transform .2s ease; z-index: 5; }
     .toast.show{ opacity:1; transform: translateX(-50%) translateY(-6px); }
-    .toggle-switch { display:flex; align-items:center; gap: 10px; }
+    .toggle-switch { display:flex; align-items:center; gap: 10px; cursor: pointer; }
     .toggle-switch input { opacity:0; width:0; height:0; }
     .toggle-switch .slider { width:40px; height:22px; background:hsl(var(--muted)); border-radius:22px; cursor:pointer; position:relative; transition: background .2s ease; }
     .toggle-switch .slider::before { content:''; position:absolute; height:16px; width:16px; left:3px; top:3px; background:white; border-radius:50%; transition:transform .2s ease; }
     .toggle-switch input:checked + .slider { background:hsl(var(--primary)); }
     .toggle-switch input:checked + .slider::before { transform:translateX(18px); }
+    .slot { display: inline-block; }
+    .slot.spin { animation: pop 0.2s ease; }
+    @keyframes pop { 0% { transform: scale(0.8); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
     @media (max-width: 900px){ body{ overflow:auto; } .app{ display:block; } .sidebar{ position: fixed; top:0; left:0; bottom:0; z-index:10; } .content{ padding: 16px; } .topbar{ position: sticky; top:0; } }
   </style>
 </head>
@@ -119,18 +117,20 @@
       <div class="brand"><div class="dot"></div><h1>All-in-One Gen</h1></div>
       <div class="nav" id="nav">
           <div class="nav-category"><div class="title">Developer Kit</div>
-            <div class="tab active" data-target="panel-password"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Password</div>
-            <div class="tab" data-target="panel-uuid"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg> UUID</div>
-            <div class="tab" data-target="panel-hashing"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11v5"></path><path d="M12 18v2"></path><path d="M12 2v2"></path><path d="M22 12h-5"></path><path d="M7 12H2"></path><circle cx="12" cy="12" r="7"></circle></svg> Hashing</div>
+            <div class="tab active" data-target="panel-password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Password</div>
+            <div class="tab" data-target="panel-code"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg> Code Generator</div>
+            <div class="tab" data-target="panel-uuid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg> UUID</div>
+            <div class="tab" data-target="panel-hashing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="7"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg> Hashing</div>
           </div>
-          <div class="nav-category"><div class="title">Creative & Design</div>
-            <div class="tab" data-target="panel-names"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg> Name Generator</div>
-            <div class="tab" data-target="panel-colors"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0L12 2.69z"></path></svg> Color Palettes</div>
-            <div class="tab" data-target="panel-qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><line x1="14" y1="14" x2="21" y2="14"></line><line x1="14" y1="17.5" x2="21" y2="17.5"></line><line x1="14" y1="21" x2="21" y2="21"></line></svg> QR Code</div>
-            <div class="tab" data-target="panel-magic8"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> Magic 8-Ball</div>
+          <div class="nav-category"><div class="title">Creative & Fun</div>
+            <div class="tab" data-target="panel-names"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg> Name Generator</div>
+            <div class="tab" data-target="panel-colors"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0L12 2.69z"></path></svg> Color Palettes</div>
+            <div class="tab" data-target="panel-qr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><line x1="14" y1="14" x2="21" y2="14"></line><line x1="14" y1="17.5" x2="21" y2="17.5"></line><line x1="14" y1="21" x2="21" y2="21"></line></svg> QR Code</div>
+            <div class="tab" data-target="panel-magic8"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> Magic 8-Ball</div>
+            <div class="tab" data-target="panel-excuse"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> Excuse Generator</div>
           </div>
           <div class="nav-category"><div class="title">Settings</div>
-            <div class="tab" data-target="panel-settings"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> Appearance</div>
+            <div class="tab" data-target="panel-settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> Appearance</div>
         </div>
       </div>
     </aside>
@@ -143,35 +143,66 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      // Core setup and helper functions
       const $ = (id) => document.getElementById(id);
       const mainContent = document.querySelector('.content');
       let isMobile = window.innerWidth <= 900;
-      
+      const readInt=(id,def)=>parseInt($(id)?.value)||def, readStr=(id,def)=>$(id)?.value||def, checked=id=>$(id)?.checked;
+      const randomOf = arr => arr[Math.floor(Math.random()*arr.length)];
+
       const showToast = (msg = "Copied!") => {
         const t = $('toast'); t.textContent = msg; t.classList.add('show');
         clearTimeout(t._timer); t._timer = setTimeout(() => t.classList.remove('show'), 1500);
       };
 
-      const copyToClipboard = (elementId) => {
-        const el = $(elementId); const text = el?.value ?? el?.textContent;
+      const copyToClipboard = (element) => {
+        const text = element?.dataset.copytext || element?.textContent;
         if (text) navigator.clipboard.writeText(text).then(() => showToast(), () => showToast("Failed to copy!"));
       };
-
+      
+      const slotReveal = async (el, finalText, opts = {}) => {
+          el.dataset.copytext = finalText;
+          const chars = opts.chars || 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+          el.innerHTML = '';
+          const spans = [...finalText].map(char => {
+              const s = document.createElement('span'); s.className = 'slot';
+              if(char === ' ' || (opts.staticChars && opts.staticChars.includes(char))) {
+                  s.innerHTML = char === ' ' ? '&nbsp;' : char;
+              }
+              el.appendChild(s);
+              return s;
+          });
+          
+          let animationFrame;
+          const animate = () => {
+              spans.forEach((span, i) => {
+                  if(span.textContent === finalText[i] || (opts.staticChars && opts.staticChars.includes(finalText[i]))) return;
+                  if (Math.random() > 0.92) { // ~8% chance to settle per frame for a slower, more random feel
+                      span.textContent = finalText[i];
+                      span.classList.add('spin');
+                  } else {
+                      span.textContent = randomOf(chars);
+                  }
+              });
+              if (spans.some((s,i) => s.textContent !== finalText[i] && !(opts.staticChars && opts.staticChars.includes(finalText[i])))) {
+                  animationFrame = requestAnimationFrame(animate);
+              }
+          };
+          cancelAnimationFrame(animationFrame);
+          animate();
+      };
+      
       const addPanel = (id, title, content, setupLogic) => {
         const panel = document.createElement('section'); panel.id = `panel-${id}`; panel.className = 'panel'; panel.style.display = 'none';
         panel.innerHTML = `<h2>${title}</h2>` + content; mainContent.appendChild(panel);
         if (setupLogic) setupLogic(panel);
       };
       
-      const setupSidebarAndTabs = () => {
-        const sidebar = $('sidebar'); const hamburger = $('hamburger'); const nav = $('nav');
+      const setupUI = () => {
+        const sidebar = $('sidebar'), hamburger = $('hamburger'), nav = $('nav');
         if (isMobile) sidebar.classList.add('hide');
         hamburger.addEventListener('click', () => sidebar.classList.toggle('hide'));
-        window.addEventListener('resize', () => {
-          const mobileState = window.innerWidth <= 900;
-          if (mobileState !== isMobile) { isMobile = mobileState; sidebar.classList.toggle('hide', isMobile); }
-        });
-
+        window.addEventListener('resize', () => { isMobile = window.innerWidth <= 900; if(isMobile) sidebar.classList.add('hide'); else sidebar.classList.remove('hide');});
         nav.addEventListener('click', (e) => {
           const tab = e.target.closest('.tab'); if (!tab) return;
           nav.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); tab.classList.add('active');
@@ -179,38 +210,33 @@
           const targetPanel = $(tab.dataset.target); if (targetPanel) targetPanel.style.display = 'block';
           if (isMobile) sidebar.classList.add('hide');
         });
-        const activeTab = nav.querySelector('.tab.active') || nav.querySelector('.tab');
-        if (activeTab) activeTab.click();
+        (nav.querySelector('.tab.active') || nav.querySelector('.tab')).click();
       };
       
-      const randomOf = arr => arr[Math.floor(Math.random()*arr.length)];
-
-      addPanel('settings', 'Appearance', `<p class="muted">Customize the look and feel of the app.</p><div class="grid"><div class="field"><label>Theme</label><select id="theme-switcher"><option value="amethyst">Amethyst</option><option value="blue">Ocean Blue</option><option value="green">Forest Green</option><option value="midnight">Midnight</option></select></div><div class="field"><label>Mode</label><label class="toggle-switch">Dark Mode <input type="checkbox" id="mode-toggle"><span class="slider"></span></label></div></div>`, p=>{
-        const themeSelect = $('theme-switcher'), modeToggle = $('mode-toggle'), html = document.documentElement;
-        function applySettings(theme, isDark) {
-            html.setAttribute('data-theme', theme);
-            html.classList.toggle('dark', isDark);
-            modeToggle.checked = isDark;
-            localStorage.setItem('appTheme', theme);
-            localStorage.setItem('appMode', isDark ? 'dark' : 'light');
-        }
-        themeSelect.addEventListener('change', (e) => applySettings(e.target.value, modeToggle.checked));
-        modeToggle.addEventListener('change', (e) => applySettings(themeSelect.value, e.target.checked));
-        const savedTheme = localStorage.getItem('appTheme') || 'amethyst';
-        const savedMode = localStorage.getItem('appMode') !== 'light';
-        themeSelect.value = savedTheme;
-        applySettings(savedTheme, savedMode);
-      });
+      // --- ALL GENERATOR PANELS ---
       
-      addPanel('password','Password',`<p class="muted">Create strong, secure passwords.</p><div class="grid"><div class="field"><label>Length</label><input id="pass-len" type="number" value="16"></div><div class="field"><label class="row"><input type="checkbox" id="pass-upper" checked> Uppercase (A-Z)</label></div><div class="field"><label class="row"><input type="checkbox" id="pass-lower" checked> Lowercase (a-z)</label></div><div class="field"><label class="row"><input type="checkbox" id="pass-nums" checked> Numbers (0-9)</label></div><div class="field"><label class="row"><input type="checkbox" id="pass-spec"> Symbols (!@#$)</label></div></div><div class="row"><button id="pass-gen" class="btn">Generate</button><button onclick="copyToClipboard('pass-output')" class="btn">Copy</button></div><div id="pass-output" class="codebox"></div>`,p=>{const gen=()=>{let c='',res='';const l=$('pass-len').value;if($('pass-upper').checked)c+='ABCDEFGHIJKLMNPQRSTUVWXYZ';if($('pass-lower').checked)c+='abcdefghijklmnpqrstuvwxyz';if($('pass-nums').checked)c+='123456789';if($('pass-spec').checked)c+='!@#$%^&*()_+';if(c==='')c='...';for(let i=0;i<l;i++)res+=c.charAt(Math.floor(Math.random()*c.length));$('pass-output').textContent=res;};p.querySelector('#pass-gen').onclick=gen;gen();});
-      addPanel('uuid', 'UUID', `<p class="muted">Generate universally unique identifiers (v4).</p><div class="row"><button id="uuid-gen" class="btn">Generate</button><button onclick="copyToClipboard('uuid-output')" class="btn">Copy</button></div><div id="uuid-output" class="codebox"></div>`,p=>{const gen=()=>$('uuid-output').textContent=crypto.randomUUID();p.querySelector('#uuid-gen').onclick=gen;gen();});
-      addPanel('hashing','Hashing',`<p class="muted">Compute a cryptographic hash of any text.</p><div class="grid grid-col-1"><div class="field"><label>Input Text</label><textarea id="hash-input" rows="4">hello world</textarea></div></div><div class="row"><button id="hash-gen" class="btn">Generate Hashes</button><button onclick="copyToClipboard('hash-output')" class="btn">Copy</button></div><div id="hash-output" class="codebox left-align" style="font-size:0.9rem"></div>`,p=>{const gen=async()=>{const t=$('hash-input').value,d=new TextEncoder().encode(t);let o='';for(const a of ['SHA-1','SHA-256','SHA-512']){const hb=await crypto.subtle.digest(a,d);const ha=Array.from(new Uint8Array(hb));o+=`${a}:\n${ha.map(b=>b.toString(16).padStart(2,'0')).join('')}\n\n`}$('hash-output').textContent=o.trim()};p.querySelector('#hash-gen').onclick=gen;gen()});
-      addPanel('names', 'Name Generator', `<p class="muted">Generate a unique name for a character or username.</p><div class="row"><button id="name-gen" class="btn">Generate</button></div><div class="codebox" id="name-output"></div>`, p => p.querySelector('#name-gen').onclick = () => { const a=["Shadow","Cyber","Void","Quantum","Solar"]; const n=["Dragon","Wolf","Knight","Fox","Reaper"]; $('name-output').textContent=randomOf(a)+randomOf(n)+Math.floor(10+Math.random()*90); });
-      addPanel('colors', 'Color Palettes', `<p class="muted">Generate a random 5-color palette.</p><div class="row"><button id="palette-gen" class="btn">Generate</button><button onclick="copyToClipboard('palette-hexes')" class="btn">Copy</button></div><div id="palette-output" class="swatches"></div><input id="palette-hexes" style="opacity:0; position:absolute; z-index:-1;" readonly>`, p => {const gen=()=>{let o=$('palette-output'),h=$('palette-hexes'),c=[];o.innerHTML='';for(let i=0;i<5;i++){const hex='#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');c.push(hex);const s=document.createElement('div');s.className='swatch';s.style.background=hex;s.innerHTML=`<span style="background:rgba(0,0,0,0.5); padding: 2px 4px; border-radius:4px;">${hex}</span>`;o.appendChild(s);}h.value=c.join(' ');}; p.querySelector('#palette-gen').onclick=gen;gen();});
-      addPanel('qr','QR Code',`<p class="muted">Enter text or a URL to generate a scannable QR code.</p><div class="grid grid-col-1"><div class="field"><label>Content</label><input id="qr-text" type="text" value="https://google.com"></div></div><div class="row"><button id="qr-gen" class="btn">Generate</button><a class="btn" id="qr-download" download="qrcode.png">Download</a></div><div style="margin-top:20px; text-align:center;"><canvas id="qr-canvas"></canvas></div>`,p=>{const gen=()=>{const text=$('qr-text').value||'Hello', canvas=$('qr-canvas'), dl=$('qr-download'); new QRious({element:canvas,value:text,size:200,padding:10,backgroundAlpha:0,foreground:getComputedStyle(document.body).getPropertyValue('color')}); dl.href=canvas.toDataURL('image/png');}; p.querySelector('#qr-gen').onclick=gen; new MutationObserver(gen).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class']}); gen()});
-      addPanel('magic8','Magic 8-Ball',`<p class="muted">Ask a yes-no question and find your fortune.</p><div class="grid grid-col-1"><div class="field"><label>Your Question</label><input type="text" id="m8-question" placeholder="Will I succeed?"></div></div><div class="row"><button class="btn" id="m8-ask">Ask the 8-Ball</button></div><div id="m8-answer" class="codebox"></div>`,p=>{const ans=["It is certain.","It is decidedly so.","Without a doubt.","Yes – definitely.","You may rely on it.","As I see it, yes.","Most likely.","Outlook good.","Yes.","Signs point to yes.","Reply hazy, try again.","Ask again later.","Better not tell you now.","Cannot predict now.","Concentrate and ask again.","Don't count on it.","My reply is no.","My sources say no.","Outlook not so good.","Very doubtful."];const ask=()=>$('m8-answer').textContent=randomOf(ans);p.querySelector('#m8-ask').onclick=ask;ask()});
+      addPanel('settings', 'Appearance', `<p class="muted">Customize the look and feel of the app.</p><div class="grid"><div class="field"><label>Theme</label><select id="theme-switcher"><option value="amethyst">Amethyst</option><option value="blue">Ocean Blue</option><option value="green">Forest Green</option><option value="midnight">Midnight</option></select></div><div class="field"><label>Mode</label><label class="toggle-switch">Dark Mode <input type="checkbox" id="mode-toggle"><span class="slider"></span></label></div></div>`, p=>{const themeSelect=$('theme-switcher'),modeToggle=$('mode-toggle'),html=document.documentElement;const apply= (t,d)=>{html.dataset.theme=t;html.classList.toggle('dark',d);localStorage.setItem('appTheme',t);localStorage.setItem('appMode',d?'dark':'light')};themeSelect.onchange=e=>apply(e.target.value,modeToggle.checked);modeToggle.onchange=e=>apply(themeSelect.value,e.target.checked);const savedTheme=localStorage.getItem('appTheme')||'amethyst',savedMode=localStorage.getItem('appMode')!=='light';themeSelect.value=savedTheme;modeToggle.checked=savedMode;apply(savedTheme,savedMode)});
+      
+      addPanel('password','Password',`<p class="muted">Create strong, secure passwords.</p><div class="grid"><div class="field"><label>Length</label><input id="pass-len" type="number" value="16"></div><div class="field"><label class="row"><input type="checkbox" id="pass-upper" checked> Uppercase (A-Z)</label></div><div class="field"><label class="row"><input type="checkbox" id="pass-lower" checked> Lowercase (a-z)</label></div><div class="field"><label class="row"><input type="checkbox" id="pass-nums" checked> Numbers (0-9)</label></div><div class="field"><label class="row"><input type="checkbox" id="pass-spec"> Symbols (!@#$)</label></div></div><div class="row"><button id="pass-gen" class="btn">Generate</button><button id="pass-copy" class="btn">Copy</button></div><div id="pass-output" class="codebox"></div>`,p=>{const gen=()=>{let c='',res='';const l=$('pass-len').value;if(checked('pass-upper'))c+='ABCDEFGHIJKLMNPQRSTUVWXYZ';if(checked('pass-lower'))c+='abcdefghijklmnpqrstuvwxyz';if(checked('pass-nums'))c+='123456789';if(checked('pass-spec'))c+='!@#$%^&*()_+';if(c==='')c='...';for(let i=0;i<l;i++)res+=randomOf(c);slotReveal($('pass-output'),res,{chars:c})};$('pass-gen').onclick=gen;$('pass-copy').onclick=()=>copyToClipboard($('pass-output'));gen();});
 
-      setupSidebarAndTabs();
+      addPanel('code', 'Code Generator', `<p class="muted">Generate custom codes and keys.</p><div class="grid"><div class="field"><label>Segments</label><input id="code-segments" type="number" value="3"></div><div class="field"><label>Segment Length</label><input id="code-seglen" type="number" value="4"></div><div class="field"><label>Separator</label><input id="code-sep" type="text" value="-"></div><div class="field"><label>Prefix</label><input id="code-prefix" type="text"></div></div><div class="field"><label>Character Sets</label><div class="row" style="flex-direction:column; gap:8px;"><label class="toggle-switch">Uppercase<input id="code-upper" type="checkbox" checked><span class="slider"></span></label><label class="toggle-switch">Lowercase<input id="code-lower" type="checkbox"><span class="slider"></span></label><label class="toggle-switch">Numbers<input id="code-nums" type="checkbox" checked><span class="slider"></span></label><label class="toggle-switch">Symbols<input id="code-spec" type="checkbox"><span class="slider"></span></label></div></div><div class="row"><button id="code-gen" class="btn">Generate</button><button id="code-copy" class="btn">Copy</button></div><div id="code-output" class="codebox"></div>`, p => {const gen = () => {const s=readInt('code-segments',3),l=readInt('code-seglen',4),sep=readStr('code-sep','-'),pre=readStr('code-prefix','');let alpha='';if(checked('code-upper'))alpha+='ABCDEFGHIJKLMNPQRSTUVWXYZ';if(checked('code-lower'))alpha+='abcdefghijklmnopqrstuvwxyz';if(checked('code-nums'))alpha+='0123456789';if(checked('code-spec'))alpha+='!@#$%^&*';if(alpha==='')alpha='01';const code=Array.from({length:s},()=>Array.from({length:l},()=>randomOf(alpha)).join('')).join(sep);const final=pre?`${pre}${sep}${code}`:code;slotReveal($('code-output'),final,{chars:alpha, staticChars:sep})};$('code-gen').onclick=gen;$('code-copy').onclick=()=>copyToClipboard($('code-output'));gen();});
+      
+      addPanel('uuid', 'UUID', `<p class="muted">Generate universally unique identifiers (v4).</p><div class="row"><button id="uuid-gen" class="btn">Generate</button><button id="uuid-copy" class="btn">Copy</button></div><div id="uuid-output" class="codebox"></div>`,p=>{const gen=()=>slotReveal($('uuid-output'),crypto.randomUUID(), {staticChars:'-'});$('uuid-gen').onclick=gen;$('uuid-copy').onclick=()=>copyToClipboard($('uuid-output'));gen()});
+      
+      addPanel('hashing','Hashing',`<p class="muted">Compute a cryptographic hash of any text.</p><div class="grid"><div class="field"><label>Input Text</label><textarea id="hash-input" rows="4">hello world</textarea></div></div><div class="row"><button id="hash-gen" class="btn">Generate Hash</button><button onclick="copyToClipboard($('hash-output'))" class="btn">Copy</button></div><div id="hash-output" class="codebox left-align" style="font-size:0.9rem"></div>`,p=>{const gen=async()=>{const t=$('hash-input').value,d=new TextEncoder().encode(t);let o='';for(const a of ['SHA-1','SHA-256','SHA-512']){const hb=await crypto.subtle.digest(a,d),ha=Array.from(new Uint8Array(hb));o+=`${a}:\n${ha.map(b=>b.toString(16).padStart(2,'0')).join('')}\n\n`}$('hash-output').textContent=o.trim(); $('hash-output').dataset.copytext = o.trim()};$('hash-gen').onclick=gen;gen()});
+      
+      addPanel('names', 'Name Generator', `<p class="muted">Generate a unique name for a character or username.</p><div class="row"><button id="name-gen" class="btn">Generate</button><button id="name-copy" class="btn">Copy</button></div><div class="codebox" id="name-output"></div>`, p=>{const gen=()=>{const a=["Shadow","Cyber","Void","Quantum","Solar"],n=["Dragon","Wolf","Knight","Fox","Reaper"];slotReveal($('name-output'),randomOf(a)+randomOf(n)+Math.floor(10+Math.random()*90))};$('name-gen').onclick=gen;$('name-copy').onclick=()=>copyToClipboard($('name-output'));gen()});
+      
+      addPanel('colors', 'Color Palettes', `<p class="muted">Generate a random 5-color palette.</p><div class="row"><button id="palette-gen" class="btn">Generate</button><button onclick="copyToClipboard($('palette-output'))" class="btn">Copy</button></div><div class="codebox" id="palette-output"></div>`, p=>{const gen=()=>{let c=[];for(let i=0;i<5;i++)c.push('#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'));slotReveal($('palette-output'),c.join('  '),{chars:'ABCDEF0123456789# '})};$('palette-gen').onclick=gen;gen()});
+      
+      addPanel('qr','QR Code',`<p class="muted">Enter text or a URL to generate a scannable QR code.</p><div class="grid"><div class="field"><label>Content</label><input id="qr-text" type="text" value="https://google.com"></div></div><div class="row"><button id="qr-gen" class="btn">Generate</button><a class="btn" id="qr-download" download="qrcode.png">Download</a></div><div style="margin-top:20px; text-align:center;"><canvas id="qr-canvas"></canvas></div>`,p=>{const gen=()=>{const text=$('qr-text').value||'Hello', canvas=$('qr-canvas'), dl=$('qr-download'), fg=getComputedStyle(document.documentElement).getPropertyValue('--foreground');new QRious({element:canvas,value:text,size:200,padding:10,backgroundAlpha:0,foreground:`hsl(${fg})`}); dl.href=canvas.toDataURL('image/png')};$('qr-gen').onclick=gen;new MutationObserver(gen).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class']});gen()});
+      
+      addPanel('magic8','Magic 8-Ball',`<p class="muted">Ask a yes-no question and find your fortune.</p><div class="grid"><div class="field"><label>Your Question</label><input type="text" id="m8-question" placeholder="Will I succeed?"></div></div><div class="row"><button class="btn" id="m8-ask">Ask the 8-Ball</button></div><div id="m8-answer" class="codebox"></div>`,p=>{const ans=["It is certain.","As I see it, yes.","Reply hazy, try again.","Don't count on it.","My sources say no."];const ask=()=>slotReveal($('m8-answer'),randomOf(ans));$('m8-ask').onclick=ask;ask()});
+      
+      addPanel('excuse', 'Excuse Generator', `<p class="muted">Generate a plausible-ish excuse for any situation.</p><div class="row"><button id="ex-gen" class="btn">Generate</button><button id="ex-copy" class="btn">Copy</button></div><div class="codebox" id="ex-output"></div>`, p=>{const gen=()=>{const excuses = ["My dog ate my Wi-Fi router.","A wizard turned my car into a pumpkin.","My psychic told me to stay in bed today.","A time traveler needed my help to save the future.","I accidentally joined a traveling circus."];slotReveal($('ex-output'), randomOf(excuses))};$('ex-gen').onclick=gen;$('ex-copy').onclick=()=>copyToClipboard($('ex-output'));gen()});
+
+      // Initialize the UI
+      setupUI();
     });
   </script>
 </body>
