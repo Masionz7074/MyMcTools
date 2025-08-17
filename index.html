@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Code Generator</title>
+  <link rel="icon" href="favicon.png" type="image/png">
   <style>
     /* ===== Cotton-candy animated background ===== */
     :root{
@@ -564,10 +565,10 @@
           handle = randomOf(["xX","i","The",""]) + b + randomOf(["","HD","Pro","360","77"]) + randomOf(["xX","",""]);
           break;
         case 'discord':
-          handle = b + "#" + Math.floor(1000+Math.random()*9000);
+          handle = b; // No # as requested
           break;
         case 'tiktok':
-          handle = "@" + b.toLowerCase();
+          handle = "@" + b.toLowerCase().replace(/\s+/g,'.');
           break;
         case 'roblox':
           handle = b.replace(/\s+/g,'') + Math.floor(Math.random()*999);
@@ -625,125 +626,125 @@
       const topic = readStr('rg-custom','Server');
       const count = Math.max(3, Math.min(20, readInt('rg-count', 8)));
       const stock = [
-        // **General Conduct**  
-        `Respect all members in the ${topic}.`,  
-        `No spamming, harassment, or hate speech.`,  
-        `Keep content appropriate; follow platform TOS.`,  
-        `No cheating, exploiting, or unauthorized mods.`,  
-        `Follow instructions from staff and moderators.`,  
-        `Use the correct channels/categories.`,  
-        `No advertising without permission.`,  
-        `Protect privacy—no doxxing or sharing personal info.`,  
-        `Report bugs/issues to staff, don't abuse them.`,  
-        `Have fun and help others.`,  
+        // **General Conduct**
+        `Respect all members in the ${topic}.`,
+        `No spamming, harassment, or hate speech.`,
+        `Keep content appropriate; follow platform TOS.`,
+        `No cheating, exploiting, or unauthorized mods.`,
+        `Follow instructions from staff and moderators.`,
+        `Use the correct channels/categories.`,
+        `No advertising without permission.`,
+        `Protect privacy—no doxxing or sharing personal info.`,
+        `Report bugs/issues to staff, don't abuse them.`,
+        `Have fun and help others.`,
 
-        // **Behavior & Communication**  
-        `No trolling, baiting, or flame wars.`,  
-        `Avoid excessive drama or off-topic arguments.`,  
-        `No impersonation of staff or other users.`,  
-        `Use English (or the server's primary language) in public channels.`,  
-        `No excessive caps, emoji, or disruptive formatting.`,  
-        `Keep politics/religion discussions civil or avoid them if volatile.`,  
-        `No NSFW content in non-designated areas.`,  
-        `No begging, guilt-tripping, or manipulative behavior.`,  
-        `Do not backseat moderate (let staff handle rule enforcement).`,  
-        `Use constructive criticism, not personal attacks.`,  
+        // **Behavior & Communication**
+        `No trolling, baiting, or flame wars.`,
+        `Avoid excessive drama or off-topic arguments.`,
+        `No impersonation of staff or other users.`,
+        `Use English (or the server's primary language) in public channels.`,
+        `No excessive caps, emoji, or disruptive formatting.`,
+        `Keep politics/religion discussions civil or avoid them if volatile.`,
+        `No NSFW content in non-designated areas.`,
+        `No begging, guilt-tripping, or manipulative behavior.`,
+        `Do not backseat moderate (let staff handle rule enforcement).`,
+        `Use constructive criticism, not personal attacks.`,
 
-        // **Content & Posting**  
-        `No low-effort posts (e.g., "lol", "this").`,  
-        `No reposting deleted/removed content.`,  
-        `Cite sources for news/claims when possible.`,  
-        `No pirated/illegal content (warez, cracks, etc.).`,  
-        `No shock/gore content.`,  
-        `No misinformation or deliberate spreading of false info.`,  
-        `No unsolicited self-promotion (DM ads = ban).`,  
-        `No AI-generated spam (e.g., ChatGPT floods).`,  
-        `Keep memes in designated areas.`,  
-        `No "upvote farming" or karma manipulation.`,  
+        // **Content & Posting**
+        `No low-effort posts (e.g., "lol", "this").`,
+        `No reposting deleted/removed content.`,
+        `Cite sources for news/claims when possible.`,
+        `No pirated/illegal content (warez, cracks, etc.).`,
+        `No shock/gore content.`,
+        `No misinformation or deliberate spreading of false info.`,
+        `No unsolicited self-promotion (DM ads = ban).`,
+        `No AI-generated spam (e.g., ChatGPT floods).`,
+        `Keep memes in designated areas.`,
+        `No "upvote farming" or karma manipulation.`,
 
-        // **Gaming/Competitive**  
-        `No smurfing or account boosting.`,  
-        `No win-trading or match-fixing.`,  
-        `No toxic behavior (e.g., "gg ez", trash talk).`,  
-        `No sharing exploits/cheats.`,  
-        `Respect esports rules if competing.`,  
-        `No false reports against players.`,  
-        `Stream sniping is prohibited.`,  
-        `No account sharing (unless explicitly allowed).`,  
-        `Clans/guilds must follow recruitment rules.`,  
-        `No stat padding or artificial rank inflation.`,  
+        // **Gaming/Competitive**
+        `No smurfing or account boosting.`,
+        `No win-trading or match-fixing.`,
+        `No toxic behavior (e.g., "gg ez", trash talk).`,
+        `No sharing exploits/cheats.`,
+        `Respect esports rules if competing.`,
+        `No false reports against players.`,
+        `Stream sniping is prohibited.`,
+        `No account sharing (unless explicitly allowed).`,
+        `Clans/guilds must follow recruitment rules.`,
+        `No stat padding or artificial rank inflation.`,
 
-        // **Tech & Security**  
-        `No sharing malware, phishing links, or IP grabbers.`,  
-        `Do not discuss/encourage illegal hacking.`,  
-        `No unauthorized bot usage.`,  
-        `No scraping/data harvesting without permission.`,  
-        `Report security vulnerabilities responsibly.`,  
-        `No DDoS threats or encouragement.`,  
-        `No bypassing bans (alt accounts = permaban).`,  
-        `No sharing others' work without credit.`,  
-        `Respect licenses (no pirated software talk).`,  
-        `No crypto scams/pyramid schemes.`,  
+        // **Tech & Security**
+        `No sharing malware, phishing links, or IP grabbers.`,
+        `Do not discuss/encourage illegal hacking.`,
+        `No unauthorized bot usage.`,
+        `No scraping/data harvesting without permission.`,
+        `Report security vulnerabilities responsibly.`,
+        `No DDoS threats or encouragement.`,
+        `No bypassing bans (alt accounts = permaban).`,
+        `No sharing others' work without credit.`,
+        `Respect licenses (no pirated software talk).`,
+        `No crypto scams/pyramid schemes.`,
 
-        // **Moderation & Appeals**  
-        `Appeals must be submitted formally (no DMs).`,  
-        `Ban evasion will extend punishments.`,  
-        `Staff decisions are final (no public arguing).`,  
-        `False reports may result in penalties.`,  
-        `Deleted content is not to be reposted.`,  
-        `No retaliating against rule reports.`,  
-        `Do not @mention staff for trivial issues.`,  
-        `Private chats with staff remain confidential.`,  
-        `Mass-pinging (e.g., @everyone) is staff-only.`,  
-        `No encouraging others to break rules.`,  
+        // **Moderation & Appeals**
+        `Appeals must be submitted formally (no DMs).`,
+        `Ban evasion will extend punishments.`,
+        `Staff decisions are final (no public arguing).`,
+        `False reports may result in penalties.`,
+        `Deleted content is not to be reposted.`,
+        `No retaliating against rule reports.`,
+        `Do not @mention staff for trivial issues.`,
+        `Private chats with staff remain confidential.`,
+        `Mass-pinging (e.g., @everyone) is staff-only.`,
+        `No encouraging others to break rules.`,
 
-        // **Community & Culture**  
-        `New members must read rules before participating.`,  
-        `No elitism or gatekeeping.`,  
-        `Respect cultural differences.`,  
-        `No discriminatory language (even as "jokes").`,  
-        `Use trigger warnings for sensitive topics.`,  
-        `No glorifying self-harm or violence.`,  
-        `Support inclusivity (LGBTQ+, neurodiversity, etc.).`,  
-        `No "us vs. them" mentality (e.g., platform wars).`,  
-        `Be patient with newcomers.`,  
-        `Celebrate others' achievements—no envy.`,  
+        // **Community & Culture**
+        `New members must read rules before participating.`,
+        `No elitism or gatekeeping.`,
+        `Respect cultural differences.`,
+        `No discriminatory language (even as "jokes").`,
+        `Use trigger warnings for sensitive topics.`,
+        `No glorifying self-harm or violence.`,
+        `Support inclusivity (LGBTQ+, neurodiversity, etc.).`,
+        `No "us vs. them" mentality (e.g., platform wars).`,
+        `Be patient with newcomers.`,
+        `Celebrate others' achievements—no envy.`,
 
-        // **Voice/Video Chats**  
-        `No earrape, loud noises, or mic spam.`,  
-        `Respect speaking turns (no interruptions).`,  
-        `No voice changers to mislead/deceive.`,  
-        `Keep background noise minimal.`,  
-        `No recording without consent.`,  
-        `Screen-sharing must be appropriate.`,  
-        `Video chats require clothed participants.`,  
-        `No fake cam/avatar misuse.`,  
-        `Raise hands in large VC discussions.`,  
-        `Debates must stay civil (no shouting).`,  
+        // **Voice/Video Chats**
+        `No earrape, loud noises, or mic spam.`,
+        `Respect speaking turns (no interruptions).`,
+        `No voice changers to mislead/deceive.`,
+        `Keep background noise minimal.`,
+        `No recording without consent.`,
+        `Screen-sharing must be appropriate.`,
+        `Video chats require clothed participants.`,
+        `No fake cam/avatar misuse.`,
+        `Raise hands in large VC discussions.`,
+        `Debates must stay civil (no shouting).`,
 
-        // **Creators & Artists**  
-        `Credit original artists/creators.`,  
-        `No AI art claiming to be human-made.`,  
-        `Critique must be constructive, not cruel.`,  
-        `No art theft/tracing without permission.`,  
-        `Commissions must follow pricing transparency.`,  
-        `No fake "free reward" scams.`,  
-        `Reposts require artist consent.`,  
-        `No plagiarism of writing/code/designs.`,  
-        `WIPs (works in progress) are welcome!`,  
-        `Feedback should be actionable.`,  
+        // **Creators & Artists**
+        `Credit original artists/creators.`,
+        `No AI art claiming to be human-made.`,
+        `Critique must be constructive, not cruel.`,
+        `No art theft/tracing without permission.`,
+        `Commissions must follow pricing transparency.`,
+        `No fake "free reward" scams.`,
+        `Reposts require artist consent.`,
+        `No plagiarism of writing/code/designs.`,
+        `WIPs (works in progress) are welcome!`,
+        `Feedback should be actionable.`,
 
-        // **Events & Giveaways**  
-        `No fake giveaways or scams.`,  
-        `Follow event-specific rules.`,  
-        `Winners must claim prizes within deadline.`,  
-        `No bribing judges/voters.`,  
-        `Event staff decisions are final.`,  
-        `No multi-accounting to enter contests.`,  
-        `Giveaways must be approved by staff.`,  
-        `No selling/trading giveaway prizes here.`,  
-        `Respect event time zones/schedules.`,  
-        `Have fun—no sabotage!`  
+        // **Events & Giveaways**
+        `No fake giveaways or scams.`,
+        `Follow event-specific rules.`,
+        `Winners must claim prizes within deadline.`,
+        `No bribing judges/voters.`,
+        `Event staff decisions are final.`,
+        `No multi-accounting to enter contests.`,
+        `Giveaways must be approved by staff.`,
+        `No selling/trading giveaway prizes here.`,
+        `Respect event time zones/schedules.`,
+        `Have fun—no sabotage!`
       ];
       let items = [];
       while(items.length < count){
