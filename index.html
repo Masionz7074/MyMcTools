@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fun Code Generator</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card: #121829;
+      --muted: #8792a2;
+      --text: #e6e8f0;
+      --accent: #6ee7b7;
+      --accent-2: #60a5fa;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100svh; display: grid; place-items: center;
+      background: radial-gradient(1200px 600px at 20% 10%, #0f1530 0%, var(--bg) 40%), var(--bg);
+      color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    .card {
+      width: min(680px, 92vw);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px; padding: 28px; box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+    }
+    h1 { font-size: clamp(22px, 2.4vw + 10px, 34px); margin: 0 0 12px; letter-spacing: 0.3px; }
+    p  { margin: 0 0 22px; color: var(--muted); }
+
+    .controls { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+    .btn {
+      appearance: none; border: 0; padding: 12px 16px; border-radius: 14px;
+      font-weight: 600; color: #091018; background: linear-gradient(180deg, var(--accent), #3ecf8e);
+      cursor: pointer; transition: transform 120ms ease, box-shadow 120ms ease; box-shadow: 0 10px 20px rgba(110, 231, 183, 0.3);
+    }
+    .btn.secondary { background: linear-gradient(180deg, var(--accent-2), #3b82f6); color: #061018; box-shadow: 0 10px 20px rgba(96, 165, 250, 0.3); }
+    .btn:active { transform: translateY(1px); }
+
+    .row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; margin-top: 18px; }
+    .codebox { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 24px; letter-spacing: 2px; background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 14px 16px; min-height: 54px; display: flex; align-items: center; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 14px; }
+    .pill { background: #0d1427; border: 1px dashed rgba(255,255,255,0.14); border-radius: 12px; padding: 10px 12px; text-align: center; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono"; }
+
+    .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(110,231,183,0.12); color: var(--accent); border: 1px solid rgba(110,231,183,0.35); padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent); margin: 18px 0; }
+    .small { font-size: 12px; color: var(--muted); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div style="display:flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <h1>Fun Code Generator</h1>
+      <span class="badge" id="eggBadge" aria-live="polite">25% Easter Eggs</span>
+    </div>
+    <p>Click generate to create codes like <strong>8VKC-L9M2-QE3R</strong>. With a 25% chance, a hidden easter egg (EGGS / CAT / DOG) slips into the code. 🥚🐱🐶</p>
+
+    <div class="controls">
+      <label class="small">
+        Segments
+        <input id="segments" type="number" min="2" max="6" value="3" style="width:68px; margin-left: 6px; padding: 8px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.14); background: #0d1427; color: var(--text);">
+      </label>
+      <label class="small">
+        Segment Length
+        <input id="segmentLen" type="number" min="3" max="8" value="4" style="width:68px; margin-left: 6px; padding: 8px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.14); background: #0d1427; color: var(--text);">
+      </label>
+      <label class="small" title="If on, avoids 0/O and 1/I for readability.">
+        <input id="safeMode" type="checkbox" checked> No-lookalikes
+      </label>
+    </div>
+
+    <div class="row">
+      <div id="output" class="codebox" role="status" aria-live="polite" aria-atomic="true">— — —</div>
+      <button class="btn" id="genBtn">Generate</button>
+    </div>
+
+    <div class="controls">
+      <button class="btn secondary" id="copyBtn">Copy</button>
+      <label class="small">
+        Bulk
+        <input id="bulkCount" type="number" min="2" max="50" value="10" style="width:68px; margin-left: 6px; padding: 8px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.14); background: #0d1427; color: var(--text);">
+      </label>
+      <button class="btn secondary" id="bulkBtn">Generate List</button>
+    </div>
+
+    <div class="divider"></div>
+    <div id="list" class="grid" aria-live="polite"></div>
+    <p class="hint">Tip: Toggle <em>No-lookalikes</em> to include characters like O/0 and I/1.</p>
+  </main>
+
+  <script>
+    const output = document.getElementById('output');
+    const list = document.getElementById('list');
+    const genBtn = document.getElementById('genBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const bulkBtn = document.getElementById('bulkBtn');
+    const eggBadge = document.getElementById('eggBadge');
+
+    const segmentsEl = document.getElementById('segments');
+    const segmentLenEl = document.getElementById('segmentLen');
+    const safeModeEl = document.getElementById('safeMode');
+    const bulkCountEl = document.getElementById('bulkCount');
+
+    const EGG_WORDS = ['EGGS', 'CAT', 'DOG'];
+
+    function charset(safe) {
+      const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // no I, O
+      const digits  = '23456789';                 // no 0, 1
+      const fullLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      const fullDigits = '0123456789';
+      return safe ? (letters + digits) : (fullLetters + fullDigits);
+    }
+
+    function randFrom(str) { return str[Math.floor(Math.random() * str.length)]; }
+
+    function makeSegment(len, pool) {
+      let s = '';
+      for (let i = 0; i < len; i++) s += randFrom(pool);
+      return s;
+    }
+
+    function injectWordIntoSegment(segmentLen, word, pool) {
+      // Place the word at a random position inside a segment, padding with random chars
+      const pos = Math.max(0, Math.min(segmentLen - word.length, Math.floor(Math.random() * (segmentLen - word.length + 1))));
+      let left = '', right = '';
+      for (let i = 0; i < pos; i++) left += randFrom(pool);
+      for (let i = pos + word.length; i < segmentLen; i++) right += randFrom(pool);
+      return left + word + right;
+    }
+
+    function shouldIncludeEgg() {
+      return Math.random() < 0.25; // 25% chance overall
+    }
+
+    function generateCode(segCount, segLen, safe) {
+      const pool = charset(safe);
+      const parts = new Array(segCount).fill('').map(() => makeSegment(segLen, pool));
+
+      if (shouldIncludeEgg()) {
+        const word = EGG_WORDS[Math.floor(Math.random() * EGG_WORDS.length)];
+        const idx = Math.floor(Math.random() * segCount);
+        const upperWord = word.toUpperCase();
+        let finalWord = upperWord;
+        if (upperWord.length > segLen) {
+          // If segment is shorter than the word, trim from the end
+          finalWord = upperWord.slice(0, segLen);
+        } else if (upperWord.length < segLen) {
+          finalWord = injectWordIntoSegment(segLen, upperWord, pool);
+        }
+        parts[idx] = finalWord;
+        eggBadge.textContent = `Easter Egg: ${word}!`;
+        eggBadge.style.background = 'rgba(96,165,250,0.12)';
+        eggBadge.style.borderColor = 'rgba(96,165,250,0.35)';
+        eggBadge.style.color = 'var(--accent-2)';
+      } else {
+        eggBadge.textContent = '25% Easter Eggs';
+        eggBadge.style.background = 'rgba(110,231,183,0.12)';
+        eggBadge.style.borderColor = 'rgba(110,231,183,0.35)';
+        eggBadge.style.color = 'var(--accent)';
+      }
+
+      return parts.join('-');
+    }
+
+    function showCode(code) {
+      output.textContent = code;
+    }
+
+    genBtn.addEventListener('click', () => {
+      const code = generateCode(
+        clamp(parseInt(segmentsEl.value), 2, 6),
+        clamp(parseInt(segmentLenEl.value), 3, 8),
+        !!safeModeEl.checked
+      );
+      showCode(code);
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      const code = output.textContent.trim();
+      if (!code || code === '— — —') return;
+      try {
+        await navigator.clipboard.writeText(code);
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => (copyBtn.textContent = 'Copy'), 1200);
+      } catch {
+        // Fallback
+        const ta = document.createElement('textarea');
+        ta.value = code; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => (copyBtn.textContent = 'Copy'), 1200);
+      }
+    });
+
+    bulkBtn.addEventListener('click', () => {
+      const count = clamp(parseInt(bulkCountEl.value), 2, 50);
+      const segs = clamp(parseInt(segmentsEl.value), 2, 6);
+      const len  = clamp(parseInt(segmentLenEl.value), 3, 8);
+      const safe = !!safeModeEl.checked;
+
+      list.innerHTML = '';
+      for (let i = 0; i < count; i++) {
+        const code = generateCode(segs, len, safe);
+        const pill = document.createElement('div');
+        pill.className = 'pill';
+        pill.textContent = code;
+        list.appendChild(pill);
+      }
+    });
+
+    function clamp(n, min, max) {
+      if (Number.isNaN(n)) return min;
+      return Math.max(min, Math.min(max, n));
+    }
+
+    // Generate one on load for fun
+    showCode(generateCode(3, 4, true));
+  </script>
+</body>
+</html>
