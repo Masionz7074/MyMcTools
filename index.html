@@ -3,20 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Code Generator</title>
+  <title>All-in-One Generator</title>
+  <!-- QR Code Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
   <style>
     /* ===== Cotton-candy animated background ===== */
     :root{
-      --bg1:#2b0a52;
-      --bg2:#3e1a78;
-      --bg3:#a855f7;
-      --bg4:#ff72c6;
-      --card:#1c0b2b;
-      --text:#f5ecff;
-      --muted:#b9a9c8;
-      --accent:#c084fc;
-      --accent2:#a855f7;
-      --border:rgba(255,255,255,.14);
+      --bg1:#2b0a52; --bg2:#3e1a78; --bg3:#a855f7; --bg4:#ff72c6;
+      --card:#1c0b2b; --text:#f5ecff; --muted:#b9a9c8; --accent:#c084fc;
+      --accent2:#a855f7; --border:rgba(255,255,255,.14);
       --glass: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04));
     }
     *{box-sizing:border-box}
@@ -26,168 +21,102 @@
       font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
       overflow: hidden;
     }
-    /* animated gradient layer */
-    .bg {
-      position: fixed; inset: -10vmax;
-      background: radial-gradient(60vmax 60vmax at 15% 20%, #fface9aa, transparent 60%),
-                  radial-gradient(70vmax 70vmax at 85% 30%, #c084fc99, transparent 60%),
-                  radial-gradient(80vmax 80vmax at 40% 80%, #6ee7ff55, transparent 60%),
-                  linear-gradient(120deg, #2b0a52 0%, #3e1a78 40%, #30124b 100%);
-      filter: blur(30px) saturate(120%);
-      animation: float 25s ease-in-out infinite alternate;
-      z-index:-2;
-    }
-    @keyframes float {
-      0% { transform: translate(0,0) scale(1); }
-      50%{ transform: translate(-3vmax, 2vmax) scale(1.05); }
-      100%{ transform: translate(3vmax,-2vmax) scale(1.08); }
-    }
-    /* soft moving light sheen */
-    .shine{
-      position: fixed; inset: -20vmax;
-      background: radial-gradient(40vmax 40vmax at 60% 60%, #ffffff18, transparent 60%);
-      animation: drift 16s ease-in-out infinite alternate;
-      z-index:-1;
-    }
-    @keyframes drift {
-      0% { transform: translate(-4vmax, 2vmax) }
-      100%{ transform: translate(6vmax,-4vmax) }
-    }
+    .bg { position: fixed; inset: -10vmax; background: radial-gradient(60vmax 60vmax at 15% 20%, #fface9aa, transparent 60%), radial-gradient(70vmax 70vmax at 85% 30%, #c084fc99, transparent 60%), radial-gradient(80vmax 80vmax at 40% 80%, #6ee7ff55, transparent 60%), linear-gradient(120deg, #2b0a52 0%, #3e1a78 40%, #30124b 100%); filter: blur(30px) saturate(120%); animation: float 25s ease-in-out infinite alternate; z-index:-2; }
+    @keyframes float { 0% { transform: translate(0,0) scale(1); } 50%{ transform: translate(-3vmax, 2vmax) scale(1.05); } 100%{ transform: translate(3vmax,-2vmax) scale(1.08); } }
+    .shine{ position: fixed; inset: -20vmax; background: radial-gradient(40vmax 40vmax at 60% 60%, #ffffff18, transparent 60%); animation: drift 16s ease-in-out infinite alternate; z-index:-1; }
+    @keyframes drift { 0% { transform: translate(-4vmax, 2vmax) } 100%{ transform: translate(6vmax,-4vmax) } }
 
     /* ===== Layout ===== */
     .app { position: relative; display:flex; height:100%; }
-    .sidebar {
-      width: 290px; min-width: 240px; max-width: 320px;
-      padding: 18px 14px; backdrop-filter: blur(12px);
-      background: var(--glass);
-      border-right: 1px solid var(--border);
-      box-shadow: 20px 0 60px rgba(0,0,0,.25);
-      overflow-y: auto;
-      transition: transform .2s ease;
-    }
+    .sidebar { width: 300px; min-width: 260px; max-width: 340px; padding: 18px 10px; backdrop-filter: blur(12px); background: var(--glass); border-right: 1px solid var(--border); box-shadow: 20px 0 60px rgba(0,0,0,.25); overflow-y: auto; transition: transform .2s ease; }
     .sidebar.hide { transform: translateX(-100%); }
-    .brand { display:flex; align-items:center; gap:10px; margin-bottom: 12px; }
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+    .brand { display:flex; align-items:center; gap:10px; margin-bottom: 12px; padding: 0 12px; }
     .brand h1 { margin:0; font-size: 20px; letter-spacing:.4px; color:#ffd6ff; }
     .brand .dot { width:10px; height:10px; border-radius:50%; background: conic-gradient(from 0deg, #ff72c6, #a855f7, #6ee7ff); box-shadow: 0 0 16px #ff72c677; }
-    .nav { display:flex; flex-direction:column; gap:8px; }
-    .tab {
-      display:flex; align-items:center; gap:10px;
-      padding:12px 12px; border-radius:14px; border:1px solid transparent;
-      color:var(--text); cursor:pointer; user-select:none;
-      background: transparent; transition: background .15s ease, transform .12s ease;
-    }
-    .tab:hover { background: #ffffff14; }
-    .tab.active { background: linear-gradient(180deg, #ffffff18, #ffffff10); border-color: var(--border); }
-    .tab .emoji { width:28px; height:28px; display:grid; place-items:center; font-size:18px; background:#00000030; border:1px solid var(--border); border-radius:10px; }
+    
+    /* New Sidebar Nav */
+    .nav { display:flex; flex-direction:column; gap:12px; }
+    .nav-category .title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); padding: 8px 12px; margin-top: 8px; }
+    .tab { display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:12px; border:1px solid transparent; color:var(--text); cursor:pointer; user-select:none; background: transparent; transition: background .15s ease, color .15s ease; }
+    .tab:hover { background: #ffffff14; color: #fff; }
+    .tab.active { background: linear-gradient(180deg, #ffffff18, #ffffff10); border-color: var(--border); color: #fff; }
+    .tab svg { width: 20px; height: 20px; stroke-width: 2px; color: var(--accent); transition: color .15s ease; }
+    .tab:hover svg, .tab.active svg { color: #f0dfff; }
 
-    .content {
-      flex:1; overflow-y: auto; padding: 20px 24px; display:grid; place-items: start; position: relative;
-    }
-    .topbar{
-      position: sticky; top:0; left:0; right:0; z-index: 2;
-      display:flex; align-items:center; gap:10px; margin-bottom: 10px;
-    }
-    .hamburger{
-      border:1px solid var(--border); background:#ffffff18; color:var(--text); border-radius:10px;
-      width:40px; height:40px; display:grid; place-items:center; cursor:pointer;
-      backdrop-filter: blur(8px);
-    }
-
-    .panel {
-      width:min(1100px, 92vw);
-      background: var(--glass);
-      border:1px solid var(--border);
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.35);
-      backdrop-filter: blur(10px);
-      margin: 0 auto;
-    }
+    .content { flex:1; overflow-y: auto; padding: 20px 24px; display:grid; place-items: start; position: relative; }
+    .topbar{ position: sticky; top:0; left:0; right:0; z-index: 2; display:flex; align-items:center; gap:10px; margin-bottom: 10px; }
+    .hamburger{ border:1px solid var(--border); background:#ffffff18; color:var(--text); border-radius:10px; width:40px; height:40px; display:grid; place-items:center; cursor:pointer; backdrop-filter: blur(8px); }
+    .panel { width:min(1100px, 92vw); background: var(--glass); border:1px solid var(--border); border-radius: 20px; padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.35); backdrop-filter: blur(10px); margin: 0 auto; }
     .panel h2 { margin: 0 0 6px; color:#ffe0ff; letter-spacing:.3px }
     .muted { color: var(--muted); margin: 0 0 12px; }
-
     .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+    .grid-col-1 { grid-template-columns: 1fr; }
     .field { display:flex; flex-direction:column; gap:6px; padding:10px; border-radius:12px; border:1px dashed var(--border); background:#0000002b; }
     .field label { font-size: 12px; color: var(--muted); }
-    .field input, .field select, .field textarea {
-      width:100%; border-radius:12px; border:1px solid var(--border); padding:10px 12px;
-      background:#130724; color:var(--text); outline:none; resize: vertical;
-    }
+    .field input, .field select, .field textarea { width:100%; border-radius:12px; border:1px solid var(--border); padding:10px 12px; background:#130724; color:var(--text); outline:none; resize: vertical; }
+    .field input[type="range"] { padding: 0; }
     .row { display:flex; gap:10px; flex-wrap: wrap; margin-top: 8px; }
-    .btn {
-      appearance:none; border:0; border-radius:14px; padding:12px 16px;
-      font-weight:700; color:white; cursor:pointer;
-      background: linear-gradient(180deg, var(--accent), var(--accent2));
-      box-shadow: 0 12px 24px rgba(168,85,247,.35);
-      transition: transform .12s ease, box-shadow .12s ease, opacity .15s ease;
-    }
+    .btn { appearance:none; border:0; border-radius:14px; padding:12px 16px; font-weight:700; color:white; cursor:pointer; background: linear-gradient(180deg, var(--accent), var(--accent2)); box-shadow: 0 12px 24px rgba(168,85,247,.35); transition: transform .12s ease, box-shadow .12s ease, opacity .15s ease; }
     .btn.secondary { background: linear-gradient(180deg, #d8a6ff, #c084fc); }
     .btn.ghost { background: #ffffff10; border:1px solid var(--border); }
     .btn:active { transform: translateY(1px); }
     .btn[disabled]{ opacity:.6; cursor:not-allowed }
-
-    .codebox {
-      min-height: 70px; display:flex; align-items:center; justify-content:center; text-align:center;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: clamp(18px, 1.6vw + 12px, 30px);
-      letter-spacing:1.5px; background:#130724; border:1px solid var(--border);
-      border-radius:14px; padding:16px; margin-top: 10px;
-      white-space: pre-wrap;
-    }
-    .flex { display:flex; gap:12px; flex-wrap:wrap; }
-    .badge { font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid var(--border); background:#ffffff14; color:#ffdfff }
-
-    /* Color swatches */
-    .swatches { display:flex; gap:10px; flex-wrap: wrap; margin-top: 10px; }
-    .swatch { width:120px; height:80px; border-radius:14px; border:1px solid var(--border); display:flex; align-items:end; justify-content:center; padding:8px; font-family: ui-monospace; background:#333; }
-
-    /* Slot-machine animation characters */
-    .slot {
-      display:inline-block; min-width: .65em; transform: translateZ(0);
-    }
-    .slot.spin { animation: pop .22s ease; }
-    @keyframes pop {
-      0%{ transform: scale(.9); opacity:.4 }
-      100%{ transform: scale(1); opacity:1 }
-    }
-
-    /* Toast */
-    .toast{
-      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
-      background: #00000085; color: white; padding: 10px 14px; border-radius: 999px;
-      border: 1px solid var(--border); box-shadow: 0 10px 20px rgba(0,0,0,.4);
-      opacity: 0; transition: opacity .2s ease, transform .2s ease; z-index: 5;
-    }
+    .codebox { min-height: 70px; display:flex; align-items:center; justify-content:center; text-align:center; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: clamp(14px, 1.6vw + 10px, 24px); letter-spacing:1.5px; background:#130724; border:1px solid var(--border); border-radius:14px; padding:16px; margin-top: 10px; white-space: pre-wrap; word-break: break-all; }
+    .codebox.left-align { text-align: left; justify-content: flex-start; align-items: flex-start; font-size: 1rem; letter-spacing: normal; }
+    .swatches, .tints-shades { display:flex; gap:10px; flex-wrap: wrap; margin-top: 10px; }
+    .swatch, .tint-shade-box { width:100px; height:70px; border-radius:14px; border:1px solid var(--border); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:8px; font-family: ui-monospace; font-size:12px; background:#333; }
+    .preview-box { width: 100%; min-height: 120px; border-radius: 14px; border: 1px solid var(--border); margin-top: 10px; display: grid; place-items: center; }
+    #qr-canvas { background: white; border-radius: 14px; border: 1px solid var(--border); }
+    .toast{ position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: #00000085; color: white; padding: 10px 14px; border-radius: 999px; border: 1px solid var(--border); box-shadow: 0 10px 20px rgba(0,0,0,.4); opacity: 0; transition: opacity .2s ease, transform .2s ease; z-index: 5; }
     .toast.show{ opacity:1; transform: translateX(-50%) translateY(-6px); }
-
-    /* Make page scrollable on small screens */
-    @media (max-width: 900px){
-      body{ overflow:auto; }
-      .app{ display:block; }
-      .sidebar{ position: fixed; top:0; left:0; bottom:0; z-index:3; }
-      .content{ padding: 16px; }
-      .topbar{ position: sticky; top:0; }
-    }
+    @media (max-width: 900px){ body{ overflow:auto; } .app{ display:block; } .sidebar{ position: fixed; top:0; left:0; bottom:0; z-index:3; } .content{ padding: 16px; } .topbar{ position: sticky; top:0; } }
   </style>
 </head>
 <body>
-  <div class="bg"></div>
-  <div class="shine"></div>
-
+  <div class="bg"></div><div class="shine"></div>
   <div class="app">
     <aside class="sidebar" id="sidebar">
-      <div class="brand">
-        <div class="dot"></div>
-        <h1>Code Generator</h1>
-      </div>
+      <div class="brand"><div class="dot"></div><h1>All-in-One Gen</h1></div>
       <div class="nav" id="nav">
-        <div class="tab active" data-target="panel-code"><span class="emoji">🔢</span> Code Generator</div>
-        <div class="tab" data-target="panel-names"><span class="emoji">🏷️</span> Name Generators</div>
-        <div class="tab" data-target="panel-project"><span class="emoji">🚀</span> Project Names</div>
-        <div class="tab" data-target="panel-rules"><span class="emoji">📜</span> Rules Generator</div>
-        <div class="tab" data-target="panel-ideas"><span class="emoji">💡</span> Random Ideas</div>
-        <div class="tab" data-target="panel-colors"><span class="emoji">🎨</span> Color Palettes</div>
-        <div class="tab" data-target="panel-webhook"><span class="emoji">💬</span> Discord Webhook JSON</div>
+        <!-- Creative Suite -->
+        <div class="nav-category"><div class="title">Creative Suite</div>
+          <div class="tab active" data-target="panel-names"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg> Name Generator</div>
+          <div class="tab" data-target="panel-project"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg> Project Names</div>
+          <div class="tab" data-target="panel-story"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg> Story Idea</div>
+          <div class="tab" data-target="panel-recipe"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3z"></path></svg> Recipe Idea</div>
+          <div class="tab" data-target="panel-ideas"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21.73 18.24c-1.34.85-3.22.64-4.28-1.04-.76-1.23-.72-2.7.08-3.85l.11-.16c.9-1.28.8-3.03-.23-4.16-1.03-1.13-2.78-1.2-4.06-.23l-.16.11c-1.15.8-2.62.84-3.85.08-1.57-.96-1.76-3.23-.42-4.28C9.7 2.1 12 1 14.5 1c3.5 0 7 2.5 7 6 0 1.5-1 3.2-2.5 4.5l-2 2.5c-.8.9-.6 2.3.4 3 .9.6 2.1.5 2.8-.2l2.5-2.5C23 15.2 23.5 13.5 23.5 12c0-4-3.5-7-7-7-2.2 0-4.2 1-5.5 2.5-.9 1-1.2 2.5-.6 3.7l.1.2c.4.7.3 1.5-.3 2.1-.6.6-1.4.7-2.1.3l-.2-.1c-1.2-.6-2.7-.2-3.7.6S.5 17 2.1 18.5c1.4 1.3 3.5 1.5 4.8.4l.2-.1c.7-.4 1.5-.3 2.1.3.6.6.7 1.4.3 2.1l-.1.2c-.6 1.2-.2 2.7.6 3.7C10.8 23 12.8 24 15 24c3.5 0 7-2.5 7-6 0-1.7-1-3.5-2.73-4.76z"></path></svg> Random Ideas</div>
+        </div>
+        <!-- Design Tools -->
+        <div class="nav-category"><div class="title">Design Tools</div>
+          <div class="tab" data-target="panel-colors"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0L12 2.69z"></path></svg> Color Palettes</div>
+          <div class="tab" data-target="panel-tints"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 12c0-5.25-4.25-9.5-9.5-9.5S2.5 6.75 2.5 12s4.25 9.5 9.5 9.5s9.5-4.25 9.5-9.5z"></path><path d="M12 2.5V21.5"></path></svg> Tints & Shades</div>
+          <div class="tab" data-target="panel-gradient"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a10 10 0 0 0-10 10h20a10 10 0 0 0-10-10z"></path></svg> CSS Gradient</div>
+          <div class="tab" data-target="panel-boxshadow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> CSS Box-Shadow</div>
+          <div class="tab" data-target="panel-qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><line x1="14" y1="14" x2="21" y2="14"></line><line x1="14" y1="17.5" x2="21" y2="17.5"></line><line x1="14" y1="21" x2="21" y2="21"></line></svg> QR Code</div>
+        </div>
+        <!-- Developer Kit -->
+        <div class="nav-category"><div class="title">Developer Kit</div>
+          <div class="tab" data-target="panel-code"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg> Code Generator</div>
+          <div class="tab" data-target="panel-password"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Password</div>
+          <div class="tab" data-target="panel-uuid"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg> UUID</div>
+          <div class="tab" data-target="panel-hashing"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11v5"></path><path d="M12 18v2"></path><path d="M12 2v2"></path><path d="M22 12h-5"></path><path d="M7 12H2"></path><circle cx="12" cy="12" r="7"></circle></svg> Hashing</div>
+          <div class="tab" data-target="panel-slugify"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20H13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2.5"></path><path d="M4 10h6.5"></path><path d="M4 14h6.5"></path></svg> Slugify</div>
+          <div class="tab" data-target="panel-lorem"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg> Lorem Ipsum</div>
+          <div class="tab" data-target="panel-webhook"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> Discord Webhook</div>
+        </div>
+        <!-- Utilities & Fun -->
+        <div class="nav-category"><div class="title">Utilities &amp; Fun</div>
+          <div class="tab" data-target="panel-rules"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Rules Generator</div>
+          <div class="tab" data-target="panel-rng"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"></path><path d="M4 20L21 3"></path><path d="M21 16v5h-5"></path><path d="M15 15l6 6"></path><path d="M4 4l5 5"></path></svg> Random Number</div>
+          <div class="tab" data-target="panel-dice"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><circle cx="15.5" cy="8.5" r="1.5"></circle><circle cx="15.5" cy="15.5" r="1.5"></circle><circle cx="8.5" cy="15.5" r="1.5"></circle></svg> Dice Roller</div>
+          <div class="tab" data-target="panel-teams"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Team Generator</div>
+          <div class="tab" data-target="panel-morse"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="5" r="2"></circle><circle cx="5" cy="19" r="2"></circle><path d="M13.5 10.5L17 7"></path><path d="M7 17l3.5-3.5"></path></svg> Morse Translator</div>
+          <div class="tab" data-target="panel-workout"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> Workout</div>
+          <div class="tab" data-target="panel-magic8"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> Magic 8-Ball</div>
+          <div class="tab" data-target="panel-excuse"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> Excuse Generator</div>
+        </div>
       </div>
     </aside>
 
@@ -196,60 +125,11 @@
         <button class="hamburger" id="hamburger" title="Toggle menu">☰</button>
         <span class="badge">Cotton-candy animated theme</span>
       </div>
-
-      <!-- ===== Code Generator ===== -->
-      <section class="panel" id="panel-code">
-        <h2>Code Generator</h2>
-        <p class="muted">Make codes like <code>XXXX-XXXX-XXXX</code>. Slot-machine reveal included. All fields are optional.</p>
-
-        <div class="grid">
-          <div class="field"><label>Segments</label><input id="cg-segments" type="number" inputmode="numeric" value="3" placeholder="3"></div>
-          <div class="field"><label>Segment length</label><input id="cg-seglen" type="number" inputmode="numeric" value="4" placeholder="4"></div>
-          <div class="field"><label>Separator</label><input id="cg-sep" type="text" value="-" placeholder="-"></div>
-          <div class="field"><label>Prefix (optional)</label><input id="cg-prefix" type="text" placeholder=""></div>
-          <div class="field"><label>Suffix (optional)</label><input id="cg-suffix" type="text" placeholder=""></div>
-          <div class="field">
-            <label>Font size (px)</label>
-            <input id="cg-font" type="number" inputmode="numeric" placeholder="">
-          </div>
-
-          <div class="field">
-            <label>Character sets</label>
-            <div class="row">
-              <label class="badge"><input id="cg-upper" type="checkbox" checked> &nbsp;Uppercase</label>
-              <label class="badge"><input id="cg-lower" type="checkbox"> &nbsp;Lowercase</label>
-              <label class="badge"><input id="cg-nums"  type="checkbox" checked> &nbsp;Numbers</label>
-              <label class="badge"><input id="cg-spec"  type="checkbox"> &nbsp;Special</label>
-              <label class="badge"><input id="cg-words" type="checkbox"> &nbsp;Words</label>
-            </div>
-          </div>
-          <div class="field">
-            <label class="row"><input id="cg-dupe" type="checkbox"> Allow duplicate characters (per segment)</label>
-          </div>
-
-          <div class="field">
-            <label>Easter egg words (comma separated)</label>
-            <input id="cg-eggs" type="text" placeholder="">
-          </div>
-          <div class="field">
-            <label>Easter egg chance (%)</label>
-            <input id="cg-eggchance" type="number" inputmode="numeric" placeholder="">
-          </div>
-        </div>
-
-        <div class="row">
-          <button class="btn" id="cg-generate">Generate</button>
-          <button class="btn secondary" id="cg-copy">Copy</button>
-        </div>
-
-        <div class="codebox" id="cg-output" aria-live="polite">Your code will appear here</div>
-      </section>
-
-      <!-- ===== Name Generators (Xbox/Discord/TikTok/Roblox/General) ===== -->
-      <section class="panel" id="panel-names" style="display:none">
+      
+      <!-- ===== Name Generator ===== -->
+      <section class="panel" id="panel-names">
         <h2>Name Generators</h2>
         <p class="muted">Choose a style and generate a name. Slot-machine reveal included.</p>
-
         <div class="grid">
           <div class="field">
             <label>Type</label>
@@ -261,17 +141,9 @@
               <option value="username">General Username</option>
             </select>
           </div>
-          <div class="field">
-            <label>Base word (optional)</label>
-            <input id="ng-base" type="text" placeholder="">
-          </div>
+          <div class="field"><label>Base word (optional)</label><input id="ng-base" type="text"></div>
         </div>
-
-        <div class="row">
-          <button class="btn" id="ng-generate">Generate</button>
-          <button class="btn secondary" id="ng-copy">Copy</button>
-        </div>
-
+        <div class="row"><button class="btn" id="ng-generate">Generate</button><button class="btn secondary" data-copy-target="ng-output">Copy</button></div>
         <div class="codebox" id="ng-output">Your name will appear here</div>
       </section>
 
@@ -279,51 +151,32 @@
       <section class="panel" id="panel-project" style="display:none">
         <h2>Project Name Generator</h2>
         <p class="muted">Generate names like “<em>Pixel Network</em>” or “<em>Shadow United</em>”.</p>
-        <div class="grid">
-          <div class="field">
-            <label>Base word (optional)</label>
-            <input id="pg-base" type="text" placeholder="">
-          </div>
-        </div>
-        <div class="row">
-          <button class="btn" id="pg-generate">Generate</button>
-          <button class="btn secondary" id="pg-copy">Copy</button>
-        </div>
+        <div class="grid"><div class="field"><label>Base word (optional)</label><input id="pg-base" type="text"></div></div>
+        <div class="row"><button class="btn" id="pg-generate">Generate</button><button class="btn secondary" data-copy-target="pg-output">Copy</button></div>
         <div class="codebox" id="pg-output">Your project name will appear here</div>
       </section>
-
-      <!-- ===== Rules Generator ===== -->
-      <section class="panel" id="panel-rules" style="display:none">
-        <h2>Rules Generator</h2>
-        <p class="muted">Enter a topic (e.g., Minecraft, Discord, Roblox, Lethal Company) and choose count.</p>
-
-        <div class="grid">
-          <div class="field">
-            <label>Custom topic</label>
-            <input id="rg-custom" type="text" placeholder="">
-          </div>
-          <div class="field">
-            <label>How many rules?</label>
-            <input id="rg-count" type="number" inputmode="numeric" placeholder="">
-          </div>
-        </div>
-
-        <div class="row">
-          <button class="btn" id="rg-generate">Generate</button>
-          <button class="btn secondary" id="rg-copy">Copy</button>
-        </div>
-
-        <div class="codebox" id="rg-output">Your rules will appear here</div>
+      
+      <!-- ===== Story Idea Generator ===== -->
+      <section class="panel" id="panel-story" style="display:none">
+        <h2>Story Idea Generator</h2>
+        <p class="muted">Generate a random plot prompt.</p>
+        <div class="row"><button class="btn" id="story-generate">Generate</button><button class="btn secondary" data-copy-target="story-output">Copy</button></div>
+        <div class="codebox left-align" id="story-output">Your story idea will appear here</div>
+      </section>
+      
+      <!-- ===== Recipe Idea Generator ===== -->
+      <section class="panel" id="panel-recipe" style="display:none">
+        <h2>Recipe Idea Generator</h2>
+        <p class="muted">Get a random idea for your next meal.</p>
+        <div class="row"><button class="btn" id="recipe-generate">Generate</button><button class="btn secondary" data-copy-target="recipe-output">Copy</button></div>
+        <div class="codebox" id="recipe-output">Your recipe idea will appear here</div>
       </section>
 
       <!-- ===== Ideas Generator ===== -->
       <section class="panel" id="panel-ideas" style="display:none">
         <h2>Random Ideas</h2>
         <p class="muted">One click sparks project concepts, minigames, content prompts, etc.</p>
-        <div class="row">
-          <button class="btn" id="ig-generate">Generate Idea</button>
-          <button class="btn secondary" id="ig-copy">Copy</button>
-        </div>
+        <div class="row"><button class="btn" id="ig-generate">Generate Idea</button><button class="btn secondary" data-copy-target="ig-output">Copy</button></div>
         <div class="codebox" id="ig-output">Your idea will appear here</div>
       </section>
 
@@ -331,31 +184,258 @@
       <section class="panel" id="panel-colors" style="display:none">
         <h2>Color Palette</h2>
         <p class="muted">Generate a 5‑color palette. Click copy to grab all hex values.</p>
-        <div class="row">
-          <button class="btn" id="cp-generate">Generate Palette</button>
-          <button class="btn secondary" id="cp-copy">Copy</button>
-        </div>
+        <div class="row"><button class="btn" id="cp-generate">Generate Palette</button><button class="btn secondary" id="cp-copy">Copy</button></div>
         <div class="swatches" id="cp-swatches"></div>
       </section>
+      
+      <!-- ===== Tints and Shades ===== -->
+      <section class="panel" id="panel-tints" style="display:none">
+        <h2>Tints & Shades Generator</h2>
+        <p class="muted">Enter a base hex color to generate lighter (tints) and darker (shades) variants.</p>
+        <div class="grid grid-col-1">
+          <div class="field"><label>Base Color (Hex)</label><input id="ts-color" type="text" value="#a855f7"></div>
+        </div>
+        <div class="row"><button class="btn" id="ts-generate">Generate</button><button class="btn secondary" id="ts-copy">Copy All</button></div>
+        <div class="tints-shades" id="ts-output"></div>
+      </section>
 
-      <!-- ===== Discord Webhook JSON (no send, just generate) ===== -->
+      <!-- ===== CSS Gradient Generator ===== -->
+      <section class="panel" id="panel-gradient" style="display:none">
+          <h2>CSS Gradient Generator</h2>
+          <p class="muted">Generate a random linear gradient and its CSS code.</p>
+          <div class="row"><button class="btn" id="grad-generate">Generate</button><button class="btn secondary" data-copy-target="grad-output">Copy CSS</button></div>
+          <div class="preview-box" id="grad-preview"></div>
+          <div class="codebox left-align" id="grad-output" style="font-size: 1rem;">CSS will appear here</div>
+      </section>
+      
+      <!-- ===== CSS Box-Shadow Generator ===== -->
+      <section class="panel" id="panel-boxshadow" style="display:none">
+        <h2>CSS Box-Shadow Generator</h2>
+        <p class="muted">Visually design a box-shadow and copy the CSS.</p>
+        <div class="grid">
+            <div class="field"><label>Horizontal Offset (px)</label><input type="range" id="bs-h" min="-100" max="100" value="10"></div>
+            <div class="field"><label>Vertical Offset (px)</label><input type="range" id="bs-v" min="-100" max="100" value="10"></div>
+            <div class="field"><label>Blur Radius (px)</label><input type="range" id="bs-b" min="0" max="100" value="20"></div>
+            <div class="field"><label>Spread Radius (px)</label><input type="range" id="bs-s" min="-50" max="50" value="0"></div>
+            <div class="field"><label>Shadow Color</label><input type="color" id="bs-c" value="#a855f7" style="padding:4px; height: 40px;"></div>
+            <div class="field"><label class="row"><input type="checkbox" id="bs-i"> Inset</label></div>
+        </div>
+        <div class="row"><button class="btn secondary" data-copy-target="bs-output">Copy CSS</button></div>
+        <div class="preview-box"><div id="bs-preview" style="width: 100px; height: 100px; background: var(--accent2); border-radius: 14px;"></div></div>
+        <div class="codebox left-align" id="bs-output" style="font-size: 1rem;">box-shadow will appear here</div>
+      </section>
+
+      <!-- ===== QR Code Generator ===== -->
+      <section class="panel" id="panel-qr" style="display:none">
+        <h2>QR Code Generator</h2>
+        <p class="muted">Enter text or a URL to generate a QR code.</p>
+        <div class="grid">
+          <div class="field"><label>Content</label><input id="qr-text" type="text" placeholder="https://example.com"></div>
+          <div class="field"><label>Size (px)</label><input id="qr-size" type="number" value="200"></div>
+        </div>
+        <div class="row">
+          <button class="btn" id="qr-generate">Generate</button>
+          <a class="btn secondary" id="qr-download" download="qrcode.png" style="display:none;">Download</a>
+        </div>
+        <div style="margin-top: 10px; text-align: center;"><canvas id="qr-canvas"></canvas></div>
+      </section>
+
+      <!-- ===== Code Generator ===== -->
+      <section class="panel" id="panel-code" style="display:none">
+        <h2>Code Generator</h2>
+        <p class="muted">Make codes like <code>XXXX-XXXX-XXXX</code>. All fields are optional.</p>
+        <div class="grid">
+          <div class="field"><label>Segments</label><input id="cg-segments" type="number" inputmode="numeric" placeholder="3"></div>
+          <div class="field"><label>Segment length</label><input id="cg-seglen" type="number" inputmode="numeric" placeholder="4"></div>
+          <div class="field"><label>Separator</label><input id="cg-sep" type="text" placeholder="-"></div>
+          <div class="field"><label>Prefix (optional)</label><input id="cg-prefix" type="text"></div>
+          <div class="field"><label>Suffix (optional)</label><input id="cg-suffix" type="text"></div>
+          <div class="field"><label>Font size (px)</label><input id="cg-font" type="number" inputmode="numeric"></div>
+          <div class="field">
+            <label>Character sets</label>
+            <div class="row">
+              <label class="badge"><input id="cg-upper" type="checkbox" checked> &nbsp;Uppercase</label>
+              <label class="badge"><input id="cg-lower" type="checkbox"> &nbsp;Lowercase</label>
+              <label class="badge"><input id="cg-nums"  type="checkbox" checked> &nbsp;Numbers</label>
+              <label class="badge"><input id="cg-spec"  type="checkbox"> &nbsp;Special</label>
+            </div>
+          </div>
+          <div class="field"><label class="row"><input id="cg-dupe" type="checkbox"> Allow duplicate characters</label></div>
+        </div>
+        <div class="row"><button class="btn" id="cg-generate">Generate</button><button class="btn secondary" data-copy-target="cg-output">Copy</button></div>
+        <div class="codebox" id="cg-output" aria-live="polite">Your code will appear here</div>
+      </section>
+      
+      <!-- ===== Password Generator ===== -->
+      <section class="panel" id="panel-password" style="display:none">
+        <h2>Password Generator</h2>
+        <p class="muted">Create a strong, random password.</p>
+        <div class="grid">
+          <div class="field"><label>Length</label><input id="pw-len" type="number" inputmode="numeric" value="16"></div>
+          <div class="field">
+            <label>Character sets</label>
+            <div class="row">
+              <label class="badge"><input id="pw-upper" type="checkbox" checked> &nbsp;Uppercase</label>
+              <label class="badge"><input id="pw-lower" type="checkbox" checked> &nbsp;Lowercase</label>
+              <label class="badge"><input id="pw-nums"  type="checkbox" checked> &nbsp;Numbers</label>
+              <label class="badge"><input id="pw-spec"  type="checkbox"> &nbsp;Symbols</label>
+            </div>
+          </div>
+        </div>
+        <div class="row"><button class="btn" id="pw-generate">Generate</button><button class="btn secondary" data-copy-target="pw-output">Copy</button></div>
+        <div class="codebox" id="pw-output" aria-live="polite">Your password will appear here</div>
+      </section>
+
+      <!-- ===== UUID Generator ===== -->
+      <section class="panel" id="panel-uuid" style="display:none">
+        <h2>UUID Generator</h2>
+        <p class="muted">Generate a Version 4 UUID (Universally Unique Identifier).</p>
+        <div class="row"><button class="btn" id="uuid-generate">Generate</button><button class="btn secondary" data-copy-target="uuid-output">Copy</button></div>
+        <div class="codebox" id="uuid-output" aria-live="polite">Your UUID will appear here</div>
+      </section>
+      
+      <!-- ===== Hashing Generator ===== -->
+      <section class="panel" id="panel-hashing" style="display:none">
+        <h2>Hashing Generator</h2>
+        <p class="muted">Generate a hash from text input using various algorithms.</p>
+        <div class="grid grid-col-1">
+            <div class="field"><label>Input Text</label><textarea id="hash-input" rows="4">Hello World</textarea></div>
+        </div>
+        <div class="row"><button class="btn" id="hash-generate">Generate Hashes</button></div>
+        <div class="codebox left-align" id="hash-output" style="font-size: 0.9rem;">Your hashes will appear here</div>
+      </section>
+      
+      <!-- ===== Slugify Generator ===== -->
+      <section class="panel" id="panel-slugify" style="display:none">
+        <h2>Slugify Generator</h2>
+        <p class="muted">Convert a string into a URL-friendly slug.</p>
+        <div class="grid grid-col-1">
+          <div class="field"><label>Input String</label><input type="text" id="slug-input" placeholder="My Awesome New Post!"></div>
+        </div>
+        <div class="row"><button class="btn" id="slug-generate">Generate</button><button class="btn secondary" data-copy-target="slug-output">Copy</button></div>
+        <div class="codebox" id="slug-output">your-slug-will-appear-here</div>
+      </section>
+
+      <!-- ===== Lorem Ipsum Generator ===== -->
+      <section class="panel" id="panel-lorem" style="display:none">
+        <h2>Lorem Ipsum Generator</h2>
+        <p class="muted">Generate placeholder text.</p>
+        <div class="grid">
+          <div class="field"><label>Paragraphs</label><input id="li-p" type="number" value="3" inputmode="numeric"></div>
+          <div class="field"><label>Sentences per Paragraph</label><input id="li-s" type="number" value="5" inputmode="numeric"></div>
+        </div>
+        <div class="row"><button class="btn" id="li-generate">Generate</button><button class="btn secondary" data-copy-target="li-output">Copy</button></div>
+        <div class="codebox left-align" id="li-output">Lorem ipsum will appear here...</div>
+      </section>
+
+      <!-- ===== Discord Webhook JSON ===== -->
       <section class="panel" id="panel-webhook" style="display:none">
         <h2>Discord Webhook JSON</h2>
         <p class="muted">Fill the fields and copy the JSON or cURL. (Static page—no sending.)</p>
-
         <div class="grid">
-          <div class="field"><label>Username</label><input id="wh-username" type="text" placeholder=""></div>
-          <div class="field"><label>Avatar URL</label><input id="wh-avatar" type="text" placeholder=""></div>
-          <div class="field"><label>Content (message)</label><textarea id="wh-content" rows="3" placeholder=""></textarea></div>
+          <div class="field"><label>Username</label><input id="wh-username" type="text"></div>
+          <div class="field"><label>Avatar URL</label><input id="wh-avatar" type="text"></div>
+          <div class="field"><label>Content (message)</label><textarea id="wh-content" rows="3"></textarea></div>
         </div>
-
         <div class="row">
           <button class="btn" id="wh-generate">Generate JSON</button>
           <button class="btn secondary" id="wh-copy-json">Copy JSON</button>
           <button class="btn ghost" id="wh-copy-curl">Copy cURL</button>
         </div>
+        <div class="codebox left-align" id="wh-output">Webhook JSON will appear here</div>
+      </section>
+      
+      <!-- ===== Rules Generator ===== -->
+      <section class="panel" id="panel-rules" style="display:none">
+        <h2>Rules Generator</h2>
+        <p class="muted">Enter a topic (e.g., Minecraft, Discord, Roblox) and choose a count.</p>
+        <div class="grid">
+          <div class="field"><label>Custom topic</label><input id="rg-custom" type="text" placeholder="Server"></div>
+          <div class="field"><label>How many rules?</label><input id="rg-count" type="number" inputmode="numeric" placeholder="8"></div>
+        </div>
+        <div class="row"><button class="btn" id="rg-generate">Generate</button><button class="btn secondary" data-copy-target="rg-output">Copy</button></div>
+        <div class="codebox left-align" id="rg-output">Your rules will appear here</div>
+      </section>
+      
+      <!-- ===== Random Number Generator ===== -->
+      <section class="panel" id="panel-rng" style="display:none">
+          <h2>Random Number Generator</h2>
+          <p class="muted">Generate a random integer within a specified range.</p>
+          <div class="grid">
+              <div class="field"><label>Minimum</label><input id="rng-min" type="number" value="1"></div>
+              <div class="field"><label>Maximum</label><input id="rng-max" type="number" value="100"></div>
+          </div>
+          <div class="row"><button class="btn" id="rng-generate">Generate</button><button class="btn secondary" data-copy-target="rng-output">Copy</button></div>
+          <div class="codebox" id="rng-output">0</div>
+      </section>
 
-        <div class="codebox" id="wh-output">Webhook JSON will appear here</div>
+      <!-- ===== Dice Roller ===== -->
+      <section class="panel" id="panel-dice" style="display:none">
+          <h2>Dice Roller</h2>
+          <p class="muted">Roll virtual dice, like in D&D. Format: `2d6` (two 6-sided dice).</p>
+          <div class="grid grid-col-1">
+              <div class="field"><label>Dice Notation</label><input id="dice-notation" type="text" value="1d20"></div>
+          </div>
+          <div class="row"><button class="btn" id="dice-roll">Roll</button><button class="btn secondary" data-copy-target="dice-output">Copy</button></div>
+          <div class="codebox left-align" id="dice-output">Your roll results will appear here</div>
+      </section>
+      
+      <!-- ===== Team Generator ===== -->
+      <section class="panel" id="panel-teams" style="display:none">
+          <h2>Team Generator</h2>
+          <p class="muted">Paste a list of names (one per line) and specify the number of teams to create.</p>
+          <div class="grid">
+              <div class="field"><label>Names (one per line)</label><textarea id="teams-names" rows="6">Alice
+Bob
+Charlie
+Diana
+Ethan
+Fiona</textarea></div>
+              <div class="field"><label>Number of Teams</label><input id="teams-count" type="number" value="2"></div>
+          </div>
+          <div class="row"><button class="btn" id="teams-generate">Generate Teams</button><button class="btn secondary" data-copy-target="teams-output">Copy</button></div>
+          <div class="codebox left-align" id="teams-output">Your teams will appear here</div>
+      </section>
+      
+      <!-- ===== Morse Code Translator ===== -->
+      <section class="panel" id="panel-morse" style="display:none">
+          <h2>Morse Code Translator</h2>
+          <p class="muted">Translate text to Morse code and vice-versa.</p>
+          <div class="grid">
+              <div class="field"><label>Text</label><textarea id="morse-text" rows="3">Hello world</textarea></div>
+              <div class="field"><label>Morse Code</label><textarea id="morse-code" rows="3"></textarea></div>
+          </div>
+          <div class="row">
+            <button class="btn" id="morse-to-morse">Text to Morse →</button>
+            <button class="btn" id="morse-to-text">← Morse to Text</button>
+          </div>
+      </section>
+      
+      <!-- ===== Workout Generator ===== -->
+      <section class="panel" id="panel-workout" style="display:none">
+          <h2>Workout Generator</h2>
+          <p class="muted">Get a simple, randomized workout routine.</p>
+          <div class="row"><button class="btn" id="workout-generate">Generate Workout</button><button class="btn secondary" data-copy-target="workout-output">Copy</button></div>
+          <div class="codebox left-align" id="workout-output">Your workout will appear here</div>
+      </section>
+
+      <!-- ===== Magic 8-Ball ===== -->
+      <section class="panel" id="panel-magic8" style="display:none">
+          <h2>Magic 8-Ball</h2>
+          <p class="muted">Ask a yes-no question and find your fortune.</p>
+          <div class="grid grid-col-1">
+              <div class="field"><label>Your Question</label><input type="text" id="m8-question" placeholder="Will today be a good day?"></div>
+          </div>
+          <div class="row"><button class="btn" id="m8-ask">Ask the 8-Ball</button></div>
+          <div class="codebox" id="m8-answer" style="font-size: 1.5rem;">The answer is waiting...</div>
+      </section>
+      
+      <!-- ===== Excuse Generator ===== -->
+      <section class="panel" id="panel-excuse" style="display:none">
+        <h2>Excuse Generator</h2>
+        <p class="muted">A plausible-ish excuse for any situation.</p>
+        <div class="row"><button class="btn" id="ex-generate">Generate Excuse</button><button class="btn secondary" data-copy-target="ex-output">Copy</button></div>
+        <div class="codebox" id="ex-output" style="font-size: 1rem;">Your excuse will appear here</div>
       </section>
     </main>
   </div>
@@ -367,11 +447,21 @@
     const nav = document.getElementById('nav');
     const tabs = [...nav.querySelectorAll('.tab')];
     const panels = [...document.querySelectorAll('.panel')];
+    const initialActiveTab = document.querySelector('.tab.active');
+    if (initialActiveTab) {
+        panels.forEach(p => p.style.display = 'none');
+        const initialTarget = initialActiveTab.dataset.target;
+        const initialPanel = document.getElementById(initialTarget);
+        if(initialPanel) initialPanel.style.display = '';
+        else document.getElementById('panel-names').style.display = '';
+    }
+
     nav.addEventListener('click', (e)=>{
       const tab = e.target.closest('.tab');
       if(!tab) return;
       const target = tab.dataset.target;
-      tabs.forEach(t=>t.classList.toggle('active', t===tab));
+      tabs.forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
       panels.forEach(p=> p.style.display = (p.id === target) ? '' : 'none');
     });
     const sidebar = document.getElementById('sidebar');
@@ -390,551 +480,89 @@
 
     /* ===== Helpers ===== */
     const $ = (id)=>document.getElementById(id);
-    const readInt = (id, def) => {
-      const v = parseInt(($(id).value || '').trim(), 10);
-      return Number.isFinite(v) ? v : def;
-    };
-    const readStr = (id, def) => {
-      const v = (($(id).value || '').trim());
-      return v !== '' ? v : def;
-    };
+    const readInt = (id, def) => { const v = parseInt(($(id).value || '').trim(), 10); return Number.isFinite(v) ? v : def; };
+    const readStr = (id, def) => { const v = (($(id).value || '').trim()); return v !== '' ? v : def; };
     const checked = (id)=> !!$(id).checked;
-
     const randomOf = (arr)=>arr[Math.floor(Math.random()*arr.length)];
-    const lettersUpper="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const lettersLower="abcdefghijklmnopqrstuvwxyz";
-    const digits="0123456789";
-    const special="!@#$%^&*()_+[]{}<>?/~";
-
-    /* ===== Reusable slot-machine reveal ===== */
-    async function slotReveal(el, finalText, opts={}){
-      const alphabet = opts.chars || (lettersUpper + digits);
-      const delay = opts.delay || 30;
-      const perCharSpins = opts.perCharSpins || 12;
-
-      el.style.fontSize = (opts.fontSize || '').toString().trim() ? opts.fontSize + 'px' : '';
-      el.innerHTML = '';
-      const spans = [...finalText].map((ch)=>{
-        const s = document.createElement('span');
-        s.className = 'slot';
-        s.textContent = ' ';
-        el.appendChild(s);
-        return s;
-      });
-
-      for(let i=0;i<spans.length;i++){
-        await new Promise(res=>setTimeout(res, 20)); // stagger start
-        let spins = 0;
-        const timer = setInterval(()=>{
-          spans[i].textContent = alphabet[Math.floor(Math.random()*alphabet.length)];
-          spins++;
-          if(spins >= perCharSpins || finalText[i] === '-' || finalText[i] === ' '){
-            clearInterval(timer);
-            spans[i].textContent = finalText[i];
-            spans[i].classList.add('spin');
-          }
-        }, delay);
-      }
-      // resolve when last char set
-      await new Promise(res=>setTimeout(res, perCharSpins*delay + 60));
-    }
-
-    /* ===== CODE GENERATOR ===== */
-    $('cg-generate').addEventListener('click', ()=>{
-      const segments   = readInt('cg-segments', 3);
-      const segLen     = readInt('cg-seglen', 4);
-      const sep        = readStr('cg-sep', '-');
-      const prefix     = readStr('cg-prefix','');
-      const suffix     = readStr('cg-suffix','');
-      const fontSize   = readInt('cg-font', 0);
-
-      const useUpper   = checked('cg-upper');
-      const useLower   = checked('cg-lower');
-      const useNums    = checked('cg-nums');
-      const useSpec    = checked('cg-spec');
-      const useWords   = checked('cg-words');
-      const allowDupes = checked('cg-dupe');
-
-      let alphabet = '';
-      if(useUpper) alphabet += lettersUpper;
-      if(useLower) alphabet += lettersLower;
-      if(useNums)  alphabet += digits;
-      if(useSpec)  alphabet += special;
-      if(!alphabet && !useWords){ alphabet = lettersUpper + digits; }
-
-      const eggChance = Math.max(0, Math.min(100, readInt('cg-eggchance', 0)));
-      const eggList = readStr('cg-eggs','').split(',').map(s=>s.trim()).filter(Boolean);
-
-      const wordsPool = ["CAT","DOG","STAR","NOVA","ECHO","WAVE","PINK","LUNA","VOID","RUSH","GLOW","FIZZ","MINT","BYTE","CORE"];
-
-      const parts = [];
-      for(let i=0;i<segments;i++){
-        let seg = '';
-        if(useWords){
-          // word segment
-          const pool = eggList.length ? wordsPool.concat(eggList.map(w=>w.toUpperCase())) : wordsPool;
-          seg = randomOf(pool);
-          if(segLen>0) seg = seg.slice(0, segLen).padEnd(segLen, 'X');
-        }else{
-          const chars = alphabet || (lettersUpper + digits);
-          const chosen = new Set();
-          while(seg.length < segLen){
-            const ch = chars[Math.floor(Math.random()*chars.length)];
-            if(allowDupes || !chosen.has(ch)){
-              seg += ch;
-              chosen.add(ch);
-            }
-          }
-          // Easter egg injection chance: replace whole segment with an egg
-          if(eggList.length && Math.random()*100 < eggChance){
-            const egg = randomOf(eggList).toUpperCase();
-            seg = egg.slice(0, segLen).padEnd(segLen, 'X');
-          }
-        }
-        parts.push(seg);
-      }
-
-      let finalCode = parts.join(sep || '-');
-      if(prefix) finalCode = prefix + (sep || '-') + finalCode;
-      if(suffix) finalCode = finalCode + (sep || '-') + suffix;
-
-      slotReveal($('cg-output'), finalCode, { chars: alphabet || (lettersUpper+digits), fontSize });
+    const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
+    const lettersUpper="ABCDEFGHIJKLMNOPQRSTUVWXYZ", lettersLower="abcdefghijklmnopqrstuvwxyz", digits="0123456789", special="!@#$%^&*()_+[]{}<>?/~";
+    
+    // Generic copy handler
+    document.body.addEventListener('click', async (e) => {
+        const copyBtn = e.target.closest('[data-copy-target]');
+        if (!copyBtn) return;
+        const targetId = copyBtn.dataset.copyTarget;
+        const targetEl = $(targetId);
+        if (!targetEl) return;
+        const text = targetEl.innerText.trim();
+        if(!text) return;
+        await navigator.clipboard.writeText(text);
+        showToast(copyBtn.dataset.toastMsg || "Copied!");
     });
-
-    $('cg-copy').addEventListener('click', async ()=>{
-      const text = $('cg-output').innerText.trim();
-      if(!text) return;
-      await navigator.clipboard.writeText(text);
-      showToast();
-    });
-
+    
     /* ===== NAME GENERATORS ===== */
     $('ng-generate').addEventListener('click', ()=>{
-      const type = readStr('ng-type','username');
-      const base = readStr('ng-base','');
-      const adjectives = [
-  "Abyssal", "Alpha", "Ancient", "Arcane", "Astral", "Azure", "Berserk", "Binary", "Black", "Blazing",
-  "Bleak", "Blitz", "Blood", "Bone", "Brutal", "Celestial", "Chaos", "Chrome", "Cobalt", "Corrupt",
-  "Cosmic", "Crimson", "Cursed", "Cyber", "Dark", "Deadly", "Death", "Deep", "Demonic", "Desolate",
-  "Digital", "Doom", "Dread", "Ebon", "Eclipse", "Eldritch", "Electric", "Elemental", "Elite", "Ember",
-  "Enchanted", "Endless", "Eternal", "Fallen", "Feral", "Fiendish", "Fierce", "Final", "Frozen", "Fury",
-  "Ghostly", "Glacial", "Gloom", "Grim", "Hallow", "Hateful", "Haunted", "Hellish", "Hex", "Hollow",
-  "Hyper", "Ice", "Infernal", "Infinite", "Iron", "Jagged", "Killer", "Lich", "Lunar", "Lurking",
-  "Mad", "Magma", "Malevolent", "Malicious", "Merciless", "Midnight", "Mighty", "Mystic", "Nebula", "Necro",
-  "Nether", "Neon", "Night", "Oblivion", "Obsidian", "Omega", "Onyx", "Phantom", "Plague", "Prime",
-  "Quantum", "Radiant", "Rage", "Raven", "Reaper", "Relentless", "Rogue", "Ruin", "Rust", "Sable",
-  "Savage", "Scarlet", "Scorched", "Shadow", "Sharp", "Shifting", "Silent", "Silver", "Sinister", "Solar",
-  "Soul", "Specter", "Steel", "Storm", "Strange", "Sulfur", "Swift", "Thorn", "Thunder", "Titan",
-  "Twilight", "Umbral", "Unholy", "Vengeful", "Venom", "Vicious", "Vile", "Void", "Volt", "Warp",
-  "Wicked", "Wild", "Wither", "Wraith", "Xeno", "Zero", "Abyssal", "Aether", "Ashen", "Baleful",
-  "Beastly", "Blackened", "Blistering", "Bloody", "Blight", "Brimstone", "Carnal", "Cataclysmic", "Cephalic", "Chilling",
-  "Crawling", "Cryptic", "Damned", "Darksome", "Deathly", "Defiled", "Demonic", "Diabolic", "Dire", "Dismal",
-  "Dreaded", "Dusk", "Eerie", "Enraged", "Ethereal", "Execrated", "Fabled", "Fearsome", "Feral", "Fetid",
-  "Flayed", "Forbidden", "Forsaken", "Foul", "Frenzied", "Frostbitten", "Ghastly", "Ghoulish", "Gory", "Grave",
-  "Grisly", "Grotesque", "Haggard", "Hateful", "Havoc", "Hideous", "Horrid", "Howling", "Hungering", "Husk",
-  "Ill", "Impure", "Infernal", "Insane", "Jinxed", "Lacerated", "Languid", "Lethal", "Livid", "Lurid",
-  "Macabre", "Malefic", "Mangled", "Mephitic", "Monstrous", "Morbid", "Murderous", "Nefarious", "Nihil", "Nocturnal",
-  "Obscene", "Occult", "Ominous", "Painful", "Pale", "Pestilent", "Petrified", "Phantasmal", "Plagued", "Profane",
-  "Putrid", "Rabid", "Rancid", "Ravenous", "Repulsive", "Rotted", "Ruthless", "Sanguine", "Screaming", "Severed",
-  "Shambling", "Shriek", "Sickly", "Sinic", "Skeletal", "Slavering", "Soulless", "Spasmic", "Stalking", "Stench",
-  "Stricken", "Tainted", "Terrifying", "Throbbing", "Tormented", "Tortured", "Twisted", "Unclean", "Undying", "Unholy",
-  "Verminous", "Vile", "Violent", "Virulent", "Viscous", "Voidborn", "Wailing", "Warped", "Wasting", "Wretched"
-];
-      const nouns = [
-  "Abyss", "Alpha", "Angel", "Annihilator", "Apostle", "Armageddon", "Assassin", "Atrocity", "Avatar", "Bane",
-  "Beast", "Berserker", "Betrayer", "Blackout", "Blade", "Blight", "Bloodletter", "Bonebreaker", "Brute", "Butcher",
-  "Carnage", "Centurion", "Champion", "Chimera", "Colossus", "Conqueror", "Corruptor", "Corsair", "Creature", "Crusher",
-  "Crypt", "Cyclops", "Dagger", "Darkness", "Death", "Defiler", "Demon", "Desecrator", "Destroyer", "Devastator",
-  "Devil", "Diablo", "Dismember", "Dominator", "Doom", "Dragon", "Draugr", "Dreadnought", "Drifter", "Eclipse",
-  "Emperor", "Enforcer", "Entity", "Eradicator", "Eviscerator", "Executioner", "Exile", "Fallen", "Fang", "Fate",
-  "Fiend", "Fist", "Flayer", "Forsaken", "Frostbite", "Fury", "Gargoyle", "Ghoul", "Gladiator", "Glaive",
-  "Golem", "Goliath", "Grave", "Grimoire", "Guardian", "Harbinger", "Hate", "Hatred", "Hellion", "Herald",
-  "Horror", "Hunter", "Husk", "Hydra", "Hyena", "Immortal", "Impaler", "Incarnate", "Inferno", "Inquisitor",
-  "Juggernaut", "Katana", "Killer", "King", "Knight", "Kraken", "Lament", "Legion", "Leviathan", "Lich",
-  "Lord", "Lurker", "Mace", "Machine", "Maelstrom", "Mage", "Maggot", "Marauder", "Maw", "Menace",
-  "Mercenary", "Monarch", "Monster", "Mortal", "Mutilator", "Necro", "Nemesis", "Nightmare", "Oblivion", "Ogre",
-  "Omega", "Omen", "Onslaught", "Oracle", "Overlord", "Paladin", "Paragon", "Phantom", "Phoenix", "Pit",
-  "Predator", "Priest", "Prince", "Prodigy", "Prophet", "Psycho", "Punisher", "Pyre", "Queen", "Rage",
-  "Raider", "Ranger", "Ravager", "Reaper", "Revenant", "Rider", "Ripper", "Rogue", "Ruiner", "Saber",
-  "Sage", "Samurai", "Savage", "Scar", "Scourge", "Seeker", "Sentinel", "Serpent", "Shadow", "Shaman",
-  "Shard", "Shield", "Shogun", "Sickle", "Skull", "Slayer", "Soul", "Specter", "Spell", "Spine",
-  "Stalker", "Storm", "Stranger", "Sunder", "Surgeon", "Sword", "Talon", "Terror", "Thief", "Thorn",
-  "Thunder", "Titan", "Torment", "Torturer", "Toxin", "Tyrant", "Undead", "Valkyrie", "Vandal", "Vanguard",
-  "Vengeance", "Venom", "Vermin", "Viper", "Void", "Vortex", "Warden", "Warlock", "Warlord", "Warrior",
-  "Watcher", "Wendigo", "Whisper", "Widow", "Wight", "Witch", "Wolf", "Wraith", "Wyrm", "Zealot",
-  "Abomination", "Acolyte", "Adept", "Adversary", "Alchemist", "Arbiter", "Archfiend", "Archon", "Artificer", "Behemoth",
-  "Berserker", "Blackguard", "Bloodmage", "Bonecollector", "Brawler", "Butcher", "Cannibal", "Chosen", "Crusader", "Cultist",
-  "Deathcaller", "Deathdealer", "Defender", "Demonhunter", "Despoiler", "Dreadknight", "Dreadlord", "Duelist", "Elder", "Enchanter",
-  "Exarch", "Executioner", "Farseer", "Fleshrender", "Frostmage", "Geist", "Gladiator", "Gorefiend", "Gravekeeper", "Harbinger",
-  "Hellcaller", "Hexblade", "Highborn", "Hollow", "Huntress", "Ironclad", "Judicator", "Keeper", "Lich", "Marksman",
-  "Mistwalker", "Moonstalker", "Necromancer", "Nightblade", "Outcast", "Plaguebearer", "Possessed", "Ravenshade", "Riftwalker", "Runeblade",
-  "Sanguine", "Shadowdancer", "Skullcrusher", "Slayer", "Soulbinder", "Soulreaper", "Spellblade", "Stormcaller", "Sunchaser", "Swordmaster",
-  "Tempest", "Thunderborn", "Trickster", "Voidcaller", "Voidwalker", "Warbringer", "Warmonger", "Warpath", "Witchblade", "Witchhunter",
-  "Wolfsbane", "Wrathborn", "Zealot"
-];
-
-      function pickBase(){
-        return base || (randomOf(adjectives) + randomOf(nouns));
-      }
-
+      const type = readStr('ng-type','username'), base = readStr('ng-base','');
+      const adjs = ["Abyssal","Alpha","Ancient","Arcane","Astral","Azure","Berserk","Binary","Black","Blazing","Bleak","Blitz","Blood","Bone","Brutal","Celestial","Chaos","Chrome","Cobalt","Corrupt","Cosmic","Crimson","Cursed","Cyber","Dark","Deadly","Death","Deep","Demonic","Desolate","Digital","Doom","Dread","Ebon","Eclipse","Eldritch","Electric","Elemental","Elite","Ember","Enchanted","Endless","Eternal","Fallen","Feral","Fiendish","Fierce","Final","Frozen","Fury","Ghostly","Glacial","Gloom","Grim","Hallow","Hateful","Haunted","Hellish","Hex","Hollow","Hyper","Ice","Infernal","Infinite","Iron","Jagged","Killer","Lich","Lunar","Lurking","Mad","Magma","Malevolent","Malicious","Merciless","Midnight","Mighty","Mystic","Nebula","Necro","Nether","Neon","Night","Oblivion","Obsidian","Omega","Onyx","Phantom","Plague","Prime","Quantum","Radiant","Rage","Raven","Reaper","Relentless","Rogue","Ruin","Rust","Sable","Savage","Scarlet","Scorched","Shadow","Sharp","Shifting","Silent","Silver","Sinister","Solar","Soul","Specter","Steel","Storm","Strange","Sulfur","Swift","Thorn","Thunder","Titan","Twilight","Umbral","Unholy","Vengeful","Venom","Vicious","Vile","Void","Volt","Warp","Wicked","Wild","Wither","Wraith","Xeno","Zero"];
+      const nouns = ["Abyss","Alpha","Angel","Annihilator","Apostle","Armageddon","Assassin","Atrocity","Avatar","Bane","Beast","Berserker","Betrayer","Blackout","Blade","Blight","Bloodletter","Bonebreaker","Brute","Butcher","Carnage","Centurion","Champion","Chimera","Colossus","Conqueror","Corruptor","Corsair","Creature","Crusher","Crypt","Cyclops","Dagger","Darkness","Death","Defiler","Demon","Desecrator","Destroyer","Devastator","Devil","Diablo","Dismember","Dominator","Doom","Dragon","Draugr","Dreadnought","Drifter","Eclipse","Emperor","Enforcer","Entity","Eradicator","Eviscerator","Executioner","Exile","Fallen","Fang","Fate","Fiend","Fist","Flayer","Forsaken","Frostbite","Fury","Gargoyle","Ghoul","Gladiator","Glaive","Golem","Goliath","Grave","Grimoire","Guardian","Harbinger","Hate","Hatred","Hellion","Herald","Horror","Hunter","Husk","Hydra","Hyena","Immortal","Impaler","Incarnate","Inferno","Inquisitor","Juggernaut","Katana","Killer","King","Knight","Kraken","Lament","Legion","Leviathan","Lich","Lord","Lurker","Mace","Machine","Maelstrom","Mage","Maggot","Marauder","Maw","Menace","Mercenary","Monarch","Monster","Mortal","Mutilator","Necro","Nemesis","Nightmare","Oblivion","Ogre","Omega","Omen","Onslaught","Oracle","Overlord","Paladin","Paragon","Phantom","Phoenix","Pit","Predator","Priest","Prince","Prodigy","Prophet","Psycho","Punisher","Pyre","Queen","Rage","Raider","Ranger","Ravager","Reaper","Revenant","Rider","Ripper","Rogue","Ruiner","Saber","Sage","Samurai","Savage","Scar","Scourge","Seeker","Sentinel","Serpent","Shadow","Shaman","Shard","Shield","Shogun","Sickle","Skull","Slayer","Soul","Specter","Spell","Spine","Stalker","Storm","Stranger","Sunder","Surgeon","Sword","Talon","Terror","Thief","Thorn","Thunder","Titan","Torment","Torturer","Toxin","Tyrant","Undead","Valkyrie","Vandal","Vanguard","Vengeance","Venom","Vermin","Viper","Void","Vortex","Warden","Warlock","Warlord","Warrior","Watcher","Wendigo","Whisper","Widow","Wight","Witch","Wolf","Wraith","Wyrm","Zealot"];
+      const b = base || (randomOf(adjs) + randomOf(nouns));
       let handle = '';
-      const b = pickBase();
-
       switch(type){
-        case 'xbox':
-          handle = randomOf(["xX","i","The",""]) + b + randomOf(["","HD","Pro","360","77"]) + randomOf(["xX","",""]);
-          break;
-        case 'discord':
-          handle = b + "#" + Math.floor(1000+Math.random()*9000);
-          break;
-        case 'tiktok':
-          handle = "@" + b.toLowerCase();
-          break;
-        case 'roblox':
-          handle = b.replace(/\s+/g,'') + Math.floor(Math.random()*999);
-          break;
-        default:
-          handle = b + Math.floor(Math.random()*999);
+        case 'xbox': handle = randomOf(["xX","i","The",""]) + b + randomOf(["","HD","Pro","360","77"]) + randomOf(["xX","",""]); break;
+        case 'discord': handle = b + "#" + Math.floor(1000+Math.random()*9000); break;
+        case 'tiktok': handle = "@" + b.toLowerCase().replace(/[^a-z0-9_.]/g, '').slice(0, 24); break;
+        case 'roblox': handle = b.replace(/\s+/g,'') + Math.floor(Math.random()*999); break;
+        default: handle = b + Math.floor(Math.random()*999);
       }
-
-      slotReveal($('ng-output'), handle, { chars: lettersUpper+lettersLower+digits });
-    });
-
-    $('ng-copy').addEventListener('click', async ()=>{
-      const text = $('ng-output').innerText.trim();
-      if(!text) return;
-      await navigator.clipboard.writeText(text);
-      showToast();
+      $('ng-output').textContent = handle;
     });
 
     /* ===== PROJECT NAMES ===== */
     $('pg-generate').addEventListener('click', ()=>{
       const base = readStr('pg-base','');
-      const words = [
-  "Galaxy", "Pixel", "Shadow", "Crystal", "Echo", "Storm", "Aurora", "Neon", "Quantum", "Vertex",
-  "Pulse", "Zenith", "Nova", "Vortex", "Hyper", "Orbit", "Phantom", "Infinity", "Cosmic", "Nebula",
-  "Lunar", "Solar", "Titan", "Void", "Obsidian", "Blitz", "Frost", "Ember", "Rift", "Chrome",
-  "Cyber", "Prism", "Hologram", "Synapse", "Mirage", "Catalyst", "Apex", "Horizon", "Terra", "Flux",
-  "Ion", "Zephyr", "Onyx", "Matrix", "Drift", "Cipher", "Pinnacle", "Abyss", "Eon", "Spectra",
-  "Titan", "Vector", "Astral", "Radiance", "Eclipse", "Serpent", "Warp", "Fusion", "Dynamo", "Photon",
-  "Tundra", "Inferno", "Celestial", "Paragon", "Mythic", "Sable", "Vanguard", "Talon", "Rune", "Ether",
-  "Crimson", "Viper", "Spectral", "Obelisk", "Nexus", "Kaleido", "Quasar", "Stratos", "Monolith", "Helix",
-  "Umbra", "Lumen", "Tesseract", "Fractal", "Aegis", "Chronos", "Daemon", "Echelon", "Forge", "Goliath",
-  "Havoc", "Juggernaut", "Kinetix", "Legacy", "Maelstrom", "Nether", "Oculus", "Pandora", "Quill", "Ragnarok",
-  "Sable", "Tyrant", "Umbral", "Valkyrie", "Warden", "Xenon", "Yonder", "Zero", "Aether", "Bolt",
-  "Cinder", "Doom", "Elysium", "Fable", "Gale", "Hex", "Iron", "Jade", "Karma", "Lich",
-  "Mantle", "Nyx", "Omen", "Pylon", "Quartz", "Rook", "Sapphire", "Thorn", "Urchin", "Vex",
-  "Wisp", "Xero", "Ymir", "Zodiac", "Arc", "Blight", "Core", "Dusk", "Edge", "Fang",
-  "Glyph", "Halo", "Icon", "Jinx", "Kilo", "Latch", "Muse", "Node", "Onyx", "Pact",
-  "Quill", "Rust", "Shard", "Trace", "Unity", "Vow", "Warp", "Xen", "Yield", "Zest",
-  "Alpha", "Beta", "Coda", "Dune", "Elixir", "Frost", "Grit", "Hush", "Ivory", "Jolt",
-  "Kestrel", "Luxe", "Mirth", "Nadir", "Opal", "Pique", "Quell", "Rime", "Sable", "Trove",
-  "Ultra", "Vivid", "Whorl", "Xylo", "Yare", "Zing", "Axiom", "Byte", "Cove", "Drape",
-  "Elan", "Fervor", "Glint", "Harpy", "Ink", "Jade", "Kismet", "Lustre", "Mote", "Noble",
-  "Oath", "Pique", "Quest", "Reverie", "Scribe", "Tide", "Utopia", "Verve", "Whet", "Xenith",
-  "Yare", "Zephyr", "Aegis", "Baron", "Crest", "Dew", "Epoch", "Fervor", "Gleam", "Hymn",
-  "Iota", "Jinx", "Kernel", "Loom", "Mirth", "Nectar", "Ogle", "Pith", "Quip", "Rune",
-  "Saga", "Tome", "Umbrage", "Vex", "Wile", "Xenon", "Yowl", "Zest", "Aureate", "Byss",
-  "Clemency", "Dew", "Ether", "Fleck", "Gambit", "Hue", "Ire", "Jot", "Knell", "Lilt",
-  "Muse", "Nix", "Ogle", "Pith", "Quirk", "Rill", "Sere", "Tint", "Umbral", "Vex",
-  "Wold", "Xeric", "Yare", "Zany", "Ablaze", "Benthic", "Cove", "Dew", "Erode", "Flux"
-];
-      const suffixes = [
-  "Network", "United", "Studios", "Collective", "Group", "Systems", "Labs", "Works", "Alliance",
-  "Technologies", "Digital", "Ventures", "Enterprises", "Solutions", "Dynamics", "Industries", "Corp", "Inc",
-  "Interactive", "Media", "Software", "Hardware", "Robotics", "AI", "Cloud", "Data", "Cybernetics", "Nanotech",
-  "Biotech", "Synth", "Automata", "Machina", "Foundry", "Forge", "Fabrications", "Construct", "Mechanics", "Engine",
-  "Design", "Creations", "Innovations", "Inventions", "Patents", "Logic", "Circuit", "Mainframe", "Server", "Node",
-  "Grid", "Mesh", "Web", "Net", "Link", "Chain", "Protocol", "Code", "Script", "Algorithm",
-  "Syntax", "Command", "Terminal", "Interface", "Console", "Module", "Unit", "Division", "Sector", "Domain",
-  "Realm", "Sphere", "Continuum", "Expanse", "Frontier", "Horizon", "Odyssey", "Voyage", "Mission", "Expedition",
-  "Operation", "Project", "Program", "Initiative", "Campaign", "Movement", "Order", "Guild", "Syndicate", "Federation",
-  "Confederation", "Coalition", "Consortium", "Conglomerate", "Empire", "Dynasty", "Regime", "Authority", "Directorate", "Administration",
-  "Bureau", "Agency", "Department", "Ministry", "Commission", "Council", "Assembly", "Parliament", "Senate", "Chamber",
-  "Institute", "Academy", "University", "College", "School", "Faculty", "Thinktank", "Observatory", "Laboratory", "Clinic",
-  "Factory", "Mill", "Plant", "Refinery", "Depot", "Warehouse", "Hub", "Terminal", "Station", "Port",
-  "Harbor", "Dock", "Yard", "Complex", "Facility", "Center", "Base", "Outpost", "Colony", "Settlement",
-  "Village", "Town", "City", "Metropolis", "Megalopolis", "Nation", "State", "Republic", "Kingdom", "Commonwealth",
-  "Territory", "Province", "County", "District", "Zone", "Sector", "Quadrant", "Galaxy", "Universe", "Multiverse",
-  "Reality", "Dimension", "Plane", "Existence", "Entity", "Being", "Lifeform", "Organism", "Species", "Genus",
-  "Family", "Order", "Class", "Phylum", "Kingdom", "Domain", "Ecosystem", "Biome", "Habitat", "Environment",
-  "Atmosphere", "Stratosphere", "Ionosphere", "Magnetosphere", "Lithosphere", "Hydrosphere", "Cryosphere", "Biosphere", "Noosphere", "Psychosphere",
-  "Logistics", "Operations", "Management", "Consulting", "Advisory", "Analytics", "Intelligence", "Security", "Defense", "Offense",
-  "Tactics", "Strategy", "Warfare", "Combat", "Conflict", "Struggle", "Competition", "Challenge", "Quest", "Adventure",
-  "Discovery", "Exploration", "Research", "Development", "Engineering", "Manufacturing", "Production", "Distribution", "Supply", "Demand",
-  "Economy", "Commerce", "Trade", "Exchange", "Market", "Bazaar", "Emporium", "Store", "Shop", "Boutique",
-  "Atelier", "Studio", "Gallery", "Exhibit", "Museum", "Library", "Archive", "Repository", "Database", "Registry",
-  "Ledger", "Record", "Document", "File", "Folder", "Directory", "Catalog", "Index", "Register", "Inventory",
-  "Stock", "Assets", "Holdings", "Portfolio", "Investments", "Capital", "Wealth", "Fortune", "Treasure", "Resource",
-  "Reserve", "Cache", "Stockpile", "Hoard", "Collection", "Compendium", "Anthology", "Omnibus", "Lexicon", "Glossary",
-  "Thesaurus", "Encyclopedia", "Almanac", "Atlas", "Gazetteer", "Chronicle", "Annals", "History", "Heritage", "Legacy",
-  "Tradition", "Culture", "Civilization", "Society", "Community", "Fellowship", "Brotherhood", "Sisterhood", "Alliance", "Pact",
-  "Covenant", "Treaty", "Accord", "Compact", "Contract", "Agreement", "Deal", "Bargain", "Promise", "Oath",
-  "Vow", "Pledge", "Commitment", "Dedication", "Devotion", "Fidelity", "Loyalty", "Allegiance", "Fealty", "Homage",
-  "Tribute", "Offering", "Sacrifice", "Gift", "Boon", "Blessing", "Curse", "Hex", "Charm", "Spell",
-  "Incantation", "Ritual", "Ceremony", "Rite", "Custom", "Practice", "Habit", "Routine", "Regimen", "Discipline",
-  "Doctrine", "Dogma", "Creed", "Tenet", "Principle", "Ideal", "Value", "Virtue", "Ethic", "Morality"
-];
-      const root = base || randomOf(words);
-      const project = root + " " + randomOf(suffixes);
-      slotReveal($('pg-output'), project, { chars: lettersUpper+lettersLower });
+      const words = ["Galaxy","Pixel","Shadow","Crystal","Echo","Storm","Aurora","Neon","Quantum","Vertex","Pulse","Zenith","Nova","Vortex","Hyper","Orbit","Phantom","Infinity","Cosmic","Nebula","Lunar","Solar","Titan","Void","Obsidian","Blitz","Frost","Ember","Rift","Chrome","Cyber","Prism","Hologram","Synapse","Mirage","Catalyst","Apex","Horizon","Terra","Flux","Ion","Zephyr","Onyx","Matrix","Drift","Cipher","Pinnacle","Abyss","Eon","Spectra","Vector","Astral","Radiance","Eclipse","Serpent","Warp","Fusion","Dynamo","Photon","Tundra","Inferno","Celestial","Paragon","Mythic","Sable","Vanguard","Talon","Rune","Ether","Crimson","Viper","Spectral","Obelisk","Nexus","Kaleido","Quasar","Stratos","Monolith","Helix","Umbra","Lumen","Tesseract","Fractal","Aegis","Chronos","Daemon","Echelon","Forge","Goliath","Havoc","Juggernaut","Kinetix","Legacy","Maelstrom","Nether","Oculus","Pandora","Quill","Ragnarok"];
+      const suffixes = ["Network","United","Studios","Collective","Group","Systems","Labs","Works","Alliance","Technologies","Digital","Ventures","Enterprises","Solutions","Dynamics","Industries","Corp","Inc","Interactive","Media","Software","Hardware","Robotics","AI","Cloud","Data","Cybernetics","Foundry","Forge","Design","Creations","Innovations","Logic","Circuit","Protocol","Code","Algorithm","Interface","Module","Division","Sector","Domain","Realm","Sphere","Continuum","Expanse","Frontier","Horizon","Odyssey","Voyage","Mission","Expedition","Operation","Project","Program","Initiative","Guild","Syndicate","Federation","Coalition","Consortium","Empire","Dynasty","Authority","Directorate","Agency","Commission","Council","Institute","Academy","Observatory","Laboratory","Logistics","Analytics","Intelligence","Security","Defense","Strategy"];
+      const project = (base || randomOf(words)) + " " + randomOf(suffixes);
+      $('pg-output').textContent = project;
     });
-
-    $('pg-copy').addEventListener('click', async ()=>{
-      const text = $('pg-output').innerText.trim();
-      if(!text) return;
-      await navigator.clipboard.writeText(text);
-      showToast();
+    
+    /* ===== STORY IDEA ===== */
+    $('story-generate').addEventListener('click', () => {
+        const protagonist = ["A cynical detective", "A disgraced knight", "A brilliant but eccentric scientist", "A young oracle", "A master thief", "A washed-up star pilot", "A reluctant hero"];
+        const setting = ["in a neon-drenched cyberpunk city", "in a forgotten kingdom swallowed by the jungle", "aboard a derelict starship", "in a magical library that contains every book ever written", "in a post-apocalyptic wasteland", "in a seemingly utopian society with a dark secret"];
+        const goal = ["must find a legendary artifact", "must clear their name", "must stop a powerful corporation", "must prevent an ancient prophecy from coming true", "must escape a time loop", "must deliver a crucial message"];
+        const obstacle = ["but is being hunted by a relentless assassin.", "but they are losing their memories.", "but their greatest ally is secretly their enemy.", "but they are haunted by the ghosts of their past.", "but doing so will require an unimaginable sacrifice."];
+        $('story-output').textContent = `${randomOf(protagonist)} ${randomOf(setting)} ${randomOf(goal)}, ${randomOf(obstacle)}`;
     });
-
-    /* ===== RULES ===== */
-    $('rg-generate').addEventListener('click', ()=>{
-      const topic = readStr('rg-custom','Server');
-      const count = Math.max(3, Math.min(20, readInt('rg-count', 8)));
-      const stock = [
-        // **General Conduct**  
-        `Respect all members in the ${topic}.`,  
-        `No spamming, harassment, or hate speech.`,  
-        `Keep content appropriate; follow platform TOS.`,  
-        `No cheating, exploiting, or unauthorized mods.`,  
-        `Follow instructions from staff and moderators.`,  
-        `Use the correct channels/categories.`,  
-        `No advertising without permission.`,  
-        `Protect privacy—no doxxing or sharing personal info.`,  
-        `Report bugs/issues to staff, don't abuse them.`,  
-        `Have fun and help others.`,  
-
-        // **Behavior & Communication**  
-        `No trolling, baiting, or flame wars.`,  
-        `Avoid excessive drama or off-topic arguments.`,  
-        `No impersonation of staff or other users.`,  
-        `Use English (or the server's primary language) in public channels.`,  
-        `No excessive caps, emoji, or disruptive formatting.`,  
-        `Keep politics/religion discussions civil or avoid them if volatile.`,  
-        `No NSFW content in non-designated areas.`,  
-        `No begging, guilt-tripping, or manipulative behavior.`,  
-        `Do not backseat moderate (let staff handle rule enforcement).`,  
-        `Use constructive criticism, not personal attacks.`,  
-
-        // **Content & Posting**  
-        `No low-effort posts (e.g., "lol", "this").`,  
-        `No reposting deleted/removed content.`,  
-        `Cite sources for news/claims when possible.`,  
-        `No pirated/illegal content (warez, cracks, etc.).`,  
-        `No shock/gore content.`,  
-        `No misinformation or deliberate spreading of false info.`,  
-        `No unsolicited self-promotion (DM ads = ban).`,  
-        `No AI-generated spam (e.g., ChatGPT floods).`,  
-        `Keep memes in designated areas.`,  
-        `No "upvote farming" or karma manipulation.`,  
-
-        // **Gaming/Competitive**  
-        `No smurfing or account boosting.`,  
-        `No win-trading or match-fixing.`,  
-        `No toxic behavior (e.g., "gg ez", trash talk).`,  
-        `No sharing exploits/cheats.`,  
-        `Respect esports rules if competing.`,  
-        `No false reports against players.`,  
-        `Stream sniping is prohibited.`,  
-        `No account sharing (unless explicitly allowed).`,  
-        `Clans/guilds must follow recruitment rules.`,  
-        `No stat padding or artificial rank inflation.`,  
-
-        // **Tech & Security**  
-        `No sharing malware, phishing links, or IP grabbers.`,  
-        `Do not discuss/encourage illegal hacking.`,  
-        `No unauthorized bot usage.`,  
-        `No scraping/data harvesting without permission.`,  
-        `Report security vulnerabilities responsibly.`,  
-        `No DDoS threats or encouragement.`,  
-        `No bypassing bans (alt accounts = permaban).`,  
-        `No sharing others' work without credit.`,  
-        `Respect licenses (no pirated software talk).`,  
-        `No crypto scams/pyramid schemes.`,  
-
-        // **Moderation & Appeals**  
-        `Appeals must be submitted formally (no DMs).`,  
-        `Ban evasion will extend punishments.`,  
-        `Staff decisions are final (no public arguing).`,  
-        `False reports may result in penalties.`,  
-        `Deleted content is not to be reposted.`,  
-        `No retaliating against rule reports.`,  
-        `Do not @mention staff for trivial issues.`,  
-        `Private chats with staff remain confidential.`,  
-        `Mass-pinging (e.g., @everyone) is staff-only.`,  
-        `No encouraging others to break rules.`,  
-
-        // **Community & Culture**  
-        `New members must read rules before participating.`,  
-        `No elitism or gatekeeping.`,  
-        `Respect cultural differences.`,  
-        `No discriminatory language (even as "jokes").`,  
-        `Use trigger warnings for sensitive topics.`,  
-        `No glorifying self-harm or violence.`,  
-        `Support inclusivity (LGBTQ+, neurodiversity, etc.).`,  
-        `No "us vs. them" mentality (e.g., platform wars).`,  
-        `Be patient with newcomers.`,  
-        `Celebrate others' achievements—no envy.`,  
-
-        // **Voice/Video Chats**  
-        `No earrape, loud noises, or mic spam.`,  
-        `Respect speaking turns (no interruptions).`,  
-        `No voice changers to mislead/deceive.`,  
-        `Keep background noise minimal.`,  
-        `No recording without consent.`,  
-        `Screen-sharing must be appropriate.`,  
-        `Video chats require clothed participants.`,  
-        `No fake cam/avatar misuse.`,  
-        `Raise hands in large VC discussions.`,  
-        `Debates must stay civil (no shouting).`,  
-
-        // **Creators & Artists**  
-        `Credit original artists/creators.`,  
-        `No AI art claiming to be human-made.`,  
-        `Critique must be constructive, not cruel.`,  
-        `No art theft/tracing without permission.`,  
-        `Commissions must follow pricing transparency.`,  
-        `No fake "free reward" scams.`,  
-        `Reposts require artist consent.`,  
-        `No plagiarism of writing/code/designs.`,  
-        `WIPs (works in progress) are welcome!`,  
-        `Feedback should be actionable.`,  
-
-        // **Events & Giveaways**  
-        `No fake giveaways or scams.`,  
-        `Follow event-specific rules.`,  
-        `Winners must claim prizes within deadline.`,  
-        `No bribing judges/voters.`,  
-        `Event staff decisions are final.`,  
-        `No multi-accounting to enter contests.`,  
-        `Giveaways must be approved by staff.`,  
-        `No selling/trading giveaway prizes here.`,  
-        `Respect event time zones/schedules.`,  
-        `Have fun—no sabotage!`  
-      ];
-      let items = [];
-      while(items.length < count){
-        const line = randomOf(stock);
-        if(!items.includes(line)) items.push(line);
-      }
-      const text = items.map((v,i)=>`${i+1}. ${v}`).join('\n');
-      $('rg-output').textContent = text;
-    });
-
-    $('rg-copy').addEventListener('click', async ()=>{
-      const text = $('rg-output').innerText.trim();
-      if(!text) return;
-      await navigator.clipboard.writeText(text);
-      showToast();
+    
+    /* ===== RECIPE IDEA ===== */
+    $('recipe-generate').addEventListener('click', () => {
+        const cuisine = ["Italian", "Mexican", "Japanese", "Indian", "Thai", "Mediterranean", "French", "Chinese"];
+        const method = ["Roasted", "Grilled", "Stir-fried", "Slow-cooked", "Baked", "Pan-seared", "Braised"];
+        const main = ["Chicken", "Beef", "Pork", "Salmon", "Tofu", "Lentil", "Shrimp", "Eggplant"];
+        const side = ["with a side of crispy potatoes.", "over a bed of jasmine rice.", "with a fresh garden salad.", "in a rich, creamy sauce.", "with spicy noodles.", "in a warm tortilla."];
+        $('recipe-output').textContent = `${randomOf(cuisine)} ${randomOf(method)} ${randomOf(main)} ${randomOf(side)}`;
     });
 
     /* ===== IDEAS ===== */
     $('ig-generate').addEventListener('click', ()=>{
-      const categories = [
-  // Original
-  "Mini-game", "Content series", "Tool/Utility", "Discord bot", "Plugin", "Challenge mode", "Build theme", "Event idea",
-  
-  // Game Types
-  "Roguelike", "Metroidvania", "Battle Royale", "Sandbox", "RPG", "Simulator", "Tower Defense", "Idle Game", "Visual Novel", "Text Adventure",
-  "Rhythm Game", "Puzzle Game", "Horror Game", "FPS", "Platformer", "Open World", "Survival", "Stealth", "Racing", "Sports",
-  "Card Game", "Board Game", "Trivia", "MOBA", "MMO", "Tycoon", "Clicker", "Incremental", "Arcade", "Point-and-Click",
-  "Fighting", "Shooter", "Adventure", "Strategy", "Tactical", "VR Experience", "Escape Room", "Dating Sim", "God Game", "City Builder",
-  
-  // Content Types
-  "Tutorial series", "Speedrun", "Let's Play", "Machinima", "Mod Showcase", "Art Challenge", "Writing Prompt", "Cosplay Guide", "Music Album", "Podcast",
-  "Animation", "Comic", "Meme Compilation", "Theorycrafting", "Lore Deep Dive", "Behind-the-Scenes", "Interview", "Documentary", "Review", "Reaction",
-  "Parody", "Satire", "Sketch", "Short Film", "ARG", "Interactive Story", "Web Series", "Livestream", "Vlog", "TikTok Trend",
-  
-  // Tech/Utility
-  "API Wrapper", "Web App", "Mobile App", "Browser Extension", "CLI Tool", "AI Assistant", "Data Visualizer", "Code Library", "Framework", "Engine",
-  "Database", "Analytics Tool", "Automation Script", "Web Scraper", "File Converter", "Password Manager", "VPN", "Ad Blocker", "OCR Tool", "Image Editor",
-  "Video Editor", "Audio Tool", "3D Modeler", "Pixel Art Tool", "Chat Filter", "Spam Detector", "Grammar Checker", "Translation Tool", "Archive", "Backup System",
-  
-  // Community/Events
-  "Tournament", "Contest", "Giveaway", "Charity Stream", "Collaboration", "Jam", "Hackathon", "Awards", "Festival", "Convention",
-  "Meetup", "Workshop", "AMA", "Q&A", "Debate", "Book Club", "Game Night", "Movie Night", "Karaoke", "Trivia Night",
-  "Scavenger Hunt", "Bingo", "Secret Santa", "Roleplay", "Improv", "Writing Club", "Art Trade", "Photography Walk", "Cooking Stream", "Fitness Challenge"
-];
-      const verbs = [
-  // Original
-  "Auto", "Hyper", "Neo", "Quantum", "Solar", "Pixel", "Crystal", "Echo", "Shadow", "Nova", "Lunar",
-  
-  // Tech/Futuristic
-  "Cyber", "Digital", "Virtual", "Atomic", "Nano", "Bio", "Synth", "Robo", "Mecha", "Drone",
-  "AI", "Neural", "Deep", "Machine", "Algorithm", "Blockchain", "Crypto", "Data", "Cloud", "Edge",
-  "Holo", "VR", "AR", "Mixed", "Photon", "Plasma", "Tesla", "Gamma", "Omega", "Alpha",
-  "Beta", "Delta", "Sigma", "Zeta", "Ultra", "Mega", "Giga", "Tera", "Peta", "Exa",
-  
-  // Nature/Elemental
-  "Volt", "Flame", "Frost", "Terra", "Aero", "Aqua", "Geo", "Pyro", "Cryo", "Storm",
-  "Thunder", "Lightning", "Wind", "Quake", "Tide", "Magma", "Solar", "Lunar", "Stellar", "Cosmic",
-  "Galactic", "Orbital", "Astral", "Celestial", "Meteor", "Comet", "Nebula", "Pulsar", "Quasar", "Blackhole",
-  
-  // Abstract/Power
-  "Ultima", "Infinity", "Eternal", "Absolute", "Supreme", "Divine", "Chaos", "Order", "Void", "Abyss",
-  "Mystic", "Arcane", "Enigma", "Paradox", "Rune", "Glyph", "Sigil", "Chrono", "Temporal", "Epoch",
-  "Prime", "Proto", "Omni", "Pan", "Trans", "Meta", "Post", "Pre", "Anti", "Non",
-  
-  // Action
-  "Blitz", "Rush", "Dash", "Surge", "Burst", "Flash", "Zoom", "Warp", "Jump", "Leap",
-  "Boost", "Drive", "Launch", "Shoot", "Strike", "Slash", "Crash", "Smash", "Bash", "Clash",
-  "Fury", "Rage", "Wrath", "Vengeance", "Dominion", "Conquest", "Victory", "Triumph", "Glory", "Legend"
-];
-      const nouns = [
-  // Original
-  "Market", "Tracker", "Arena", "Builder", "Hunt", "Rush", "Dash", "Tycoon", "Craft", "Defense", "Portal", "Studio",
-  
-  // Places/Spaces
-  "Hub", "Nexus", "Core", "Node", "Terminal", "Gateway", "Dimension", "Realm", "Universe", "Multiverse",
-  "Sanctuary", "Temple", "Shrine", "Archive", "Library", "Museum", "Gallery", "Theater", "Colosseum", "Dojo",
-  "Academy", "University", "Lab", "Factory", "Forge", "Mill", "Mine", "Quarry", "Outpost", "Colony",
-  
-  // Game Concepts
-  "Quest", "Dungeon", "Loot", "Gear", "Inventory", "Skill", "Talent", "Perk", "Buff", "Debuff",
-  "Boss", "Minion", "NPC", "Pet", "Mount", "Vehicle", "Spaceship", "Mech", "Drone", "Turret",
-  "Resource", "Currency", "Token", "Coin", "Gem", "Crystal", "Ore", "Alloy", "Blueprint", "Recipe",
-  
-  // Tech Concepts
-  "Engine", "Framework", "API", "SDK", "Database", "Cache", "Server", "Client", "Network", "Protocol",
-  "Algorithm", "Function", "Variable", "Array", "Object", "Class", "Method", "Loop", "Conditional", "Event",
-  "Stream", "Packet", "Bit", "Byte", "Pixel", "Voxel", "Vertex", "Shader", "Texture", "Mesh",
-  
-  // Creative Concepts
-  "Canvas", "Palette", "Brush", "Pen", "Chisel", "Loom", "Anvil", "Kiln", "Potter's Wheel", "Spinning Wheel",
-  "Manuscript", "Novel", "Poem", "Lyrics", "Script", "Screenplay", "Storyboard", "Concept Art", "Mood Board", "Style Guide",
-  
-  // Abstract Concepts
-  "Harmony", "Balance", "Infinity", "Eternity", "Destiny", "Fate", "Karma", "Zen", "Nirvana", "Enlightenment",
-  "Innovation", "Creation", "Destruction", "Evolution", "Revolution", "Liberation", "Salvation", "Damnation", "Ascension", "Transcendence"
-];
-      const idea = randomOf(categories)+": "+randomOf(verbs)+" "+randomOf(nouns);
-      slotReveal($('ig-output'), idea, { chars: lettersUpper+lettersLower+digits });
-    });
-
-    $('ig-copy').addEventListener('click', async ()=>{
-      const text = $('ig-output').innerText.trim();
-      if(!text) return;
-      await navigator.clipboard.writeText(text);
-      showToast();
+      const cats = ["Mini-game","Content series","Tool/Utility","Discord bot","Plugin","Challenge mode","Build theme","Event idea","Roguelike","Metroidvania","Battle Royale","Sandbox","RPG","Simulator","Tower Defense","Idle Game","Visual Novel","Text Adventure","Web App","Mobile App","Browser Extension","CLI Tool","AI Assistant","Data Visualizer","Code Library","Framework","Tournament","Contest","Giveaway","Charity Stream","Collaboration","Hackathon"];
+      const verbs = ["Auto","Hyper","Neo","Quantum","Solar","Pixel","Crystal","Echo","Shadow","Nova","Lunar","Cyber","Digital","Virtual","Atomic","Nano","Bio","Synth","Robo","Mecha","AI","Neural","Deep","Machine","Blockchain","Cloud","Holo","VR","AR","Photon","Plasma","Volt","Flame","Frost","Terra","Aero","Aqua","Geo","Storm","Thunder","Stellar","Cosmic","Galactic","Astral","Celestial","Meteor","Ultima","Infinity","Eternal","Absolute","Supreme","Divine","Chaos","Order","Void","Abyss","Mystic","Arcane","Enigma","Paradox","Rune","Chrono","Temporal","Prime","Proto","Omni","Meta","Blitz","Rush","Dash","Surge","Burst","Flash","Warp","Boost","Drive","Strike","Fury","Rage","Dominion","Conquest"];
+      const nouns = ["Market","Tracker","Arena","Builder","Hunt","Rush","Dash","Tycoon","Craft","Defense","Portal","Studio","Hub","Nexus","Core","Node","Gateway","Dimension","Realm","Universe","Sanctuary","Archive","Library","Lab","Factory","Forge","Quest","Dungeon","Loot","Gear","Skill","Boss","Resource","Currency","Token","Engine","Framework","API","SDK","Database","Server","Client","Network","Protocol","Algorithm","Canvas","Palette","Harmony","Balance","Infinity","Eternity","Destiny","Fate","Innovation","Creation","Evolution","Revolution"];
+      $('ig-output').textContent = randomOf(cats)+": "+randomOf(verbs)+" "+randomOf(nouns);
     });
 
     /* ===== COLOR PALETTE ===== */
-    function randomHex(){
-      return "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6,"0");
-    }
+    const randomHex = () => "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6,"0");
     $('cp-generate').addEventListener('click', ()=>{
       const wrap = $('cp-swatches');
       wrap.innerHTML = '';
-      const colors = [];
-      for(let i=0;i<5;i++){
-        const hex = randomHex();
-        colors.push(hex);
+      const colors = Array.from({length: 5}, randomHex);
+      colors.forEach(hex => {
         const div = document.createElement('div');
-        div.className = 'swatch';
-        div.style.background = hex;
-        div.textContent = hex;
+        div.className = 'swatch'; div.style.background = hex; div.textContent = hex;
         wrap.appendChild(div);
-      }
+      });
       wrap.dataset.colors = colors.join(' ');
     });
     $('cp-copy').addEventListener('click', async ()=>{
@@ -943,29 +571,262 @@
       await navigator.clipboard.writeText(colors);
       showToast("Palette copied!");
     });
+    
+    /* ===== TINTS & SHADES ===== */
+    const hexToRgb = (hex) => {
+        let r = 0, g = 0, b = 0;
+        if (hex.length == 4) { r = parseInt(hex[1] + hex[1], 16); g = parseInt(hex[2] + hex[2], 16); b = parseInt(hex[3] + hex[3], 16); }
+        else if (hex.length == 7) { r = parseInt(hex.substring(1, 3), 16); g = parseInt(hex.substring(3, 5), 16); b = parseInt(hex.substring(5, 7), 16); }
+        return {r, g, b};
+    };
+    const rgbToHex = (r, g, b) => '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+    const generateTintsShades = () => {
+        const baseColor = readStr('ts-color', '#a855f7');
+        const {r, g, b} = hexToRgb(baseColor);
+        const output = $('ts-output');
+        output.innerHTML = '';
+        let allColors = [];
+        for (let i = 5; i > 0; i--) { // Tints
+            const p = i * 0.2;
+            const tintR = Math.round(r + (255 - r) * p);
+            const tintG = Math.round(g + (255 - g) * p);
+            const tintB = Math.round(b + (255 - b) * p);
+            const hex = rgbToHex(tintR, tintG, tintB);
+            allColors.push(hex);
+            const div = document.createElement('div');
+            div.className = 'tint-shade-box'; div.style.background = hex;
+            div.innerHTML = `<span>${hex}</span><span style="font-size:10px; opacity:0.7;">Tint</span>`;
+            output.appendChild(div);
+        }
+        for (let i = 1; i <= 5; i++) { // Shades
+            const p = i * 0.2;
+            const shadeR = Math.round(r * (1 - p));
+            const shadeG = Math.round(g * (1 - p));
+            const shadeB = Math.round(b * (1 - p));
+            const hex = rgbToHex(shadeR, shadeG, shadeB);
+            allColors.push(hex);
+            const div = document.createElement('div');
+            div.className = 'tint-shade-box'; div.style.background = hex;
+            div.innerHTML = `<span>${hex}</span><span style="font-size:10px; opacity:0.7;">Shade</span>`;
+            output.appendChild(div);
+        }
+        output.dataset.colors = allColors.join(' ');
+    };
+    $('ts-generate').addEventListener('click', generateTintsShades);
+    $('ts-color').addEventListener('input', generateTintsShades);
+    $('ts-copy').addEventListener('click', async () => {
+      const colors = $('ts-output').dataset.colors || '';
+      if(!colors) return;
+      await navigator.clipboard.writeText(colors);
+      showToast("Colors copied!");
+    });
+
+
+    /* ===== CSS GRADIENT ===== */
+    $('grad-generate').addEventListener('click', () => {
+        const angle = randomInt(0, 360), color1 = randomHex(), color2 = randomHex();
+        const css = `background: linear-gradient(${angle}deg, ${color1}, ${color2});`;
+        $('grad-preview').style.background = `linear-gradient(${angle}deg, ${color1}, ${color2})`;
+        $('grad-output').textContent = css;
+    });
+
+    /* ===== CSS BOX-SHADOW ===== */
+    const updateBoxShadow = () => {
+        const h = $('bs-h').value, v = $('bs-v').value, b = $('bs-b').value, s = $('bs-s').value, c = $('bs-c').value, i = checked('bs-i') ? 'inset' : '';
+        const css = `box-shadow: ${i} ${h}px ${v}px ${b}px ${s}px ${c};`.replace('  ', ' ');
+        $('bs-preview').style.boxShadow = `${i} ${h}px ${v}px ${b}px ${s}px ${c}`;
+        $('bs-output').textContent = css;
+    };
+    ['bs-h', 'bs-v', 'bs-b', 'bs-s', 'bs-c', 'bs-i'].forEach(id => $(id).addEventListener('input', updateBoxShadow));
+
+    /* ===== QR CODE ===== */
+    $('qr-generate').addEventListener('click', () => {
+        const text = readStr('qr-text', 'https://example.com'), size = readInt('qr-size', 200), canvas = $('qr-canvas'), dl = $('qr-download');
+        new QRious({ element: canvas, value: text, size: size, padding: 10 });
+        dl.href = canvas.toDataURL('image/png'); dl.style.display = 'inline-block';
+    });
+    
+    /* ===== CODE GENERATOR ===== */
+    $('cg-generate').addEventListener('click', ()=>{
+      const segs = readInt('cg-segments', 3), len = readInt('cg-seglen', 4), sep = readStr('cg-sep', '-'), pre = readStr('cg-prefix',''), suf = readStr('cg-suffix','');
+      const useU=checked('cg-upper'), useL=checked('cg-lower'), useN=checked('cg-nums'), useS=checked('cg-spec'), dupes=checked('cg-dupe');
+      let alpha = '';
+      if(useU) alpha+=lettersUpper; if(useL) alpha+=lettersLower; if(useN) alpha+=digits; if(useS) alpha+=special;
+      if(!alpha) alpha = lettersUpper + digits;
+      let parts = [];
+      for(let i=0;i<segs;i++){
+        let seg = '';
+        while(seg.length < len) {
+          const char = randomOf(alpha);
+          if (dupes || !seg.includes(char)) seg += char;
+        }
+        parts.push(seg);
+      }
+      let final = parts.join(sep);
+      if(pre) final = pre + sep + final; if(suf) final = final + sep + suf;
+      $('cg-output').textContent = final;
+    });
+    
+    /* ===== PASSWORD GENERATOR ===== */
+    $('pw-generate').addEventListener('click', () => {
+        const len = Math.max(8, Math.min(128, readInt('pw-len', 16)));
+        let pool = '';
+        if(checked('pw-upper')) pool+=lettersUpper; if(checked('pw-lower')) pool+=lettersLower; if(checked('pw-nums')) pool+=digits; if(checked('pw-spec')) pool+=special;
+        if(!pool) pool = lettersLower + digits;
+        let pass = ''; for(let i=0; i<len; i++) pass += randomOf(pool);
+        $('pw-output').textContent = pass;
+    });
+
+    /* ===== UUID GENERATOR ===== */
+    const generateUUID = () => ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+    $('uuid-generate').addEventListener('click', () => { $('uuid-output').textContent = generateUUID(); });
+
+    /* ===== HASHING GENERATOR ===== */
+    const generateHashes = async () => {
+        const input = readStr('hash-input', '');
+        const encoder = new TextEncoder();
+        const data = encoder.encode(input);
+        const algorithms = ['SHA-1', 'SHA-256', 'SHA-512'];
+        let output = '';
+        for (const alg of algorithms) {
+            const hashBuffer = await crypto.subtle.digest(alg, data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            output += `${alg}:\n${hashHex}\n\n`;
+        }
+        $('hash-output').textContent = output.trim();
+    };
+    $('hash-generate').addEventListener('click', generateHashes);
+    
+    /* ===== SLUGIFY GENERATOR ===== */
+    const slugify = () => {
+        const str = readStr('slug-input', '');
+        const slug = str.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+        $('slug-output').textContent = slug;
+    };
+    $('slug-generate').addEventListener('click', slugify);
+    $('slug-input').addEventListener('input', slugify);
+
+    /* ===== LOREM IPSUM ===== */
+    $('li-generate').addEventListener('click', () => {
+        const pC = readInt('li-p', 3), sC = readInt('li-s', 5);
+        const words = ['lorem','ipsum','dolor','sit','amet','consectetur','adipiscing','elit','curabitur','vitae','ultricies','ante','morbi','euismod','pretium','tincidunt','nullam','vel','risus','quis','erat','lacinia','fermentum','sed','ut','tellus','cras','aliquam','sapien','ac','urna','auctor','dignissim','maecenas','nec','eros','eu','nibh','sodales','maximus','duis','a','justo','et','nunc','varius','luctus','in','hac','habitasse','platea','dictumst','fusce','id','efficitur','massa','vivamus','suscipit','accumsan','libero','at','vestibulum','purus','hendrerit','quisque','non','ex','vulputate','convallis','nisl','etiam','fringilla'];
+        let result = [];
+        for (let i=0;i<pC;i++) {
+            let p = [];
+            for (let j=0;j<sC;j++) {
+                let sLen = randomInt(8, 15), s = [];
+                for (let k=0;k<sLen;k++) s.push(randomOf(words));
+                let sentence = s.join(' ');
+                p.push(sentence.charAt(0).toUpperCase() + sentence.slice(1) + '.');
+            }
+            result.push(p.join(' '));
+        }
+        $('li-output').textContent = result.join('\n\n');
+    });
 
     /* ===== DISCORD WEBHOOK JSON ===== */
     let lastWebhookJSON = '';
     $('wh-generate').addEventListener('click', ()=>{
-      const obj = {
-        username: readStr('wh-username',''),
-        avatar_url: readStr('wh-avatar',''),
-        content: readStr('wh-content','')
-      };
+      const obj = { username: readStr('wh-username',''), avatar_url: readStr('wh-avatar',''), content: readStr('wh-content','') };
       lastWebhookJSON = JSON.stringify(obj, null, 2);
       $('wh-output').textContent = lastWebhookJSON;
     });
-    $('wh-copy-json').addEventListener('click', async ()=>{
-      if(!lastWebhookJSON) return;
-      await navigator.clipboard.writeText(lastWebhookJSON);
-      showToast("JSON copied!");
-    });
+    $('wh-copy-json').addEventListener('click', async ()=>{ if(lastWebhookJSON) await navigator.clipboard.writeText(lastWebhookJSON); showToast("JSON copied!"); });
     $('wh-copy-curl').addEventListener('click', async ()=>{
       if(!lastWebhookJSON) return;
-      const curl = `curl -X POST -H "Content-Type: application/json" -d '${lastWebhookJSON.replace(/'/g,"'\\''")}' https://discord.com/api/webhooks/WEBHOOK_ID/WEBHOOK_TOKEN`;
-      await navigator.clipboard.writeText(curl);
-      showToast("cURL copied!");
+      const curl = `curl -X POST -H "Content-Type: application/json" -d '${lastWebhookJSON.replace(/'/g,"'\\''")}' URL`;
+      await navigator.clipboard.writeText(curl); showToast("cURL copied!");
     });
+    
+    /* ===== RULES ===== */
+    $('rg-generate').addEventListener('click', ()=>{
+      const topic = readStr('rg-custom','Server'), count = Math.max(3, Math.min(20, readInt('rg-count', 8)));
+      const stock = [`Respect all members in the ${topic}.`,`No spamming or hate speech.`,`Keep content appropriate.`,`No cheating or exploiting.`,`Follow staff instructions.`,`Use correct channels.`,`No advertising without permission.`,`No doxxing or sharing personal info.`,`Have fun and help others.`,`No trolling or flame wars.`,`Avoid excessive drama.`,`No impersonation.`,`No NSFW content in main channels.`,`No backseat moderating.`,`No low-effort posts.`,`No pirated content.`,`No spreading misinformation.`,`No toxic behavior (e.g., "gg ez").`,`No bypassing bans with alt accounts.`];
+      const items = stock.sort(() => 0.5 - Math.random()).slice(0, count);
+      $('rg-output').textContent = items.map((v,i)=>`${i+1}. ${v}`).join('\n');
+    });
+    
+    /* ===== RANDOM NUMBER ===== */
+    $('rng-generate').addEventListener('click', () => {
+        const min = readInt('rng-min', 1), max = readInt('rng-max', 100);
+        $('rng-output').textContent = randomInt(min, max);
+    });
+    
+    /* ===== DICE ROLLER ===== */
+    $('dice-roll').addEventListener('click', () => {
+        const notation = readStr('dice-notation', '1d20').toLowerCase();
+        const match = notation.match(/(\d+)d(\d+)/);
+        if (!match) { $('dice-output').textContent = 'Invalid format. Use e.g., "2d6".'; return; }
+        const [_, num, sides] = match.map(Number);
+        if (num > 100 || sides > 1000) { $('dice-output').textContent = 'Max 100 dice, 1000 sides.'; return; }
+        let rolls = [], total = 0;
+        for (let i = 0; i < num; i++) { const roll = randomInt(1, sides); rolls.push(roll); total += roll; }
+        $('dice-output').textContent = `Total: ${total}\nRolls: [${rolls.join(', ')}]`;
+    });
+    
+    /* ===== TEAM GENERATOR ===== */
+    $('teams-generate').addEventListener('click', () => {
+        const names = readStr('teams-names', '').split('\n').map(n => n.trim()).filter(Boolean);
+        const count = readInt('teams-count', 2);
+        if (names.length < count) { $('teams-output').textContent = 'Not enough people for that many teams.'; return; }
+        const shuffled = names.sort(() => 0.5 - Math.random());
+        const teams = Array.from({length: count}, () => []);
+        shuffled.forEach((name, i) => teams[i % count].push(name));
+        $('teams-output').textContent = teams.map((team, i) => `Team ${i+1}:\n- ${team.join('\n- ')}`).join('\n\n');
+    });
+
+    /* ===== MORSE CODE TRANSLATOR ===== */
+    const morseMap = {'A':'.-', 'B':'-...', 'C':'-.-.', 'D':'-..', 'E':'.', 'F':'..-.', 'G':'--.', 'H':'....', 'I':'..', 'J':'.---', 'K':'-.-', 'L':'.-..', 'M':'--', 'N':'-.', 'O':'---', 'P':'.--.', 'Q':'--.-', 'R':'.-.', 'S':'...', 'T':'-', 'U':'..-', 'V':'...-', 'W':'.--', 'X':'-..-', 'Y':'-.--', 'Z':'--..', '1':'.----', '2':'..---', '3':'...--', '4':'....-', '5':'.....', '6':'-....', '7':'--...', '8':'---..', '9':'----.', '0':'-----', ' ':'/'};
+    const textMap = Object.fromEntries(Object.entries(morseMap).map(a => a.reverse()));
+    $('morse-to-morse').addEventListener('click', () => {
+        const text = readStr('morse-text', '').toUpperCase();
+        $('morse-code').value = text.split('').map(char => morseMap[char] || '').join(' ');
+    });
+    $('morse-to-text').addEventListener('click', () => {
+        const code = readStr('morse-code', '');
+        $('morse-text').value = code.split(' ').map(c => textMap[c] || '').join('');
+    });
+    
+    /* ===== WORKOUT GENERATOR ===== */
+    $('workout-generate').addEventListener('click', () => {
+        const upper = ["Push-ups", "Pull-ups", "Dips", "Overhead Press", "Bicep Curls"];
+        const lower = ["Squats", "Lunges", "Deadlifts", "Calf Raises", "Glute Bridges"];
+        const core = ["Plank", "Crunches", "Leg Raises", "Russian Twists", "Bicycle Kicks"];
+        const cardio = ["Jumping Jacks", "Burpees", "High Knees", "Mountain Climbers"];
+        const routine = [
+            `1. Warm-up: 5 min ${randomOf(cardio)}`,
+            `2. Upper Body: 3 sets of 10 ${randomOf(upper)}`,
+            `3. Lower Body: 3 sets of 12 ${randomOf(lower)}`,
+            `4. Core: 3 sets of 15 ${randomOf(core)}`,
+            `5. Cool-down: 5 min light stretching`
+        ];
+        $('workout-output').textContent = routine.join('\n');
+    });
+
+    /* ===== MAGIC 8-BALL ===== */
+    $('m8-ask').addEventListener('click', () => {
+        const answers = ["It is certain.", "It is decidedly so.", "Without a doubt.", "Yes – definitely.", "You may rely on it.", "As I see it, yes.", "Most likely.", "Outlook good.", "Yes.", "Signs point to yes.", "Reply hazy, try again.", "Ask again later.", "Better not tell you now.", "Cannot predict now.", "Concentrate and ask again.", "Don't count on it.", "My reply is no.", "My sources say no.", "Outlook not so good.", "Very doubtful."];
+        $('m8-answer').textContent = randomOf(answers);
+    });
+
+    /* ===== EXCUSE GENERATOR ===== */
+    $('ex-generate').addEventListener('click', () => {
+      const excuses = ["My dog ate my Wi-Fi router.","I was attacked by a flock of unusually aggressive pigeons.","A wizard turned my car into a pumpkin.","I had to perform an emergency exorcism on my laptop.","My psychic told me to stay in bed today.","I was arrested for being too awesome.","A time traveler needed my help to save the future.","My cat unplugged my alarm clock for revenge.","I accidentally joined a traveling circus.","I'm currently in a dimension where time moves slower."];
+      $('ex-output').textContent = randomOf(excuses);
+    });
+
+    // Auto-generate on first load for all panels
+    document.querySelectorAll('.panel .btn[id$="-generate"], .panel .btn[id$="-roll"], .panel .btn[id$="-ask"]').forEach(btn => {
+      if(btn.id !== 'qr-generate' && btn.id !== 'wh-generate' && btn.id !== 'hash-generate') btn.click();
+    });
+    generateTintsShades();
+    updateBoxShadow();
+    $('qr-text').value = 'https://github.com/google/gemini';
+    $('qr-generate').click();
+    $('hash-generate').click();
+    slugify();
+    $('morse-to-morse').click();
   </script>
 </body>
 </html>
