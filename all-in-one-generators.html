@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Code Generator</title>
+  <style>
+    /* ===== Cotton-candy animated background ===== */
+    :root{
+      --bg1:#2b0a52;
+      --bg2:#3e1a78;
+      --bg3:#a855f7;
+      --bg4:#ff72c6;
+      --card:#1c0b2b;
+      --text:#f5ecff;
+      --muted:#b9a9c8;
+      --accent:#c084fc;
+      --accent2:#a855f7;
+      --border:rgba(255,255,255,.14);
+      --glass: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04));
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
+      overflow: hidden;
+    }
+    /* animated gradient layer */
+    .bg {
+      position: fixed; inset: -10vmax;
+      background: radial-gradient(60vmax 60vmax at 15% 20%, #fface9aa, transparent 60%),
+                  radial-gradient(70vmax 70vmax at 85% 30%, #c084fc99, transparent 60%),
+                  radial-gradient(80vmax 80vmax at 40% 80%, #6ee7ff55, transparent 60%),
+                  linear-gradient(120deg, #2b0a52 0%, #3e1a78 40%, #30124b 100%);
+      filter: blur(30px) saturate(120%);
+      animation: float 25s ease-in-out infinite alternate;
+      z-index:-2;
+    }
+    @keyframes float {
+      0% { transform: translate(0,0) scale(1); }
+      50%{ transform: translate(-3vmax, 2vmax) scale(1.05); }
+      100%{ transform: translate(3vmax,-2vmax) scale(1.08); }
+    }
+    /* soft moving light sheen */
+    .shine{
+      position: fixed; inset: -20vmax;
+      background: radial-gradient(40vmax 40vmax at 60% 60%, #ffffff18, transparent 60%);
+      animation: drift 16s ease-in-out infinite alternate;
+      z-index:-1;
+    }
+    @keyframes drift {
+      0% { transform: translate(-4vmax, 2vmax) }
+      100%{ transform: translate(6vmax,-4vmax) }
+    }
+
+    /* ===== Layout ===== */
+    .app { position: relative; display:flex; height:100%; }
+    .sidebar {
+      width: 290px; min-width: 240px; max-width: 320px;
+      padding: 18px 14px; backdrop-filter: blur(12px);
+      background: var(--glass);
+      border-right: 1px solid var(--border);
+      box-shadow: 20px 0 60px rgba(0,0,0,.25);
+      overflow-y: auto;
+      transition: transform .2s ease;
+    }
+    .sidebar.hide { transform: translateX(-100%); }
+    .brand { display:flex; align-items:center; gap:10px; margin-bottom: 12px; }
+    .brand h1 { margin:0; font-size: 20px; letter-spacing:.4px; color:#ffd6ff; }
+    .brand .dot { width:10px; height:10px; border-radius:50%; background: conic-gradient(from 0deg, #ff72c6, #a855f7, #6ee7ff); box-shadow: 0 0 16px #ff72c677; }
+    .nav { display:flex; flex-direction:column; gap:8px; }
+    .tab {
+      display:flex; align-items:center; gap:10px;
+      padding:12px 12px; border-radius:14px; border:1px solid transparent;
+      color:var(--text); cursor:pointer; user-select:none;
+      background: transparent; transition: background .15s ease, transform .12s ease;
+    }
+    .tab:hover { background: #ffffff14; }
+    .tab.active { background: linear-gradient(180deg, #ffffff18, #ffffff10); border-color: var(--border); }
+    .tab .emoji { width:28px; height:28px; display:grid; place-items:center; font-size:18px; background:#00000030; border:1px solid var(--border); border-radius:10px; }
+
+    .content {
+      flex:1; overflow-y: auto; padding: 20px 24px; display:grid; place-items: start; position: relative;
+    }
+    .topbar{
+      position: sticky; top:0; left:0; right:0; z-index: 2;
+      display:flex; align-items:center; gap:10px; margin-bottom: 10px;
+    }
+    .hamburger{
+      border:1px solid var(--border); background:#ffffff18; color:var(--text); border-radius:10px;
+      width:40px; height:40px; display:grid; place-items:center; cursor:pointer;
+      backdrop-filter: blur(8px);
+    }
+
+    .panel {
+      width:min(1100px, 92vw);
+      background: var(--glass);
+      border:1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+      backdrop-filter: blur(10px);
+      margin: 0 auto;
+    }
+    .panel h2 { margin: 0 0 6px; color:#ffe0ff; letter-spacing:.3px }
+    .muted { color: var(--muted); margin: 0 0 12px; }
+
+    .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+    .field { display:flex; flex-direction:column; gap:6px; padding:10px; border-radius:12px; border:1px dashed var(--border); background:#0000002b; }
+    .field label { font-size: 12px; color: var(--muted); }
+    .field input, .field select, .field textarea {
+      width:100%; border-radius:12px; border:1px solid var(--border); padding:10px 12px;
+      background:#130724; color:var(--text); outline:none; resize: vertical;
+    }
+    .row { display:flex; gap:10px; flex-wrap: wrap; margin-top: 8px; }
+    .btn {
+      appearance:none; border:0; border-radius:14px; padding:12px 16px;
+      font-weight:700; color:white; cursor:pointer;
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      box-shadow: 0 12px 24px rgba(168,85,247,.35);
+      transition: transform .12s ease, box-shadow .12s ease, opacity .15s ease;
+    }
+    .btn.secondary { background: linear-gradient(180deg, #d8a6ff, #c084fc); }
+    .btn.ghost { background: #ffffff10; border:1px solid var(--border); }
+    .btn:active { transform: translateY(1px); }
+    .btn[disabled]{ opacity:.6; cursor:not-allowed }
+
+    .codebox {
+      min-height: 70px; display:flex; align-items:center; justify-content:center; text-align:center;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: clamp(18px, 1.6vw + 12px, 30px);
+      letter-spacing:1.5px; background:#130724; border:1px solid var(--border);
+      border-radius:14px; padding:16px; margin-top: 10px;
+      white-space: pre-wrap;
+    }
+    .flex { display:flex; gap:12px; flex-wrap:wrap; }
+    .badge { font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid var(--border); background:#ffffff14; color:#ffdfff }
+
+    /* Color swatches */
+    .swatches { display:flex; gap:10px; flex-wrap: wrap; margin-top: 10px; }
+    .swatch { width:120px; height:80px; border-radius:14px; border:1px solid var(--border); display:flex; align-items:end; justify-content:center; padding:8px; font-family: ui-monospace; background:#333; }
+
+    /* Slot-machine animation characters */
+    .slot {
+      display:inline-block; min-width: .65em; transform: translateZ(0);
+    }
+    .slot.spin { animation: pop .22s ease; }
+    @keyframes pop {
+      0%{ transform: scale(.9); opacity:.4 }
+      100%{ transform: scale(1); opacity:1 }
+    }
+
+    /* Toast */
+    .toast{
+      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+      background: #00000085; color: white; padding: 10px 14px; border-radius: 999px;
+      border: 1px solid var(--border); box-shadow: 0 10px 20px rgba(0,0,0,.4);
+      opacity: 0; transition: opacity .2s ease, transform .2s ease; z-index: 5;
+    }
+    .toast.show{ opacity:1; transform: translateX(-50%) translateY(-6px); }
+
+    /* Make page scrollable on small screens */
+    @media (max-width: 900px){
+      body{ overflow:auto; }
+      .app{ display:block; }
+      .sidebar{ position: fixed; top:0; left:0; bottom:0; z-index:3; }
+      .content{ padding: 16px; }
+      .topbar{ position: sticky; top:0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="shine"></div>
+
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="dot"></div>
+        <h1>Code Generator</h1>
+      </div>
+      <div class="nav" id="nav">
+        <div class="tab active" data-target="panel-code"><span class="emoji">🎰</span> Code Generator</div>
+        <div class="tab" data-target="panel-names"><span class="emoji">🎮</span> Name Generators</div>
+        <div class="tab" data-target="panel-project"><span class="emoji">💡</span> Project Names</div>
+        <div class="tab" data-target="panel-rules"><span class="emoji">📜</span> Rules Generator</div>
+        <div class="tab" data-target="panel-ideas"><span class="emoji">✨</span> Random Ideas</div>
+        <div class="tab" data-target="panel-colors"><span class="emoji">🎨</span> Color Palettes</div>
+        <div class="tab" data-target="panel-webhook"><span class="emoji">🔗</span> Discord Webhook JSON</div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="topbar">
+        <button class="hamburger" id="hamburger" title="Toggle menu">☰</button>
+        <span class="badge">Cotton-candy animated theme</span>
+      </div>
+
+      <!-- ===== Code Generator ===== -->
+      <section class="panel" id="panel-code">
+        <h2>Code Generator</h2>
+        <p class="muted">Make codes like <code>XXXX-XXXX-XXXX</code>. Slot-machine reveal included. All fields are optional.</p>
+
+        <div class="grid">
+          <div class="field"><label>Segments</label><input id="cg-segments" type="number" inputmode="numeric" placeholder=""></div>
+          <div class="field"><label>Segment length</label><input id="cg-seglen" type="number" inputmode="numeric" placeholder=""></div>
+          <div class="field"><label>Separator</label><input id="cg-sep" type="text" placeholder=""></div>
+          <div class="field"><label>Prefix (optional)</label><input id="cg-prefix" type="text" placeholder=""></div>
+          <div class="field"><label>Suffix (optional)</label><input id="cg-suffix" type="text" placeholder=""></div>
+          <div class="field">
+            <label>Font size (px)</label>
+            <input id="cg-font" type="number" inputmode="numeric" placeholder="">
+          </div>
+
+          <div class="field">
+            <label>Character sets</label>
+            <div class="row">
+              <label class="badge"><input id="cg-upper" type="checkbox"> &nbsp;Uppercase</label>
+              <label class="badge"><input id="cg-lower" type="checkbox"> &nbsp;Lowercase</label>
+              <label class="badge"><input id="cg-nums"  type="checkbox"> &nbsp;Numbers</label>
+              <label class="badge"><input id="cg-spec"  type="checkbox"> &nbsp;Special</label>
+              <label class="badge"><input id="cg-words" type="checkbox"> &nbsp;Words</label>
+            </div>
+          </div>
+          <div class="field">
+            <label class="row"><input id="cg-dupe" type="checkbox"> Allow duplicate characters (per segment)</label>
+          </div>
+
+          <div class="field">
+            <label>Easter egg words (comma separated)</label>
+            <input id="cg-eggs" type="text" placeholder="">
+          </div>
+          <div class="field">
+            <label>Easter egg chance (%)</label>
+            <input id="cg-eggchance" type="number" inputmode="numeric" placeholder="">
+          </div>
+        </div>
+
+        <div class="row">
+          <button class="btn" id="cg-generate">Generate</button>
+          <button class="btn secondary" id="cg-copy">Copy</button>
+        </div>
+
+        <div class="codebox" id="cg-output" aria-live="polite">Your code will appear here</div>
+      </section>
+
+      <!-- ===== Name Generators (Xbox/Discord/TikTok/Roblox/General) ===== -->
+      <section class="panel" id="panel-names" style="display:none">
+        <h2>Name Generators</h2>
+        <p class="muted">Choose a style and generate a name. Slot-machine reveal included.</p>
+
+        <div class="grid">
+          <div class="field">
+            <label>Type</label>
+            <select id="ng-type">
+              <option value="xbox">Xbox Gamertag</option>
+              <option value="discord">Discord Name</option>
+              <option value="tiktok">TikTok Handle</option>
+              <option value="roblox">Roblox Username</option>
+              <option value="username">General Username</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Base word (optional)</label>
+            <input id="ng-base" type="text" placeholder="">
+          </div>
+        </div>
+
+        <div class="row">
+          <button class="btn" id="ng-generate">Generate</button>
+          <button class="btn secondary" id="ng-copy">Copy</button>
+        </div>
+
+        <div class="codebox" id="ng-output">Your name will appear here</div>
+      </section>
+
+      <!-- ===== Project Names ===== -->
+      <section class="panel" id="panel-project" style="display:none">
+        <h2>Project Name Generator</h2>
+        <p class="muted">Generate names like “<em>Pixel Network</em>” or “<em>Shadow United</em>”.</p>
+        <div class="grid">
+          <div class="field">
+            <label>Base word (optional)</label>
+            <input id="pg-base" type="text" placeholder="">
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn" id="pg-generate">Generate</button>
+          <button class="btn secondary" id="pg-copy">Copy</button>
+        </div>
+        <div class="codebox" id="pg-output">Your project name will appear here</div>
+      </section>
+
+      <!-- ===== Rules Generator ===== -->
+      <section class="panel" id="panel-rules" style="display:none">
+        <h2>Rules Generator</h2>
+        <p class="muted">Enter a topic (e.g., Minecraft, Discord, Roblox, Lethal Company) and choose count.</p>
+
+        <div class="grid">
+          <div class="field">
+            <label>Custom topic</label>
+            <input id="rg-custom" type="text" placeholder="">
+          </div>
+          <div class="field">
+            <label>How many rules?</label>
+            <input id="rg-count" type="number" inputmode="numeric" placeholder="">
+          </div>
+        </div>
+
+        <div class="row">
+          <button class="btn" id="rg-generate">Generate</button>
+          <button class="btn secondary" id="rg-copy">Copy</button>
+        </div>
+
+        <div class="codebox" id="rg-output">Your rules will appear here</div>
+      </section>
+
+      <!-- ===== Ideas Generator ===== -->
+      <section class="panel" id="panel-ideas" style="display:none">
+        <h2>Random Ideas</h2>
+        <p class="muted">One click sparks project concepts, minigames, content prompts, etc.</p>
+        <div class="row">
+          <button class="btn" id="ig-generate">Generate Idea</button>
+          <button class="btn secondary" id="ig-copy">Copy</button>
+        </div>
+        <div class="codebox" id="ig-output">Your idea will appear here</div>
+      </section>
+
+      <!-- ===== Color Palette Generator ===== -->
+      <section class="panel" id="panel-colors" style="display:none">
+        <h2>Color Palette</h2>
+        <p class="muted">Generate a 5‑color palette. Click copy to grab all hex values.</p>
+        <div class="row">
+          <button class="btn" id="cp-generate">Generate Palette</button>
+          <button class="btn secondary" id="cp-copy">Copy</button>
+        </div>
+        <div class="swatches" id="cp-swatches"></div>
+      </section>
+
+      <!-- ===== Discord Webhook JSON (no send, just generate) ===== -->
+      <section class="panel" id="panel-webhook" style="display:none">
+        <h2>Discord Webhook JSON</h2>
+        <p class="muted">Fill the fields and copy the JSON or cURL. (Static page—no sending.)</p>
+
+        <div class="grid">
+          <div class="field"><label>Username</label><input id="wh-username" type="text" placeholder=""></div>
+          <div class="field"><label>Avatar URL</label><input id="wh-avatar" type="text" placeholder=""></div>
+          <div class="field"><label>Content (message)</label><textarea id="wh-content" rows="3" placeholder=""></textarea></div>
+        </div>
+
+        <div class="row">
+          <button class="btn" id="wh-generate">Generate JSON</button>
+          <button class="btn secondary" id="wh-copy-json">Copy JSON</button>
+          <button class="btn ghost" id="wh-copy-curl">Copy cURL</button>
+        </div>
+
+        <div class="codebox" id="wh-output">Webhook JSON will appear here</div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast">Copied!</div>
+
+  <script>
+    /* ===== Tab nav & sidebar ===== */
+    const nav = document.getElementById('nav');
+    const tabs = [...nav.querySelectorAll('.tab')];
+    const panels = [...document.querySelectorAll('.panel')];
+    nav.addEventListener('click', (e)=>{
+      const tab = e.target.closest('.tab');
+      if(!tab) return;
+      const target = tab.dataset.target;
+      tabs.forEach(t=>t.classList.toggle('active', t===tab));
+      panels.forEach(p=> p.style.display = (p.id === target) ? '' : 'none');
+    });
+    const sidebar = document.getElementById('sidebar');
+    document.getElementById('hamburger').addEventListener('click', ()=>{
+      sidebar.classList.toggle('hide');
+    });
+
+    /* ===== Toast ===== */
+    function showToast(msg="Copied!"){
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(()=> t.classList.remove('show'), 1200);
+    }
+
+    /* ===== Helpers ===== */
+    const $ = (id)=>document.getElementById(id);
+    const readInt = (id, def) => {
+      const v = parseInt(($(id).value || '').trim(), 10);
+      return Number.isFinite(v) ? v : def;
+    };
+    const readStr = (id, def) => {
+      const v = (($(id).value || '').trim());
+      return v !== '' ? v : def;
+    };
+    const checked = (id)=> !!$(id).checked;
+
+    const randomOf = (arr)=>arr[Math.floor(Math.random()*arr.length)];
+    const lettersUpper="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lettersLower="abcdefghijklmnopqrstuvwxyz";
+    const digits="0123456789";
+    const special="!@#$%^&*()_+[]{}<>?/~";
+
+    /* ===== Reusable slot-machine reveal ===== */
+    async function slotReveal(el, finalText, opts={}){
+      const alphabet = opts.chars || (lettersUpper + digits);
+      const delay = opts.delay || 30;
+      const perCharSpins = opts.perCharSpins || 12;
+
+      el.style.fontSize = (opts.fontSize || '').toString().trim() ? opts.fontSize + 'px' : '';
+      el.innerHTML = '';
+      const spans = [...finalText].map((ch)=>{
+        const s = document.createElement('span');
+        s.className = 'slot';
+        s.textContent = ' ';
+        el.appendChild(s);
+        return s;
+      });
+
+      for(let i=0;i<spans.length;i++){
+        await new Promise(res=>setTimeout(res, 20)); // stagger start
+        let spins = 0;
+        const timer = setInterval(()=>{
+          spans[i].textContent = alphabet[Math.floor(Math.random()*alphabet.length)];
+          spins++;
+          if(spins >= perCharSpins || finalText[i] === '-' || finalText[i] === ' '){
+            clearInterval(timer);
+            spans[i].textContent = finalText[i];
+            spans[i].classList.add('spin');
+          }
+        }, delay);
+      }
+      // resolve when last char set
+      await new Promise(res=>setTimeout(res, perCharSpins*delay + 60));
+    }
+
+    /* ===== CODE GENERATOR ===== */
+    $('cg-generate').addEventListener('click', ()=>{
+      const segments   = readInt('cg-segments', 3);
+      const segLen     = readInt('cg-seglen', 4);
+      const sep        = readStr('cg-sep', '-');
+      const prefix     = readStr('cg-prefix','');
+      const suffix     = readStr('cg-suffix','');
+      const fontSize   = readInt('cg-font', 0);
+
+      const useUpper   = checked('cg-upper');
+      const useLower   = checked('cg-lower');
+      const useNums    = checked('cg-nums');
+      const useSpec    = checked('cg-spec');
+      const useWords   = checked('cg-words');
+      const allowDupes = checked('cg-dupe');
+
+      let alphabet = '';
+      if(useUpper) alphabet += lettersUpper;
+      if(useLower) alphabet += lettersLower;
+      if(useNums)  alphabet += digits;
+      if(useSpec)  alphabet += special;
+      if(!alphabet && !useWords){ alphabet = lettersUpper + digits; }
+
+      const eggChance = Math.max(0, Math.min(100, readInt('cg-eggchance', 0)));
+      const eggList = readStr('cg-eggs','').split(',').map(s=>s.trim()).filter(Boolean);
+
+      const wordsPool = ["CAT","DOG","STAR","NOVA","ECHO","WAVE","PINK","LUNA","VOID","RUSH","GLOW","FIZZ","MINT","BYTE","CORE"];
+
+      const parts = [];
+      for(let i=0;i<segments;i++){
+        let seg = '';
+        if(useWords){
+          // word segment
+          const pool = eggList.length ? wordsPool.concat(eggList.map(w=>w.toUpperCase())) : wordsPool;
+          seg = randomOf(pool);
+          if(segLen>0) seg = seg.slice(0, segLen).padEnd(segLen, 'X');
+        }else{
+          const chars = alphabet || (lettersUpper + digits);
+          const chosen = new Set();
+          while(seg.length < segLen){
+            const ch = chars[Math.floor(Math.random()*chars.length)];
+            if(allowDupes || !chosen.has(ch)){
+              seg += ch;
+              chosen.add(ch);
+            }
+          }
+          // Easter egg injection chance: replace whole segment with an egg
+          if(eggList.length && Math.random()*100 < eggChance){
+            const egg = randomOf(eggList).toUpperCase();
+            seg = egg.slice(0, segLen).padEnd(segLen, 'X');
+          }
+        }
+        parts.push(seg);
+      }
+
+      let finalCode = parts.join(sep || '-');
+      if(prefix) finalCode = prefix + (sep || '-') + finalCode;
+      if(suffix) finalCode = finalCode + (sep || '-') + suffix;
+
+      slotReveal($('cg-output'), finalCode, { chars: alphabet || (lettersUpper+digits), fontSize });
+    });
+
+    $('cg-copy').addEventListener('click', async ()=>{
+      const text = $('cg-output').innerText.trim();
+      if(!text) return;
+      await navigator.clipboard.writeText(text);
+      showToast();
+    });
+
+    /* ===== NAME GENERATORS ===== */
+    $('ng-generate').addEventListener('click', ()=>{
+      const type = readStr('ng-type','username');
+      const base = readStr('ng-base','');
+      const adjectives = ["Swift","Dark","Crimson","Silent","Pixel","Lunar","Violet","Neon","Mystic","Prime"];
+      const nouns = ["Wolf","Ninja","Dragon","Shadow","Knight","Ghost","Nova","Falcon","Phantom","Rider"];
+
+      function pickBase(){
+        return base || (randomOf(adjectives) + randomOf(nouns));
+      }
+
+      let handle = '';
+      const b = pickBase();
+
+      switch(type){
+        case 'xbox':
+          handle = randomOf(["xX","i","The",""]) + b + randomOf(["","HD","Pro","360","77"]) + randomOf(["xX","",""]);
+          break;
+        case 'discord':
+          handle = b + "#" + Math.floor(1000+Math.random()*9000);
+          break;
+        case 'tiktok':
+          handle = "@" + b.toLowerCase();
+          break;
+        case 'roblox':
+          handle = b.replace(/\s+/g,'') + Math.floor(Math.random()*999);
+          break;
+        default:
+          handle = b + Math.floor(Math.random()*999);
+      }
+
+      slotReveal($('ng-output'), handle, { chars: lettersUpper+lettersLower+digits });
+    });
+
+    $('ng-copy').addEventListener('click', async ()=>{
+      const text = $('ng-output').innerText.trim();
+      if(!text) return;
+      await navigator.clipboard.writeText(text);
+      showToast();
+    });
+
+    /* ===== PROJECT NAMES ===== */
+    $('pg-generate').addEventListener('click', ()=>{
+      const base = readStr('pg-base','');
+      const words = ["Galaxy","Pixel","Shadow","Crystal","Echo","Storm","Aurora","Neon","Quantum","Vertex","Pulse","Zenith"];
+      const suffixes = ["Network","United","Studios","Collective","Group","Systems","Labs","Works","Alliance"];
+      const root = base || randomOf(words);
+      const project = root + " " + randomOf(suffixes);
+      slotReveal($('pg-output'), project, { chars: lettersUpper+lettersLower });
+    });
+
+    $('pg-copy').addEventListener('click', async ()=>{
+      const text = $('pg-output').innerText.trim();
+      if(!text) return;
+      await navigator.clipboard.writeText(text);
+      showToast();
+    });
+
+    /* ===== RULES ===== */
+    $('rg-generate').addEventListener('click', ()=>{
+      const topic = readStr('rg-custom','Server');
+      const count = Math.max(3, Math.min(20, readInt('rg-count', 8)));
+      const stock = [
+        `Respect all members in the ${topic}.`,
+        `No spamming, harassment, or hate speech.`,
+        `Keep content appropriate; follow platform TOS.`,
+        `No cheating, exploiting, or unauthorized mods.`,
+        `Follow instructions from staff and moderators.`,
+        `Use the correct channels/categories.`,
+        `No advertising without permission.`,
+        `Protect privacy—no doxxing or sharing personal info.`,
+        `Report bugs/issues to staff, don't abuse them.`,
+        `Have fun and help others.`
+      ];
+      let items = [];
+      while(items.length < count){
+        const line = randomOf(stock);
+        if(!items.includes(line)) items.push(line);
+      }
+      const text = items.map((v,i)=>`${i+1}. ${v}`).join('\\n');
+      $('rg-output').textContent = text;
+    });
+
+    $('rg-copy').addEventListener('click', async ()=>{
+      const text = $('rg-output').innerText.trim();
+      if(!text) return;
+      await navigator.clipboard.writeText(text);
+      showToast();
+    });
+
+    /* ===== IDEAS ===== */
+    $('ig-generate').addEventListener('click', ()=>{
+      const categories = ["Mini-game","Content series","Tool/Utility","Discord bot","Plugin","Challenge mode","Build theme","Event idea"];
+      const verbs = ["Auto","Hyper","Neo","Quantum","Solar","Pixel","Crystal","Echo","Shadow","Nova","Lunar"];
+      const nouns = ["Market","Tracker","Arena","Builder","Hunt","Rush","Dash","Tycoon","Craft","Defense","Portal","Studio"];
+      const idea = randomOf(categories)+": "+randomOf(verbs)+" "+randomOf(nouns);
+      slotReveal($('ig-output'), idea, { chars: lettersUpper+lettersLower+digits });
+    });
+
+    $('ig-copy').addEventListener('click', async ()=>{
+      const text = $('ig-output').innerText.trim();
+      if(!text) return;
+      await navigator.clipboard.writeText(text);
+      showToast();
+    });
+
+    /* ===== COLOR PALETTE ===== */
+    function randomHex(){
+      return "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6,"0");
+    }
+    $('cp-generate').addEventListener('click', ()=>{
+      const wrap = $('cp-swatches');
+      wrap.innerHTML = '';
+      const colors = [];
+      for(let i=0;i<5;i++){
+        const hex = randomHex();
+        colors.push(hex);
+        const div = document.createElement('div');
+        div.className = 'swatch';
+        div.style.background = hex;
+        div.textContent = hex;
+        wrap.appendChild(div);
+      }
+      wrap.dataset.colors = colors.join(' ');
+    });
+    $('cp-copy').addEventListener('click', async ()=>{
+      const colors = $('cp-swatches').dataset.colors || '';
+      if(!colors) return;
+      await navigator.clipboard.writeText(colors);
+      showToast("Palette copied!");
+    });
+
+    /* ===== DISCORD WEBHOOK JSON ===== */
+    let lastWebhookJSON = '';
+    $('wh-generate').addEventListener('click', ()=>{
+      const obj = {
+        username: readStr('wh-username',''),
+        avatar_url: readStr('wh-avatar',''),
+        content: readStr('wh-content','')
+      };
+      lastWebhookJSON = JSON.stringify(obj, null, 2);
+      $('wh-output').textContent = lastWebhookJSON;
+    });
+    $('wh-copy-json').addEventListener('click', async ()=>{
+      if(!lastWebhookJSON) return;
+      await navigator.clipboard.writeText(lastWebhookJSON);
+      showToast("JSON copied!");
+    });
+    $('wh-copy-curl').addEventListener('click', async ()=>{
+      if(!lastWebhookJSON) return;
+      const curl = `curl -X POST -H "Content-Type: application/json" -d '${lastWebhookJSON.replace(/'/g,"'\\''")}' https://discord.com/api/webhooks/WEBHOOK_ID/WEBHOOK_TOKEN`;
+      await navigator.clipboard.writeText(curl);
+      showToast("cURL copied!");
+    });
+  </script>
+</body>
+</html>
