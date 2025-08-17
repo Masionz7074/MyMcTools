@@ -3,9 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>All-in-One Generator</title>
-  <link rel="icon" type="image/png" href="images/favicon.png">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+  <title>Code Generator</title>
   <style>
     /* ===== Cotton-candy animated background ===== */
     :root{
@@ -20,7 +18,6 @@
       --accent2:#a855f7;
       --border:rgba(255,255,255,.14);
       --glass: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04));
-      --shadow-color: rgba(168,85,247,.35);
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -28,7 +25,6 @@
       margin:0; color:var(--text);
       font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
       overflow: hidden;
-      background: var(--bg2);
     }
     /* animated gradient layer */
     .bg {
@@ -62,57 +58,46 @@
     .app { position: relative; display:flex; height:100%; }
     .sidebar {
       width: 290px; min-width: 240px; max-width: 320px;
-      padding: 18px 10px; backdrop-filter: blur(12px);
+      padding: 18px 14px; backdrop-filter: blur(12px);
       background: var(--glass);
       border-right: 1px solid var(--border);
       box-shadow: 20px 0 60px rgba(0,0,0,.25);
       overflow-y: auto;
-      transition: transform .3s ease-in-out;
-      display: flex; flex-direction: column; gap: 10px;
+      transition: transform .2s ease;
     }
-    .sidebar-header { padding: 0 12px; }
-    .sidebar::-webkit-scrollbar { width: 4px; } .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+    .sidebar.hide { transform: translateX(-100%); }
     .brand { display:flex; align-items:center; gap:10px; margin-bottom: 12px; }
     .brand h1 { margin:0; font-size: 20px; letter-spacing:.4px; color:#ffd6ff; }
     .brand .dot { width:10px; height:10px; border-radius:50%; background: conic-gradient(from 0deg, #ff72c6, #a855f7, #6ee7ff); box-shadow: 0 0 16px #ff72c677; }
-    .nav { flex: 1; overflow-y: auto; display:flex; flex-direction:column; gap:8px; padding-right: 5px; }
-    .nav-category .title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); padding: 8px 12px; margin-top: 8px; }
+    .nav { display:flex; flex-direction:column; gap:8px; }
     .tab {
-      display:flex; align-items:center; gap:12px;
-      padding:10px 12px; border-radius:14px; border:1px solid transparent;
+      display:flex; align-items:center; gap:10px;
+      padding:12px 12px; border-radius:14px; border:1px solid transparent;
       color:var(--text); cursor:pointer; user-select:none;
-      background: transparent; transition: background .15s ease, color .15s ease;
+      background: transparent; transition: background .15s ease, transform .12s ease;
     }
     .tab:hover { background: #ffffff14; }
     .tab.active { background: linear-gradient(180deg, #ffffff18, #ffffff10); border-color: var(--border); }
-    .tab svg { width: 20px; height: 20px; stroke-width: 2px; color: var(--accent); transition: color .15s ease; }
-    .tab:hover svg, .tab.active svg { color: #f0dfff; }
+    .tab .emoji { width:28px; height:28px; display:grid; place-items:center; font-size:18px; background:#00000030; border:1px solid var(--border); border-radius:10px; }
+
     .content {
-      flex:1; overflow-y: auto; padding: 20px 24px;
+      flex:1; overflow-y: auto; padding: 20px 24px; display:grid; place-items: start; position: relative;
     }
     .topbar{
+      position: sticky; top:0; left:0; right:0; z-index: 2;
       display:flex; align-items:center; gap:10px; margin-bottom: 10px;
     }
     .hamburger{
       border:1px solid var(--border); background:#ffffff18; color:var(--text); border-radius:10px;
-      width:40px; height:40px; display:none; align-items:center; justify-content:center;
-      cursor:pointer; backdrop-filter: blur(8px);
-      transition: all 0.3s ease;
+      width:40px; height:40px; display:grid; place-items:center; cursor:pointer;
+      backdrop-filter: blur(8px);
     }
-    .hamburger span { display:block; width: 20px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.3s ease-in-out; position: relative; }
-    .hamburger span::before, .hamburger span::after { content: ''; position: absolute; left: 0; width: 100%; height: 100%; background: var(--text); border-radius: 2px; transition: all 0.3s ease-in-out; }
-    .hamburger span::before { transform: translateY(-7px); }
-    .hamburger span::after { transform: translateY(7px); }
-    body.sidebar-open .hamburger span { background: transparent; }
-    body.sidebar-open .hamburger span::before { transform: translateY(0) rotate(45deg); }
-    body.sidebar-open .hamburger span::after { transform: translateY(0) rotate(-45deg); }
-    .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40; opacity: 0; pointer-events: none; transition: opacity .3s ease-in-out; }
-    
+
     .panel {
       width:min(1100px, 92vw);
       background: var(--glass);
       border:1px solid var(--border);
-      border-radius: 20px;
+      borderRadius: 20px;
       padding: 20px;
       box-shadow: 0 20px 60px rgba(0,0,0,.35);
       backdrop-filter: blur(10px);
@@ -120,258 +105,749 @@
     }
     .panel h2 { margin: 0 0 6px; color:#ffe0ff; letter-spacing:.3px }
     .muted { color: var(--muted); margin: 0 0 12px; }
+
     .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
-    .grid-col-1 { grid-template-columns: 1fr; }
     .field { display:flex; flex-direction:column; gap:6px; padding:10px; border-radius:12px; border:1px dashed var(--border); background:#0000002b; }
     .field label { font-size: 12px; color: var(--muted); }
     .field input, .field select, .field textarea {
       width:100%; border-radius:12px; border:1px solid var(--border); padding:10px 12px;
       background:#130724; color:var(--text); outline:none; resize: vertical;
     }
-    .field input[type="range"] { padding: 0; } .field input[type="color"] { padding: 4px; height: 40px; }
     .row { display:flex; gap:10px; flex-wrap: wrap; margin-top: 8px; }
     .btn {
       appearance:none; border:0; border-radius:14px; padding:12px 16px;
       font-weight:700; color:white; cursor:pointer;
       background: linear-gradient(180deg, var(--accent), var(--accent2));
-      box-shadow: 0 12px 24px var(--shadow-color);
+      box-shadow: 0 12px 24px rgba(168,85,247,.35);
       transition: transform .12s ease, box-shadow .12s ease, opacity .15s ease;
     }
     .btn.secondary { background: linear-gradient(180deg, #d8a6ff, #c084fc); }
     .btn.ghost { background: #ffffff10; border:1px solid var(--border); }
     .btn:active { transform: translateY(1px); }
     .btn[disabled]{ opacity:.6; cursor:not-allowed }
+
     .codebox {
       min-height: 70px; display:flex; align-items:center; justify-content:center; text-align:center;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: clamp(14px, 1.6vw + 10px, 24px);
+      font-size: clamp(18px, 1.6vw + 12px, 30px);
       letter-spacing:1.5px; background:#130724; border:1px solid var(--border);
       border-radius:14px; padding:16px; margin-top: 10px;
-      white-space: pre-wrap; word-break: break-all;
+      white-space: pre-wrap;
     }
-    .codebox.left-align { text-align: left; justify-content: flex-start; align-items: flex-start; font-size: 1rem; letter-spacing: normal; }
+    .flex { display:flex; gap:12px; flex-wrap:wrap; }
+    .badge { font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid var(--border); background:#ffffff14; color:#ffdfff }
+
+    /* Color swatches */
     .swatches { display:flex; gap:10px; flex-wrap: wrap; margin-top: 10px; }
     .swatch { width:120px; height:80px; border-radius:14px; border:1px solid var(--border); display:flex; align-items:end; justify-content:center; padding:8px; font-family: ui-monospace; background:#333; }
-    .preview-box { width: 100%; min-height: 120px; border-radius: 14px; border: 1px solid var(--border); margin-top: 10px; display: grid; place-items: center; }
-    .toast{ position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: #00000085; color: white; padding: 10px 14px; border-radius: 999px; border: 1px solid var(--border); box-shadow: 0 10px 20px rgba(0,0,0,.4); opacity: 0; transition: opacity .2s ease, transform .2s ease; z-index: 101; }
+
+    /* Slot-machine animation characters */
+    .slot {
+      display:inline-block; min-width: .65em; transform: translateZ(0);
+    }
+    .slot.spin { animation: pop .22s ease; }
+    @keyframes pop {
+      0%{ transform: scale(.9); opacity:.4 }
+      100%{ transform: scale(1); opacity:1 }
+    }
+
+    /* Toast */
+    .toast{
+      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+      background: #00000085; color: white; padding: 10px 14px; border-radius: 999px;
+      border: 1px solid var(--border); box-shadow: 0 10px 20px rgba(0,0,0,.4);
+      opacity: 0; transition: opacity .2s ease, transform .2s ease; z-index: 5;
+    }
     .toast.show{ opacity:1; transform: translateX(-50%) translateY(-6px); }
-    #lucky-output span { display: inline-block; min-width: 0.6em; text-align: center; border-bottom: 2px solid transparent; transition: all .2s ease; }
-    #lucky-output span.active { border-color: var(--accent); }
-    .badge { font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid var(--border); background:#ffffff14; color:#ffdfff }
-    
+
+    /* Make page scrollable on small screens */
     @media (max-width: 900px){
-        body{ overflow:auto; }
-        .app{ display:block; }
-        .topbar { position: sticky; top: 0; z-index: 45; }
-        .hamburger { display: flex; }
-        .sidebar{ position: fixed; top:0; left:0; bottom:0; z-index: 50; transform: translateX(-100%); }
-        body.sidebar-open .sidebar { transform: translateX(0); }
-        body.sidebar-open .sidebar-overlay { opacity: 1; pointer-events: auto; }
-        .content{ padding: 16px; }
+      body{ overflow:auto; }
+      .app{ display:block; }
+      .sidebar{ position: fixed; top:0; left:0; bottom:0; z-index:3; }
+      .content{ padding: 16px; }
+      .topbar{ position: sticky; top:0; }
     }
   </style>
 </head>
 <body>
-  <div class="bg"></div><div class="shine"></div>
-  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="bg"></div>
+  <div class="shine"></div>
+
   <div class="app">
     <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="brand"><div class="dot"></div><h1>All-in-One Gen</h1></div>
-            <input class="field" type="text" id="gen-search" placeholder="Search generators...">
-        </div>
-        <div class="nav" id="nav">
-            <!-- Sidebar tabs are dynamically inserted here -->
-        </div>
+      <div class="brand">
+        <div class="dot"></div>
+        <h1>Code Generator</h1>
+      </div>
+      <div class="nav" id="nav">
+        <div class="tab active" data-target="panel-code"><span class="emoji">🔢</span> Code Generator</div>
+        <div class="tab" data-target="panel-names"><span class="emoji">👤</span> Name Generators</div>
+        <div class="tab" data-target="panel-project"><span class="emoji">🚀</span> Project Names</div>
+        <div class="tab" data-target="panel-rules"><span class="emoji">📜</span> Rules Generator</div>
+        <div class="tab" data-target="panel-ideas"><span class="emoji">💡</span> Random Ideas</div>
+        <div class="tab" data-target="panel-colors"><span class="emoji">🎨</span> Color Palettes</div>
+        <div class="tab" data-target="panel-webhook"><span class="emoji">🤖</span> Discord Webhook JSON</div>
+      </div>
     </aside>
+
     <main class="content">
       <div class="topbar">
-        <button class="hamburger" id="hamburger" title="Toggle menu"><span></span></button>
-        <span class="badge">All-in-One Generator Suite</span>
+        <button class="hamburger" id="hamburger" title="Toggle menu">☰</button>
+        <span class="badge">Cotton-candy animated theme</span>
       </div>
-      <!-- Panels are dynamically inserted here -->
+
+      <!-- ===== Code Generator ===== -->
+      <section class="panel" id="panel-code">
+        <h2>Code Generator</h2>
+        <p class="muted">Make codes like <code>XXXX-XXXX-XXXX</code>. Slot-machine reveal included. All fields are optional.</p>
+
+        <div class="grid">
+          <div class="field"><label>Segments</label><input id="cg-segments" type="number" inputmode="numeric" placeholder="3" value="3"></div>
+          <div class="field"><label>Segment length</label><input id="cg-seglen" type="number" inputmode="numeric" placeholder="4" value="4"></div>
+          <div class="field"><label>Separator</label><input id="cg-sep" type="text" placeholder="-" value="-"></div>
+          <div class="field"><label>Prefix (optional)</label><input id="cg-prefix" type="text" placeholder=""></div>
+          <div class="field"><label>Suffix (optional)</label><input id="cg-suffix" type="text" placeholder=""></div>
+          <div class="field">
+            <label>Font size (px)</label>
+            <input id="cg-font" type="number" inputmode="numeric" placeholder="30" value="30">
+          </div>
+
+          <div class="field">
+            <label>Character sets</label>
+            <div class="row">
+              <label class="badge"><input id="cg-upper" type="checkbox" checked> &nbsp;Uppercase</label>
+              <label class="badge"><input id="cg-lower" type="checkbox"> &nbsp;Lowercase</label>
+              <label class="badge"><input id="cg-nums"  type="checkbox" checked> &nbsp;Numbers</label>
+              <label class="badge"><input id="cg-spec"  type="checkbox"> &nbsp;Special</label>
+              <label class="badge"><input id="cg-words" type="checkbox"> &nbsp;Words</label>
+            </div>
+          </div>
+          <div class="field">
+            <label class="row"><input id="cg-dupe" type="checkbox" checked> Allow duplicate characters (per segment)</label>
+          </div>
+
+          <div class="field">
+            <label>Easter egg words (comma separated)</label>
+            <input id="cg-eggs" type="text" placeholder="VIP,PRO,BETA,ALPHA">
+          </div>
+          <div class="field">
+            <label>Easter egg chance (%)</label>
+            <input id="cg-eggchance" type="number" inputmode="numeric" placeholder="10" value="10">
+          </div>
+        </div>
+
+        <div class="row">
+          <button class="btn" id="cg-generate">Generate</button>
+          <button class="btn secondary" id="cg-copy">Copy</button>
+        </div>
+
+        <div class="codebox" id="cg-output" aria-live="polite">Your code will appear here</div>
+      </section>
+
+      <!-- ===== Name Generators (Xbox/Discord/TikTok/Roblox/General) ===== -->
+      <section class="panel" id="panel-names" style="display:none">
+        <h2>Name Generators</h2>
+        <p class="muted">Choose a style and generate a name. Slot-machine reveal included.</p>
+
+        <div class="grid">
+          <div class="field">
+            <label>Type</label>
+            <select id="ng-type">
+              <option value="xbox">Xbox Gamertag</option>
+              <option value="discord">Discord Name</option>
+              <option value="tiktok">TikTok Handle</option>
+              <option value="roblox">Roblox Username</option>
+              <option value="username">General Username</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Base word (optional)</label>
+            <input id="ng-base" type="text" placeholder="">
+          </div>
+        </div>
+
+        <div class="row">
+          <button class="btn" id="ng-generate">Generate</button>
+          <button class="btn secondary" id="ng-copy">Copy</button>
+        </div>
+
+        <div class="codebox" id="ng-output">Your name will appear here</div>
+      </section>
+
+      <!-- ===== Project Names ===== -->
+      <section class="panel" id="panel-project" style="display:none">
+        <h2>Project Name Generator</h2>
+        <p class="muted">Generate names like "Pixel Network" or "Shadow United".</p>
+        <div class="grid">
+          <div class="field">
+            <label>Base word (optional)</label>
+            <input id="pg-base" type="text" placeholder="">
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn" id="pg-generate">Generate</button>
+          <button class="btn secondary" id="pg-copy">Copy</button>
+        </div>
+        <div class="codebox" id="pg-output">Your project name will appear here</div>
+      </section>
+
+      <!-- ===== Rules Generator ===== -->
+      <section class="panel" id="panel-rules" style="display:none">
+        <h2>Rules Generator</h2>
+        <p class="muted">Enter a topic (e.g., Minecraft, Discord, Roblox, Lethal Company) and choose count.</p>
+
+        <div class="grid">
+          <div class="field">
+            <label>Custom topic</label>
+            <input id="rg-custom" type="text" placeholder="Server" value="Server">
+          </div>
+          <div class="field">
+            <label>How many rules?</label>
+            <input id="rg-count" type="number" inputmode="numeric" placeholder="8" value="8">
+          </div>
+        </div>
+
+        <div class="row">
+          <button class="btn" id="rg-generate">Generate</button>
+          <button class="btn secondary" id="rg-copy">Copy</button>
+        </div>
+
+        <div class="codebox" id="rg-output">Your rules will appear here</div>
+      </section>
+
+      <!-- ===== Ideas Generator ===== -->
+      <section class="panel" id="panel-ideas" style="display:none">
+        <h2>Random Ideas</h2>
+        <p class="muted">One click sparks project concepts, minigames, content prompts, etc.</p>
+        <div class="row">
+          <button class="btn" id="ig-generate">Generate Idea</button>
+          <button class="btn secondary" id="ig-copy">Copy</button>
+        </div>
+        <div class="codebox" id="ig-output">Your idea will appear here</div>
+      </section>
+
+      <!-- ===== Color Palette Generator ===== -->
+      <section class="panel" id="panel-colors" style="display:none">
+        <h2>Color Palette</h2>
+        <p class="muted">Generate a 5‑color palette. Click copy to grab all hex values.</p>
+        <div class="row">
+          <button class="btn" id="cp-generate">Generate Palette</button>
+          <button class="btn secondary" id="cp-copy">Copy</button>
+        </div>
+        <div class="swatches" id="cp-swatches"></div>
+      </section>
+
+      <!-- ===== Discord Webhook JSON (no send, just generate) ===== -->
+      <section class="panel" id="panel-webhook" style="display:none">
+        <h2>Discord Webhook JSON</h2>
+        <p class="muted">Fill the fields and copy the JSON or cURL. (Static page—no sending.)</p>
+
+        <div class="grid">
+          <div class="field"><label>Username</label><input id="wh-username" type="text" placeholder="Webhook Bot"></div>
+          <div class="field"><label>Avatar URL</label><input id="wh-avatar" type="text" placeholder="https://example.com/avatar.png"></div>
+          <div class="field"><label>Content (message)</label><textarea id="wh-content" rows="3" placeholder="Hello from the webhook!"></textarea></div>
+        </div>
+
+        <div class="row">
+          <button class="btn" id="wh-generate">Generate JSON</button>
+          <button class="btn secondary" id="wh-copy-json">Copy JSON</button>
+          <button class="btn ghost" id="wh-copy-curl">Copy cURL</button>
+        </div>
+
+        <div class="codebox" id="wh-output">Webhook JSON will appear here</div>
+      </section>
     </main>
   </div>
+
   <div class="toast" id="toast">Copied!</div>
 
-<script>
-const generators = [
-    { category: 'Creative Suite', id: 'names', title: 'Name Generator', icon: '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line>', html: `<h2>Name Generators</h2><p class="muted">Generate gamertags, usernames, and handles.</p><div class="grid"><div class="field"><label>Type</label><select id="names-type"><option value="xbox">Xbox Gamertag</option><option value="discord">Discord Name</option><option value="tiktok">TikTok Handle</option><option value="roblox">Roblox Username</option><option value="username">General Username</option></select></div><div class="field"><label>Base word (optional)</label><input id="names-base" type="text"></div></div><div class="row"><button class="btn" id="names-generate">Generate</button><button class="btn secondary" data-copy-target="names-output">Copy</button></div><div class="codebox" id="names-output"></div>`},
-    { category: 'Creative Suite', id: 'project', title: 'Project Names', icon: '<path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path>', html: `<h2>Project Name Generator</h2><p class="muted">Generate names like “Pixel Network” or “Shadow United”.</p><div class="grid"><div class="field"><label>Base word (optional)</label><input id="project-base" type="text"></div></div><div class="row"><button class="btn" id="project-generate">Generate</button><button class="btn secondary" data-copy-target="project-output">Copy</button></div><div class="codebox" id="project-output"></div>`},
-    { category: 'Creative Suite', id: 'haiku', title: 'Haiku Generator', icon: '<path d="M16 4H8a4 4 0 0 0-4 4v12.01a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8l-6-6z"></path><polyline points="14 2 14 8 20 8"></polyline>', html: `<h2>Haiku Generator</h2><p class="muted">Generate a random, poetic 5-7-5 haiku.</p><div class="row"><button class="btn" id="haiku-generate">Generate</button><button class="btn secondary" data-copy-target="haiku-output">Copy</button></div><div class="codebox left-align" id="haiku-output" style="line-height: 1.6;"></div>`},
-    { category: 'Creative Suite', id: 'story', title: 'Story Idea', icon: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>', html: `<h2>Story Idea Generator</h2><p class="muted">Generate a random plot prompt.</p><div class="row"><button class="btn" id="story-generate">Generate</button><button class="btn secondary" data-copy-target="story-output">Copy</button></div><div class="codebox left-align" id="story-output"></div>`},
-    { category: 'Creative Suite', id: 'recipe', title: 'Recipe Idea', icon: '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3z"></path>', html: `<h2>Recipe Idea Generator</h2><p class="muted">Get a random idea for your next meal.</p><div class="row"><button class="btn" id="recipe-generate">Generate</button><button class="btn secondary" data-copy-target="recipe-output">Copy</button></div><div class="codebox" id="recipe-output"></div>`},
-    { category: 'Creative Suite', id: 'ideas', title: 'Random Ideas', icon: '<path d="M21.73 18.24c-1.34.85-3.22.64-4.28-1.04-.76-1.23-.72-2.7.08-3.85l.11-.16c.9-1.28.8-3.03-.23-4.16-1.03-1.13-2.78-1.2-4.06-.23l-.16.11c-1.15.8-2.62.84-3.85.08-1.57-.96-1.76-3.23-.42-4.28C9.7 2.1 12 1 14.5 1c3.5 0 7 2.5 7 6 0 1.5-1 3.2-2.5 4.5l-2 2.5c-.8.9-.6 2.3.4 3 .9.6 2.1.5 2.8-.2l2.5-2.5C23 15.2 23.5 13.5 23.5 12c0-4-3.5-7-7-7-2.2 0-4.2 1-5.5 2.5-.9 1-1.2 2.5-.6 3.7l.1.2c.4.7.3 1.5-.3 2.1-.6.6-1.4.7-2.1.3l-.2-.1c-1.2-.6-2.7-.2-3.7.6S.5 17 2.1 18.5c1.4 1.3 3.5 1.5 4.8.4l.2-.1c.7-.4 1.5-.3 2.1.3.6.6.7 1.4.3 2.1l-.1.2c-.6 1.2-.2 2.7.6 3.7C10.8 23 12.8 24 15 24c3.5 0 7-2.5 7-6 0-1.7-1-3.5-2.73-4.76z"></path>', html: `<h2>Random Ideas</h2><p class="muted">Sparks project concepts, minigames, content prompts, etc.</p><div class="row"><button class="btn" id="ideas-generate">Generate Idea</button><button class="btn secondary" data-copy-target="ideas-output">Copy</button></div><div class="codebox" id="ideas-output"></div>`},
-    { category: 'Creative Suite', id: 'ascii', title: 'ASCII Art', icon: '<polyline points="4 6 4 4 6 4"></polyline><polyline points="18 4 20 4 20 6"></polyline><polyline points="4 18 4 20 6 20"></polyline><polyline points="18 20 20 20 20 18"></polyline><path d="M9 12h.01"></path><path d="M15 12h.01"></path><path d="M10 16c.5-1 1.5-2 2-2s1.5 1 2 2"></path>', html: `<h2>ASCII Art Generator</h2><p class="muted">A selection of classic copy-paste ASCII art.</p><div class="grid"><div class="field"><label>Select Art</label><select id="ascii-select"></select></div></div><div class="row"><button class="btn secondary" data-copy-target="ascii-output">Copy</button></div><div class="codebox left-align" id="ascii-output" style="font-size: 0.8rem; line-height: 1;"></div>`},
-    // Design Tools
-    { category: 'Design Tools', id: 'colors', title: 'Color Palettes', icon: '<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0L12 2.69z"></path>', html: `<h2>Color Palette</h2><p class="muted">Generate a 5‑color palette.</p><div class="row"><button class="btn" id="colors-generate">Generate</button><button class="btn secondary" id="colors-copy">Copy All</button></div><div class="swatches" id="colors-swatches"></div>`},
-    { category: 'Design Tools', id: 'tints', title: 'Tints & Shades', icon: '<path d="M21.5 12c0-5.25-4.25-9.5-9.5-9.5S2.5 6.75 2.5 12s4.25 9.5 9.5 9.5s9.5-4.25 9.5-9.5z"></path><path d="M12 2.5V21.5"></path>', html: `<h2>Tints & Shades Generator</h2><p class="muted">Generate lighter (tints) and darker (shades) variants.</p><div class="grid grid-col-1"><div class="field"><label>Base Color (Hex)</label><input id="tints-color" type="text" value="#a855f7"></div></div><div class="row"><button class="btn" id="tints-generate">Generate</button><button class="btn secondary" id="tints-copy">Copy All</button></div><div class="tints-shades" id="tints-output"></div>`},
-    { category: 'Design Tools', id: 'gradient', title: 'CSS Gradient', icon: '<circle cx="12" cy="12" r="10"></circle><path d="M12 2a10 10 0 0 0-10 10h20a10 10 0 0 0-10-10z"></path>', html: `<h2>CSS Gradient Generator</h2><p class="muted">Generate a random linear gradient.</p><div class="row"><button class="btn" id="gradient-generate">Generate</button><button class="btn secondary" data-copy-target="gradient-output">Copy CSS</button></div><div class="preview-box" id="gradient-preview"></div><div class="codebox left-align" id="gradient-output" style="font-size: 1rem;"></div>`},
-    { category: 'Design Tools', id: 'boxshadow', title: 'CSS Box-Shadow', icon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>', html: `<h2>CSS Box-Shadow Generator</h2><p class="muted">Visually design a box-shadow and copy the CSS.</p><div class="grid"><div class="field"><label>Horizontal Offset (px)</label><input type="range" id="bs-h" min="-100" max="100" value="10"></div><div class="field"><label>Vertical Offset (px)</label><input type="range" id="bs-v" min="-100" max="100" value="10"></div><div class="field"><label>Blur Radius (px)</label><input type="range" id="bs-b" min="0" max="100" value="20"></div><div class="field"><label>Spread Radius (px)</label><input type="range" id="bs-s" min="-50" max="50" value="0"></div><div class="field"><label>Shadow Color</label><input type="color" id="bs-c" value="#a855f7"></div><div class="field"><label class="row"><input type="checkbox" id="bs-i"> Inset</label></div></div><div class="row"><button class="btn secondary" data-copy-target="bs-output">Copy CSS</button></div><div class="preview-box"><div id="bs-preview" style="width: 100px; height: 100px; background: var(--accent2); border-radius: 14px;"></div></div><div class="codebox left-align" id="bs-output" style="font-size: 1rem;"></div>`},
-    { category: 'Design Tools', id: 'aspectratio', title: 'Aspect Ratio', icon: '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="3"></line>', html: `<h2>Aspect Ratio Calculator</h2><p class="muted">Calculate dimensions for a new aspect ratio.</p><div class="grid"><div class="field"><label>Original Width</label><input id="ar-w1" type="number" value="1920"></div><div class="field"><label>Original Height</label><input id="ar-h1" type="number" value="1080"></div><div class="field"><label>New Width</label><input id="ar-w2" type="number"></div><div class="field"><label>New Height</label><input id="ar-h2" type="number"></div></div>`},
-    { category: 'Design Tools', id: 'qr', title: 'QR Code', icon: '<rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><line x1="14" y1="14" x2="21" y2="14"></line><line x1="14" y1="17.5" x2="21" y2="17.5"></line><line x1="14" y1="21" x2="21" y2="21"></line>', html: `<h2>QR Code Generator</h2><p class="muted">Enter text or a URL to generate a QR code.</p><div class="grid"><div class="field"><label>Content</label><input id="qr-text" type="text" placeholder="https://example.com"></div><div class="field"><label>Size (px)</label><input id="qr-size" type="number" value="200"></div></div><div class="row"><button class="btn" id="qr-generate">Generate</button><a class="btn secondary" id="qr-download" download="qrcode.png" style="display:none;">Download</a></div><div style="margin-top: 10px; text-align: center;"><canvas id="qr-canvas"></canvas></div>`},
-    // Developer Kit
-    { category: 'Developer Kit', id: 'code', title: 'Code Generator', icon: '<polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline>', html: `<h2>Code Generator</h2><p class="muted">Make codes like <code>XXXX-XXXX-XXXX</code>.</p><div class="grid"><div class="field"><label>Segments</label><input id="code-segments" type="number" inputmode="numeric" value="3"></div><div class="field"><label>Segment length</label><input id="code-seglen" type="number" inputmode="numeric" value="4"></div><div class="field"><label>Separator</label><input id="code-sep" type="text" value="-"></div><div class="field"><label>Character sets</label><div class="row"><label class="badge"><input id="code-upper" type="checkbox" checked> Uppercase</label><label class="badge"><input id="code-nums"  type="checkbox" checked> Numbers</label></div></div></div><div class="row"><button class="btn" id="code-generate">Generate</button><button class="btn secondary" data-copy-target="code-output">Copy</button></div><div class="codebox" id="code-output"></div>`},
-    { category: 'Developer Kit', id: 'password', title: 'Password', icon: '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>', html: `<h2>Password Generator</h2><p class="muted">Create a strong, random password.</p><div class="grid"><div class="field"><label>Length</label><input id="pw-len" type="number" inputmode="numeric" value="16"></div><div class="field"><label>Character sets</label><div class="row"><label class="badge"><input id="pw-upper" type="checkbox" checked> Uppercase</label><label class="badge"><input id="pw-lower" type="checkbox" checked> Lowercase</label><label class="badge"><input id="pw-nums"  type="checkbox" checked> Numbers</label><label class="badge"><input id="pw-spec"  type="checkbox"> Symbols</label></div></div></div><div class="row"><button class="btn" id="password-generate">Generate</button><button class="btn secondary" data-copy-target="password-output">Copy</button></div><div class="codebox" id="password-output"></div>`},
-    { category: 'Developer Kit', id: 'uuid', title: 'UUID', icon: '<circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>', html: `<h2>UUID Generator</h2><p class="muted">Generate a Version 4 UUID.</p><div class="row"><button class="btn" id="uuid-generate">Generate</button><button class="btn secondary" data-copy-target="uuid-output">Copy</button></div><div class="codebox" id="uuid-output"></div>`},
-    { category: 'Developer Kit', id: 'hashing', title: 'Hashing', icon: '<path d="M12 11v5"></path><path d="M12 18v2"></path><path d="M12 2v2"></path><path d="M22 12h-5"></path><path d="M7 12H2"></path><circle cx="12" cy="12" r="7"></circle>', html: `<h2>Hashing Generator</h2><p class="muted">Generate hashes from text input.</p><div class="grid grid-col-1"><div class="field"><label>Input Text</label><textarea id="hash-input" rows="4">Hello World</textarea></div></div><div class="row"><button class="btn" id="hashing-generate">Generate Hashes</button></div><div class="codebox left-align" id="hashing-output" style="font-size: 0.9rem;"></div>`},
-    { category: 'Developer Kit', id: 'base64', title: 'Base64', icon: '<path d="M10.5 20H13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2.5"></path><path d="M4 10h6.5"></path><path d="M4 14h6.5"></path>', html: `<h2>Base64 Encoder/Decoder</h2><p class="muted">Encode text to Base64 or decode from it.</p><div class="grid"><div class="field"><label>Text</label><textarea id="b64-text" rows="4">All-in-One Generator!</textarea></div><div class="field"><label>Base64</label><textarea id="b64-encoded" rows="4"></textarea></div></div><div class="row"><button class="btn" id="b64-encode">Encode →</button><button class="btn" id="b64-decode">← Decode</button></div>`},
-    { category: 'Developer Kit', id: 'slugify', title: 'Slugify', icon: '<path d="M15.5 20H18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2.5"></path><path d="M4 10h8.5"></path><path d="M4 14h8.5"></path>', html: `<h2>Slugify Generator</h2><p class="muted">Convert a string into a URL-friendly slug.</p><div class="grid grid-col-1"><div class="field"><label>Input String</label><input type="text" id="slug-input" placeholder="My Awesome New Post!"></div></div><div class="row"><button class="btn" id="slugify-generate">Generate</button><button class="btn secondary" data-copy-target="slugify-output">Copy</button></div><div class="codebox" id="slugify-output"></div>`},
-    { category: 'Developer Kit', id: 'lorem', title: 'Lorem Ipsum', icon: '<path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline>', html: `<h2>Lorem Ipsum Generator</h2><p class="muted">Generate placeholder text.</p><div class="grid"><div class="field"><label>Paragraphs</label><input id="li-p" type="number" value="3" inputmode="numeric"></div><div class="field"><label>Sentences per Paragraph</label><input id="li-s" type="number" value="5" inputmode="numeric"></div></div><div class="row"><button class="btn" id="lorem-generate">Generate</button><button class="btn secondary" data-copy-target="lorem-output">Copy</button></div><div class="codebox left-align" id="lorem-output"></div>`},
-    { category: 'Developer Kit', id: 'fakedata', title: 'Fake Data (JSON)', icon: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>', html: `<h2>Fake Data (JSON)</h2><p class="muted">Generate an array of fake user data.</p><div class="grid"><div class="field"><label>Number of Users</label><input id="fakedata-count" type="number" value="3"></div></div><div class="row"><button class="btn" id="fakedata-generate">Generate</button><button class="btn secondary" data-copy-target="fakedata-output">Copy</button></div><div class="codebox left-align" id="fakedata-output" style="font-size: 0.8rem;"></div>`},
-    { category: 'Developer Kit', id: 'webhook', title: 'Discord Webhook', icon: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>', html: `<h2>Discord Webhook JSON</h2><p class="muted">Fill fields and copy the JSON or cURL.</p><div class="grid"><div class="field"><label>Username</label><input id="wh-username" type="text"></div><div class="field"><label>Avatar URL</label><input id="wh-avatar" type="text"></div><div class="field"><label>Content (message)</label><textarea id="wh-content" rows="3"></textarea></div></div><div class="row"><button class="btn" id="webhook-generate">Generate JSON</button><button class="btn secondary" id="wh-copy-json">Copy JSON</button></div><div class="codebox left-align" id="webhook-output"></div>`},
-    // Utilities & Fun
-    { category: 'Utilities & Fun', id: 'rules', title: 'Rules Generator', icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>', html: `<h2>Rules Generator</h2><p class="muted">Generate rules for a server or community.</p><div class="grid"><div class="field"><label>Topic</label><input id="rules-topic" type="text" placeholder="Server"></div><div class="field"><label>Count</label><input id="rules-count" type="number" placeholder="8"></div></div><div class="row"><button class="btn" id="rules-generate">Generate</button><button class="btn secondary" data-copy-target="rules-output">Copy</button></div><div class="codebox left-align" id="rules-output"></div>`},
-    { category: 'Utilities & Fun', id: 'case', title: 'Case Converter', icon: '<polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>', html: `<h2>Case Converter</h2><p class="muted">Convert text to different cases.</p><div class="grid grid-col-1"><div class="field"><label>Text</label><textarea id="case-input" rows="5">Hello World! This is a test.</textarea></div></div><div class="row"><button class="btn" data-case="upper">UPPERCASE</button><button class="btn" data-case="lower">lowercase</button><button class="btn" data-case="title">Title Case</button><button class="btn" data-case="sentence">Sentence case</button></div>`},
-    { category: 'Utilities & Fun', id: 'counter', title: 'Word Counter', icon: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline>', html: `<h2>Word & Character Counter</h2><p class="muted">Get stats for your text.</p><div class="grid grid-col-1"><div class="field"><label>Text</label><textarea id="count-input" rows="6"></textarea></div></div><div class="codebox" id="count-output" style="font-size: 1rem;">Words: 0 | Characters: 0</div>`},
-    { category: 'Utilities & Fun', id: 'tip', title: 'Tip Calculator', icon: '<line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>', html: `<h2>Tip Calculator</h2><p class="muted">Calculate tips and split the bill.</p><div class="grid"><div class="field"><label>Bill Amount</label><input id="tip-bill" type="number" value="50"></div><div class="field"><label>Tip Percentage</label><input id="tip-percent" type="number" value="18"></div><div class="field"><label>Number of People</label><input id="tip-people" type="number" value="1"></div></div><div class="row"><button class="btn" id="tip-calculate">Calculate</button></div><div class="codebox left-align" id="tip-output" style="font-size: 1rem;"></div>`},
-    { category: 'Utilities & Fun', id: 'rng', title: 'Random Number', icon: '<path d="M16 3h5v5"></path><path d="M4 20L21 3"></path><path d="M21 16v5h-5"></path><path d="M15 15l6 6"></path><path d="M4 4l5 5"></path>', html: `<h2>Random Number Generator</h2><p class="muted">Generate a random integer in a range.</p><div class="grid"><div class="field"><label>Minimum</label><input id="rng-min" type="number" value="1"></div><div class="field"><label>Maximum</label><input id="rng-max" type="number" value="100"></div></div><div class="row"><button class="btn" id="rng-generate">Generate</button><button class="btn secondary" data-copy-target="rng-output">Copy</button></div><div class="codebox" id="rng-output"></div>`},
-    { category: 'Utilities & Fun', id: 'lucky', title: 'Lucky Number', icon: '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>', html: `<h2>Lucky Number Generator</h2><p class="muted">A gambling-style slot machine for numbers. Hit stop for each digit!</p><div class="grid"><div class="field"><label>Digits (1-10)</label><input id="lucky-digits" type="number" value="3" min="1" max="10"></div><div class="field"><label>Speed (ms)</label><input id="lucky-speed" type="number" value="50" min="20" max="500"></div></div><div class="row"><button class="btn" id="lucky-spin">Spin</button><button class="btn secondary" id="lucky-stop" disabled>Stop</button></div><div class="codebox" id="lucky-output" style="font-size: 2.5rem;"></div>`},
-    { category: 'Utilities & Fun', id: 'dice', title: 'Dice Roller', icon: '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><circle cx="15.5" cy="8.5" r="1.5"></circle><circle cx="15.5" cy="15.5" r="1.5"></circle><circle cx="8.5" cy="15.5" r="1.5"></circle>', html: `<h2>Dice Roller</h2><p class="muted">Roll virtual dice. Format: \`2d6\`.</p><div class="grid grid-col-1"><div class="field"><label>Dice Notation</label><input id="dice-notation" type="text" value="1d20"></div></div><div class="row"><button class="btn" id="dice-roll">Roll</button><button class="btn secondary" data-copy-target="dice-output">Copy</button></div><div class="codebox left-align" id="dice-output"></div>`},
-    { category: 'Utilities & Fun', id: 'morse', title: 'Morse Translator', icon: '<circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="5" r="2"></circle><circle cx="5" cy="19" r="2"></circle><path d="M13.5 10.5L17 7"></path><path d="M7 17l3.5-3.5"></path>', html: `<h2>Morse Code Translator</h2><p class="muted">Translate text to Morse code and vice-versa.</p><div class="grid"><div class="field"><label>Text</label><textarea id="morse-text" rows="3">Hello world</textarea></div><div class="field"><label>Morse Code</label><textarea id="morse-code" rows="3"></textarea></div></div><div class="row"><button class="btn" id="morse-to-morse">To Morse →</button><button class="btn" id="morse-to-text">← To Text</button></div>`},
-    { category: 'Utilities & Fun', id: 'teams', title: 'Team Generator', icon: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>', html: `<h2>Team Generator</h2><p class="muted">Paste names to create random teams.</p><div class="grid"><div class="field"><label>Names (one per line)</label><textarea id="teams-names" rows="6">Alice\nBob\nCharlie\nDiana\nEthan\nFiona</textarea></div><div class="field"><label>Number of Teams</label><input id="teams-count" type="number" value="2"></div></div><div class="row"><button class="btn" id="teams-generate">Generate</button><button class="btn secondary" data-copy-target="teams-output">Copy</button></div><div class="codebox left-align" id="teams-output"></div>`},
-    { category: 'Utilities & Fun', id: 'workout', title: 'Workout', icon: '<line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line>', html: `<h2>Workout Generator</h2><p class="muted">Get a simple, randomized workout routine.</p><div class="row"><button class="btn" id="workout-generate">Generate</button><button class="btn secondary" data-copy-target="workout-output">Copy</button></div><div class="codebox left-align" id="workout-output"></div>`},
-    { category: 'Utilities & Fun', id: 'shipname', title: 'Ship Name', icon: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>', html: `<h2>Ship Name Generator</h2><p class="muted">Combine two names into a ship name.</p><div class="grid"><div class="field"><label>Name 1</label><input type="text" id="ship-name1" placeholder="Alice"></div><div class="field"><label>Name 2</label><input type="text" id="ship-name2" placeholder="Bob"></div></div><div class="row"><button class="btn" id="ship-generate">Generate</button><button class="btn secondary" data-copy-target="ship-output">Copy</button></div><div class="codebox" id="ship-output"></div>`},
-    { category: 'Utilities & Fun', id: 'magic8', title: 'Magic 8-Ball', icon: '<circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line>', html: `<h2>Magic 8-Ball</h2><p class="muted">Ask a yes-no question and find your fortune.</p><div class="grid grid-col-1"><div class="field"><label>Your Question</label><input type="text" id="m8-question" placeholder="Will today be a good day?"></div></div><div class="row"><button class="btn" id="m8-ask">Ask</button></div><div class="codebox" id="m8-answer" style="font-size: 1.5rem;"></div>`},
-    { category: 'Utilities & Fun', id: 'excuse', title: 'Excuse Generator', icon: '<circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line>', html: `<h2>Excuse Generator</h2><p class="muted">A plausible-ish excuse for any situation.</p><div class="row"><button class="btn" id="ex-generate">Generate</button><button class="btn secondary" data-copy-target="ex-output">Copy</button></div><div class="codebox" id="ex-output" style="font-size: 1rem;"></div>`},
-];
-
-document.addEventListener('DOMContentLoaded', () => {
-    // --- MASTER SETUP ---
+  <script>
+    /* ===== Tab nav & sidebar ===== */
     const nav = document.getElementById('nav');
-    const content = document.querySelector('.content');
-    const categories = {};
-
-    generators.forEach((gen, index) => {
-        const panel = document.createElement('section');
-        panel.className = 'panel'; panel.id = `panel-${gen.id}`; panel.innerHTML = gen.html;
-        panel.style.display = index === 0 ? '' : 'none';
-        content.appendChild(panel);
-
-        if (!categories[gen.category]) {
-            categories[gen.category] = document.createElement('div');
-            categories[gen.category].className = 'nav-category';
-            categories[gen.category].innerHTML = `<div class="title">${gen.category}</div>`;
-            nav.appendChild(categories[gen.category]);
-        }
-        
-        const tab = document.createElement('div');
-        tab.className = `tab ${index === 0 ? 'active' : ''}`; tab.dataset.target = `panel-${gen.id}`;
-        tab.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${gen.icon}</svg> ${gen.title}`;
-        categories[gen.category].appendChild(tab);
+    const tabs = [...nav.querySelectorAll('.tab')];
+    const panels = [...document.querySelectorAll('.panel')];
+    nav.addEventListener('click', (e)=>{
+      const tab = e.target.closest('.tab');
+      if(!tab) return;
+      const target = tab.dataset.target;
+      tabs.forEach(t=>t.classList.toggle('active', t===tab));
+      panels.forEach(p=> p.style.display = (p.id === target) ? '' : 'none');
+    });
+    const sidebar = document.getElementById('sidebar');
+    document.getElementById('hamburger').addEventListener('click', ()=>{
+      sidebar.classList.toggle('hide');
     });
 
-    const $ = id => document.getElementById(id);
-    const readInt = (id, def) => { const v = parseInt(($(id)?.value || '').trim(), 10); return Number.isFinite(v) ? v : def; };
-    const readStr = (id, def) => { const v = ($(id)?.value || '').trim(); return v !== '' ? v : def; };
-    const checked = id => !!$(id)?.checked;
-    const randomOf = arr => arr[Math.floor(Math.random() * arr.length)];
-    const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-
-    function showToast(msg = "Copied!") {
-        const t = $('toast'); t.textContent = msg; t.classList.add('show');
-        clearTimeout(showToast._timer);
-        showToast._timer = setTimeout(() => t.classList.remove('show'), 1200);
+    /* ===== Toast ===== */
+    function showToast(msg="Copied!"){
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(()=> t.classList.remove('show'), 1200);
     }
-    
-    document.body.addEventListener('click', async e => {
-        const copyBtn = e.target.closest('[data-copy-target]');
-        if (!copyBtn) return;
-        const targetEl = $(copyBtn.dataset.copyTarget); if (!targetEl) return;
-        const text = targetEl.value !== undefined ? targetEl.value : targetEl.innerText;
-        if (text && text.trim()) {
-            await navigator.clipboard.writeText(text.trim());
-            const originalText = copyBtn.innerHTML; copyBtn.textContent = 'Copied!';
-            setTimeout(() => { copyBtn.innerHTML = originalText; }, 1200);
+
+    /* ===== Helpers ===== */
+    const $ = (id)=>document.getElementById(id);
+    const readInt = (id, def) => {
+      const v = parseInt(($(id).value || '').trim(), 10);
+      return Number.isFinite(v) ? v : def;
+    };
+    const readStr = (id, def) => {
+      const v = (($(id).value || '').trim());
+      return v !== '' ? v : def;
+    };
+    const checked = (id)=> !!$(id).checked;
+
+    const randomOf = (arr)=>arr[Math.floor(Math.random()*arr.length)];
+    const lettersUpper="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lettersLower="abcdefghijklmnopqrstuvwxyz";
+    const digits="0123456789";
+    const special="!@#$%^&*()_+[]{}<>?/~";
+
+    /* ===== Reusable slot-machine reveal ===== */
+    async function slotReveal(el, finalText, opts={}){
+      const alphabet = opts.chars || (lettersUpper + digits);
+      const delay = opts.delay || 30;
+      const perCharSpins = opts.perCharSpins || 12;
+
+      el.style.fontSize = (opts.fontSize || '').toString().trim() ? opts.fontSize + 'px' : '';
+      el.innerHTML = '';
+      const spans = [...finalText].map((ch)=>{
+        const s = document.createElement('span');
+        s.className = 'slot';
+        s.textContent = ' ';
+        el.appendChild(s);
+        return s;
+      });
+
+      for(let i=0;i<spans.length;i++){
+        await new Promise(res=>setTimeout(res, 20)); // stagger start
+        let spins = 0;
+        const timer = setInterval(()=>{
+          spans[i].textContent = alphabet[Math.floor(Math.random()*alphabet.length)];
+          spins++;
+          if(spins >= perCharSpins || finalText[i] === '-' || finalText[i] === ' '){
+            clearInterval(timer);
+            spans[i].textContent = finalText[i];
+            spans[i].classList.add('spin');
+          }
+        }, delay);
+      }
+      // resolve when last char set
+      await new Promise(res=>setTimeout(res, perCharSpins*delay + 60));
+    }
+
+    /* ===== CODE GENERATOR ===== */
+    $('cg-generate').addEventListener('click', ()=>{
+      const segments   = readInt('cg-segments', 3);
+      const segLen     = readInt('cg-seglen', 4);
+      const sep        = readStr('cg-sep', '-');
+      const prefix     = readStr('cg-prefix','');
+      const suffix     = readStr('cg-suffix','');
+      const fontSize   = readInt('cg-font', 0);
+
+      const useUpper   = checked('cg-upper');
+      const useLower   = checked('cg-lower');
+      const useNums    = checked('cg-nums');
+      const useSpec    = checked('cg-spec');
+      const useWords   = checked('cg-words');
+      const allowDupes = checked('cg-dupe');
+
+      let alphabet = '';
+      if(useUpper) alphabet += lettersUpper;
+      if(useLower) alphabet += lettersLower;
+      if(useNums)  alphabet += digits;
+      if(useSpec)  alphabet += special;
+      if(!alphabet && !useWords){ alphabet = lettersUpper + digits; }
+
+      const eggChance = Math.max(0, Math.min(100, readInt('cg-eggchance', 0)));
+      const eggList = readStr('cg-eggs','').split(',').map(s=>s.trim()).filter(Boolean);
+
+      const wordsPool = ["CAT","DOG","STAR","NOVA","ECHO","WAVE","PINK","LUNA","VOID","RUSH","GLOW","FIZZ","MINT","BYTE","CORE"];
+
+      const parts = [];
+      for(let i=0;i<segments;i++){
+        let seg = '';
+        if(useWords){
+          // word segment
+          const pool = eggList.length ? wordsPool.concat(eggList.map(w=>w.toUpperCase())) : wordsPool;
+          seg = randomOf(pool);
+          if(segLen>0) seg = seg.slice(0, segLen).padEnd(segLen, 'X');
+        }else{
+          const chars = alphabet || (lettersUpper + digits);
+          const chosen = new Set();
+          while(seg.length < segLen){
+            const ch = chars[Math.floor(Math.random()*chars.length)];
+            if(allowDupes || !chosen.has(ch)){
+              seg += ch;
+              chosen.add(ch);
+            }
+          }
+          // Easter egg injection chance: replace whole segment with an egg
+          if(eggList.length && Math.random()*100 < eggChance){
+            const egg = randomOf(eggList).toUpperCase();
+            seg = egg.slice(0, segLen).padEnd(segLen, 'X');
+          }
         }
+        parts.push(seg);
+      }
+
+      let finalCode = parts.join(sep || '-');
+      if(prefix) finalCode = prefix + (sep || '-') + finalCode;
+      if(suffix) finalCode = finalCode + (sep || '-') + suffix;
+
+      slotReveal($('cg-output'), finalCode, { chars: alphabet || (lettersUpper+digits), fontSize });
     });
 
-    const hamburger = $('hamburger'), sidebarOverlay = $('sidebar-overlay');
-    const toggleSidebar = () => document.body.classList.toggle('sidebar-open');
-    hamburger.addEventListener('click', toggleSidebar);
-    sidebarOverlay.addEventListener('click', toggleSidebar);
-    nav.addEventListener('click', e => {
-        const tab = e.target.closest('.tab');
-        if (!tab) return;
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
-        $(tab.dataset.target).style.display = '';
-        if (window.innerWidth <= 900) document.body.classList.remove('sidebar-open');
-    });
-    
-    // REMOVED THEME SWITCHER LOGIC
-    // $('theme-select').style.display = 'none'; // Hide if needed, or remove from HTML
-
-    $('gen-search').addEventListener('input', e => {
-        const query = e.target.value.toLowerCase();
-        document.querySelectorAll('.tab').forEach(tab => {
-            const match = tab.textContent.toLowerCase().includes(query);
-            tab.style.display = match ? 'flex' : 'none';
-        });
-        document.querySelectorAll('.nav-category').forEach(cat => {
-            const hasVisibleTabs = !!cat.querySelector('.tab[style*="display: flex"]');
-            cat.style.display = hasVisibleTabs ? 'block' : 'none';
-        });
+    $('cg-copy').addEventListener('click', async ()=>{
+      const text = $('cg-output').innerText.trim();
+      if(!text) return;
+      await navigator.clipboard.writeText(text);
+      showToast();
     });
 
-    // --- FULL GENERATOR LOGIC & INITIALIZATION ---
-    generators.forEach(gen => {
-        const panel = $(`panel-${gen.id}`);
-        if (!panel) return;
-        const genBtn = panel.querySelector('.btn[id$="-generate"], .btn[id$="-roll"], .btn[id$="-ask"], .btn[id$="-calculate"], .btn[id$="-spin"], .btn[id$="-encode"]');
-        
-        // Attach event listeners based on ID
-        switch (gen.id) {
-            case 'names': $('names-generate').addEventListener('click', () => { const type=readStr('names-type','username'),base=readStr('names-base',''),adjs=["Abyssal","Alpha","Ancient","Arcane","Astral","Azure","Berserk","Binary","Black","Blazing"],nouns=["Abyss","Alpha","Angel","Annihilator","Apostle","Armageddon","Assassin","Atrocity","Avatar"],b=base||(randomOf(adjs)+randomOf(nouns));let h='';switch(type){case'xbox':h=randomOf(["xX","i",""])+b+randomOf(["","HD","Pro"]);break;case'discord':h=b+"#"+randomInt(1000,9999);break;case'tiktok':h="@"+b.toLowerCase().replace(/[^a-z0-9_.]/g,'').slice(0,24);break;default:h=b+randomInt(100,999);}$('names-output').textContent=h;}); break;
-            case 'project': $('project-generate').addEventListener('click', () => { const b=readStr('project-base',''),w=["Galaxy","Pixel","Shadow","Crystal","Echo","Storm","Aurora","Neon","Quantum","Vertex"],s=["Network","United","Studios","Collective","Group","Systems","Labs","Works","Alliance"];$('project-output').textContent=(b||randomOf(w))+" "+randomOf(s); }); break;
-            case 'haiku': $('haiku-generate').addEventListener('click', () => { const l1=["An old silent pond","Green twilight, deep woods"],l2=["A frog jumps into the pond—","A cicada's cry deepens the silence"],l3=["Splash! Silence again.","The stillness of the rocks."];$('haiku-output').textContent=`${randomOf(l1)}\n${randomOf(l2)}\n${randomOf(l3)}`; }); break;
-            case 'story': $('story-generate').addEventListener('click', () => { const p=["A cynical detective","A disgraced knight"],s=["in a neon-drenched cyberpunk city","in a forgotten kingdom"],g=["must find a legendary artifact","must clear their name"],o=["but is being hunted by a relentless assassin.","but they are losing their memories."];$('story-output').textContent=`${randomOf(p)} ${randomOf(s)} ${randomOf(g)}, ${randomOf(o)}`; }); break;
-            case 'recipe': $('recipe-generate').addEventListener('click', () => { const c=["Italian","Mexican","Japanese"],m=["Roasted","Grilled","Stir-fried"],p=["Chicken","Beef","Tofu"],s=["with crispy potatoes.","over jasmine rice."];$('recipe-output').textContent=`${randomOf(c)} ${randomOf(m)} ${randomOf(p)} ${randomOf(s)}`;}); break;
-            case 'ideas': $('ideas-generate').addEventListener('click', () => { const c=["Mini-game","Tool/Utility"], v=["Auto","Hyper","Neo"], n=["Market","Tracker","Arena"];$('ideas-output').textContent=`${randomOf(c)}: ${randomOf(v)} ${randomOf(n)}`; }); break;
-            case 'ascii': { const arts={'Cat':' /\\_/\\\n( o.o )\n > ^ <','Rose':`  ,-_,-.\n / \\  \`;,'\n \`\\ `}""{\n  } ,-\\ \n /,' ( \\ \n \\-.__;=\\ \n  _.,'-',\n 'a' (°)\n_.-~-\`~-._`},sel=$('ascii-select');Object.keys(arts).forEach(k=>sel.add(new Option(k,k)));const u=()=>$('ascii-output').textContent=arts[sel.value];sel.addEventListener('change',u);u(); break; }
-            case 'colors': { const gen=()=>{const w=$('colors-swatches');w.innerHTML='';const c=Array.from({length:5},()=>"#"+Math.floor(Math.random()*16777215).toString(16).padStart(6,"0"));c.forEach(h=>{const d=document.createElement('div');d.className='swatch';d.style.background=h;d.textContent=h;w.appendChild(d);});w.dataset.colors=c.join(' ');};$('colors-generate').addEventListener('click',gen);$('colors-copy').addEventListener('click',async()=>{const c=$('colors-swatches').dataset.colors||'';if(c){await navigator.clipboard.writeText(c);showToast("Palette copied!");}}); break; }
-            case 'tints': { const htr=h=>{let r=0,g=0,b=0;if(h.length==4){r=parseInt(h[1]+h[1],16);g=parseInt(h[2]+h[2],16);b=parseInt(h[3]+h[3],16);}else if(h.length==7){r=parseInt(h.substring(1,3),16);g=parseInt(h.substring(3,5),16);b=parseInt(h.substring(5,7),16);}return{r,g,b};},rth=(r,g,b)=>'#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');const gen=()=>{const b=readStr('tints-color','#a855f7'),{r,g,b:B}=htr(b),o=$('tints-output');o.innerHTML='';let a=[];for(let i=5;i>0;i--){const p=i*0.2,tR=Math.round(r+(255-r)*p),tG=Math.round(g+(255-g)*p),tB=Math.round(B+(255-B)*p),h=rth(tR,tG,tB);a.push(h);const d=document.createElement('div');d.className='tint-shade-box';d.style.background=h;d.innerHTML=`<span>${h}</span><small style="opacity:0.7">Tint</small>`;o.appendChild(d);}for(let i=1;i<=5;i++){const p=i*0.2,sR=Math.round(r*(1-p)),sG=Math.round(g*(1-p)),sB=Math.round(B*(1-p)),h=rth(sR,sG,sB);a.push(h);const d=document.createElement('div');d.className='tint-shade-box';d.style.background=h;d.innerHTML=`<span>${h}</span><small style="opacity:0.7">Shade</small>`;o.appendChild(d);}o.dataset.colors=a.join(' ');};$('tints-generate').addEventListener('click',gen);$('tints-color').addEventListener('input',gen);$('tints-copy').addEventListener('click',async()=>{const c=$('tints-output').dataset.colors||'';if(c){await navigator.clipboard.writeText(c);showToast("Colors copied!");}}); break; }
-            case 'gradient': $('gradient-generate').addEventListener('click', () => { const a=randomInt(0,360),c1="#"+Math.random().toString(16).slice(2,8).padEnd(6,'0'),c2="#"+Math.random().toString(16).slice(2,8).padEnd(6,'0'),css=`background: linear-gradient(${a}deg, ${c1}, ${c2});`;$('gradient-preview').style.background=`linear-gradient(${a}deg, ${c1}, ${c2})`;$('gradient-output').textContent=css;}); break;
-            case 'boxshadow': { const u=()=>{const h=$('bs-h').value,v=$('bs-v').value,b=$('bs-b').value,s=$('bs-s').value,c=$('bs-c').value,i=checked('bs-i')?'inset':'';const css=`box-shadow: ${i} ${h}px ${v}px ${b}px ${s}px ${c};`.replace('  ',' ');$('bs-preview').style.boxShadow=`${i} ${h}px ${v}px ${b}px ${s}px ${c}`;$('bs-output').textContent=css;};['bs-h','bs-v','bs-b','bs-s','bs-c','bs-i'].forEach(id=>$(id)?.addEventListener('input',u));u(); break; }
-            case 'aspectratio': ['ar-w1','ar-h1','ar-w2','ar-h2'].forEach(id=>$(id)?.addEventListener('input',e=>{const w1=readInt('ar-w1',0),h1=readInt('ar-h1',0),w2=readInt('ar-w2',0),h2=readInt('ar-h2',0);if(w1<=0||h1<=0)return;const s=e.target.id;if(s==='ar-w2'&&w2)$('ar-h2').value=Math.round((w2/w1)*h1)||'';else if(s==='ar-h2'&&h2)$('ar-w2').value=Math.round((h2/h1)*w1)||'';else if(s==='ar-w1'||s==='ar-h1'){if(w2)$('ar-h2').value=Math.round((w2/w1)*h1)||'';else if(h2)$('ar-w2').value=Math.round((h2/h1)*w1)||'';}})); break;
-            case 'qr': $('qr-generate').addEventListener('click',()=>{const t=readStr('qr-text','https://example.com'),s=readInt('qr-size',200),c=$('qr-canvas'),d=$('qr-download');new QRious({element:c,value:t,size:s,padding:10});d.href=c.toDataURL('image/png');d.style.display='inline-block';});$('qr-text').value='https://github.com/google/gemini'; break;
-            case 'code': $('code-generate').addEventListener('click',()=>{const s=readInt('code-segments',3),l=readInt('code-seglen',4),p=readStr('code-sep','-');let a='';if(checked('code-upper'))a+='ABCDEFGHIJKLMNOPQRSTUVWXYZ';if(checked('code-nums'))a+='0123456789';if(!a)a='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';$('code-output').textContent=Array.from({length:s},()=>Array.from({length:l},()=>randomOf(a)).join('')).join(p);}); break;
-            case 'password': $('password-generate').addEventListener('click',()=>{const l=readInt('pw-len',16);let p='';if(checked('pw-upper'))p+='ABCDEFGHIJKLMNOPQRSTUVWXYZ';if(checked('pw-lower'))p+='abcdefghijklmnopqrstuvwxyz';if(checked('pw-nums'))p+='0123456789';if(checked('pw-spec'))p+='!@#$%^&*()';if(!p)p='abc123';$('password-output').textContent=Array.from({length:l},()=>randomOf(p)).join('');}); break;
-            case 'uuid': $('uuid-generate').addEventListener('click',()=>$('uuid-output').textContent=([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,c=>(c^crypto.getRandomValues(new Uint8Array(1))[0]&15>>c/4).toString(16))); break;
-            case 'hashing': $('hashing-generate').addEventListener('click',async()=>{const i=readStr('hash-input',''),d=new TextEncoder().encode(i),a=['SHA-1','SHA-256','SHA-512'];let o='';for(const l of a){const hB=await crypto.subtle.digest(l,d),hA=Array.from(new Uint8Array(hB)),hH=hA.map(b=>b.toString(16).padStart(2,'0')).join('');o+=`${l}:\n${hH}\n\n`;}$('hashing-output').textContent=o.trim();}); break;
-            case 'base64': $('b64-encode').addEventListener('click',()=>$('b64-encoded').value=btoa(readStr('b64-text','')));$('b64-decode').addEventListener('click',()=>{try{$('b64-text').value=atob(readStr('b64-encoded',''));}catch(e){$('b64-text').value='Invalid Base64';}}); break;
-            case 'slugify': { const u=()=>$('slugify-output').textContent=readStr('slug-input','').toLowerCase().trim().replace(/[^\w\s-]/g,'').replace(/[\s_-]+/g,'-').replace(/^-+|-+$/g,'');$('slugify-generate').addEventListener('click',u);$('slug-input').addEventListener('input',u); break; }
-            case 'lorem': $('lorem-generate').addEventListener('click',()=>{const pC=readInt('li-p',3),sC=readInt('li-s',5),w=['lorem','ipsum','dolor','sit','amet'];let r=[];for(let i=0;i<pC;i++){let p=[];for(let j=0;j<sC;j++){let s=Array.from({length:randomInt(8,15)},()=>randomOf(w)).join(' ');p.push(s[0].toUpperCase()+s.slice(1)+'.');}r.push(p.join(' '));}$('lorem-output').textContent=r.join('\n\n');}); break;
-            case 'fakedata': $('fakedata-generate').addEventListener('click',()=>{const c=readInt('fakedata-count',3),f=['Olivia','Liam','Emma'],l=['Smith','Johnson','Williams'];const u=Array.from({length:c},(_,i)=>{const a=randomOf(f),n=randomOf(l);return{id:i+1,name:`${a} ${n}`,email:`${a.toLowerCase()}.${n.toLowerCase()}${randomInt(1,99)}@example.com`};});$('fakedata-output').textContent=JSON.stringify(u,null,2);}); break;
-            case 'webhook': { let l='';$('webhook-generate').addEventListener('click',()=>{const o={username:readStr('wh-username',''),avatar_url:readStr('wh-avatar',''),content:readStr('wh-content','')};l=JSON.stringify(o,null,2);$('webhook-output').textContent=l;});$('wh-copy-json').addEventListener('click',async()=>{if(l){await navigator.clipboard.writeText(l);showToast("JSON copied!");}}); break; }
-            case 'rules': $('rules-generate').addEventListener('click',()=>{const t=readStr('rules-topic','Server'),c=readInt('rules-count',8),s=[`Respect all members in the ${t}.`,`No spamming.`,`No cheating.`];$('rules-output').textContent=s.slice(0,c).map((v,i)=>`${i+1}. ${v}`).join('\n');}); break;
-            case 'case': panel.addEventListener('click',e=>{if(!e.target.matches('.btn'))return;const i=$('case-input'),t=i.value,p=e.target.dataset.case;if(p==='upper')i.value=t.toUpperCase();else if(p==='lower')i.value=t.toLowerCase();else if(p==='title')i.value=t.toLowerCase().replace(/\b\w/g,s=>s.toUpperCase());else if(p==='sentence')i.value=t.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g,c=>c.toUpperCase());}); break;
-            case 'counter': $('count-input').addEventListener('input',e=>{const t=e.target.value,w=t.split(/\s+/).filter(Boolean).length;$('count-output').textContent=`Words: ${w} | Characters: ${t.length}`;}); break;
-            case 'tip': $('tip-calculate').addEventListener('click',()=>{const b=parseFloat(readStr('tip-bill','0')),p=parseFloat(readStr('tip-percent','0')),e=readInt('tip-people',1);if(b<=0||e<=0){$('tip-output').textContent="Invalid numbers.";return;}const t=b*(p/100),o=b+t,a=o/e;$('tip-output').textContent=`Tip: $${t.toFixed(2)}\nTotal: $${o.toFixed(2)}\nPer Person: $${a.toFixed(2)}`;}); break;
-            case 'rng': $('rng-generate').addEventListener('click',()=>$('rng-output').textContent=randomInt(readInt('rng-min',1),readInt('rng-max',100))); break;
-            case 'lucky': { let i=[],s=0;const b=$('lucky-spin'),t=$('lucky-stop'),o=$('lucky-output');b.addEventListener('click',()=>{const d=Math.max(1,Math.min(10,readInt('lucky-digits',3))),p=Math.max(20,Math.min(500,readInt('lucky-speed',50)));o.innerHTML='';i.forEach(clearInterval);i=[];s=0;for(let c=0;c<d;c++){const n=document.createElement('span');o.appendChild(n);i.push(setInterval(()=>n.textContent=randomInt(0,9),p));}o.children[0].classList.add('active');b.disabled=true;t.disabled=false;});t.addEventListener('click',()=>{if(s>=i.length)return;clearInterval(i[s]);if(o.children[s])o.children[s].classList.remove('active');s++;if(s<i.length){if(o.children[s])o.children[s].classList.add('active');}else{t.disabled=true;b.disabled=false;}}); break; }
-            case 'dice': $('dice-roll').addEventListener('click',()=>{const m=readStr('dice-notation','1d20').match(/(\d+)d(\d+)/);if(!m){$('dice-output').textContent='Invalid';return;}const[_,n,s]=m.map(Number);let r=[],t=0;for(let i=0;i<n;i++){const o=randomInt(1,s);r.push(o);t+=o;}$('dice-output').textContent=`Total: ${t}\nRolls: [${r.join(', ')}]`;}); break;
-            case 'morse': { const m={'A':'.-','B':'-...','C':'-.-.','D':'-..','E':'.','F':'..-.','G':'--.','H':'....','I':'..','J':'.---','K':'-.-','L':'.-..','M':'--','N':'-.','O':'---','P':'.--.','Q':'--.-','R':'.-.','S':'...','T':'-','U':'..-','V':'...-','W':'.--','X':'-..-','Y':'-.--','Z':'--..','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.','0':'-----',' ':'/'},t=Object.fromEntries(Object.entries(m).map(a=>a.reverse()));$('morse-to-morse').addEventListener('click',()=>$('morse-code').value=readStr('morse-text','').toUpperCase().split('').map(c=>m[c]||'').join(' '));$('morse-to-text').addEventListener('click',()=>$('morse-text').value=readStr('morse-code','').split(' ').map(c=>t[c]||'').join('')); break; }
-            case 'teams': $('teams-generate').addEventListener('click',()=>{const n=readStr('teams-names','').split('\n').map(x=>x.trim()).filter(Boolean),c=readInt('teams-count',2);if(n.length<c){$('teams-output').textContent='Not enough people.';return;}const s=n.sort(()=>0.5-Math.random()),t=Array.from({length:c},()=>[]);s.forEach((name,i)=>t[i%c].push(name));$('teams-output').textContent=t.map((team,i)=>`Team ${i+1}:\n- ${team.join('\n- ')}`).join('\n\n');}); break;
-            case 'workout': $('workout-generate').addEventListener('click',()=>{const u=["Push-ups"],l=["Squats"],c=["Plank"],ca=["Jumping Jacks"];$('workout-output').textContent=`1. Warm-up: 5 min ${randomOf(ca)}\n2. Upper Body: 3x10 ${randomOf(u)}\n3. Lower Body: 3x12 ${randomOf(l)}\n4. Core: 3x15 ${randomOf(c)}`;}); break;
-            case 'shipname': $('ship-generate').addEventListener('click',()=>{const n1=readStr('ship-name1',''),n2=readStr('ship-name2','');if(!n1||!n2){$('ship-output').textContent='Enter two names.';return;}$('ship-output').textContent=n1.slice(0,Math.ceil(n1.length/2))+n2.slice(Math.floor(n2.length/2));}); break;
-            case 'magic8': $('m8-ask').addEventListener('click',()=>{const a=["It is certain.","Without a doubt.","Yes.","Reply hazy, try again.","Don't count on it.","My sources say no."];$('m8-answer').textContent=randomOf(a);}); break;
-            case 'excuse': $('ex-generate').addEventListener('click',()=>{const e=["My dog ate my Wi-Fi.","A wizard did it.","I was abducted by aliens."];$('ex-output').textContent=randomOf(e);}); break;
-        }
+    /* ===== NAME GENERATORS ===== */
+    $('ng-generate').addEventListener('click', ()=>{
+      const type = readStr('ng-type','username');
+      const base = readStr('ng-base','');
+      const adjectives = [
+        "Abyssal", "Alpha", "Ancient", "Arcane", "Astral", "Azure", "Berserk", "Binary", "Black", "Blazing",
+        "Bleak", "Blitz", "Blood", "Bone", "Brutal", "Celestial", "Chaos", "Chrome", "Cobalt", "Corrupt",
+        "Cosmic", "Crimson", "Cursed", "Cyber", "Dark", "Deadly", "Death", "Deep", "Demonic", "Desolate",
+        "Digital", "Doom", "Dread", "Ebon", "Eclipse", "Eldritch", "Electric", "Elemental", "Elite", "Ember",
+        "Enchanted", "Endless", "Eternal", "Fallen", "Feral", "Fiendish", "Fierce", "Final", "Frozen", "Fury",
+        "Ghostly", "Glacial", "Gloom", "Grim", "Hallow", "Hateful", "Haunted", "Hellish", "Hex", "Hollow",
+        "Hyper", "Ice", "Infernal", "Infinite", "Iron", "Jagged", "Killer", "Lich", "Lunar", "Lurking",
+        "Mad", "Magma", "Malevolent", "Malicious", "Merciless", "Midnight", "Mighty", "Mystic", "Nebula", "Necro",
+        "Nether", "Neon", "Night", "Oblivion", "Obsidian", "Omega", "Onyx", "Phantom", "Plague", "Prime",
+        "Quantum", "Radiant", "Rage", "Raven", "Reaper", "Relentless", "Rogue", "Ruin", "Rust", "Sable",
+        "Savage", "Scarlet", "Scorched", "Shadow", "Sharp", "Shifting", "Silent", "Silver", "Sinister", "Solar",
+        "Soul", "Specter", "Steel", "Storm", "Strange", "Sulfur", "Swift", "Thorn", "Thunder", "Titan",
+        "Twilight", "Umbral", "Unholy", "Vengeful", "Venom", "Vicious", "Vile", "Void", "Volt", "Warp",
+        "Wicked", "Wild", "Wither", "Wraith", "Xeno", "Zero"
+      ];
+      const nouns = [
+        "Abyss", "Alpha", "Angel", "Annihilator", "Apostle", "Armageddon", "Assassin", "Atrocity", "Avatar", "Bane",
+        "Beast", "Berserker", "Betrayer", "Blackout", "Blade", "Blight", "Bloodletter", "Bonebreaker", "Brute", "Butcher",
+        "Carnage", "Centurion", "Champion", "Chimera", "Colossus", "Conqueror", "Corruptor", "Corsair", "Creature", "Crusher",
+        "Crypt", "Cyclops", "Dagger", "Darkness", "Death", "Defiler", "Demon", "Desecrator", "Destroyer", "Devastator",
+        "Devil", "Diablo", "Dismember", "Dominator", "Doom", "Dragon", "Draugr", "Dreadnought", "Drifter", "Eclipse",
+        "Emperor", "Enforcer", "Entity", "Eradicator", "Eviscerator", "Executioner", "Exile", "Fallen", "Fang", "Fate",
+        "Fiend", "Fist", "Flayer", "Forsaken", "Frostbite", "Fury", "Gargoyle", "Ghoul", "Gladiator", "Glaive",
+        "Golem", "Goliath", "Grave", "Grimoire", "Guardian", "Harbinger", "Hate", "Hatred", "Hellion", "Herald",
+        "Horror", "Hunter", "Husk", "Hydra", "Hyena", "Immortal", "Impaler", "Incarnate", "Inferno", "Inquisitor",
+        "Juggernaut", "Katana", "Killer", "King", "Knight", "Kraken", "Lament", "Legion", "Leviathan", "Lich",
+        "Lord", "Lurker", "Mace", "Machine", "Maelstrom", "Mage", "Maggot", "Marauder", "Maw", "Menace",
+        "Mercenary", "Monarch", "Monster", "Mortal", "Mutilator", "Necro", "Nemesis", "Nightmare", "Oblivion", "Ogre",
+        "Omega", "Omen", "Onslaught", "Oracle", "Overlord", "Paladin", "Paragon", "Phantom", "Phoenix", "Pit",
+        "Predator", "Priest", "Prince", "Prodigy", "Prophet", "Psycho", "Punisher", "Pyre", "Queen", "Rage",
+        "Raider", "Ranger", "Ravager", "Reaper", "Revenant", "Rider", "Ripper", "Rogue", "Ruiner", "Saber",
+        "Sage", "Samurai", "Savage", "Scar", "Scourge", "Seeker", "Sentinel", "Serpent", "Shadow", "Shaman",
+        "Shard", "Shield", "Shogun", "Sickle", "Skull", "Slayer", "Soul", "Specter", "Spell", "Spine",
+        "Stalker", "Storm", "Stranger", "Sunder", "Surgeon", "Sword", "Talon", "Terror", "Thief", "Thorn",
+        "Thunder", "Titan", "Torment", "Torturer", "Toxin", "Tyrant", "Undead", "Valkyrie", "Vandal", "Vanguard",
+        "Vengeance", "Venom", "Vermin", "Viper", "Void", "Vortex", "Warden", "Warlock", "Warlord", "Warrior",
+        "Watcher", "Wendigo", "Whisper", "Widow", "Wight", "Witch", "Wolf", "Wraith", "Wyrm", "Zealot"
+      ];
 
-        if (genBtn && !['qr-generate', 'webhook-generate', 'hashing-generate', 'lucky-spin', 'case-generate'].includes(genBtn.id)) {
-            genBtn.click();
-        }
+      function pickBase(){
+        return base || (randomOf(adjectives) + randomOf(nouns));
+      }
+
+      let handle = '';
+      const b = pickBase();
+
+      switch(type){
+        case 'xbox':
+          handle = randomOf(["xX","i","The",""]) + b + randomOf(["","HD","Pro","360","77"]) + randomOf(["xX","",""]);
+          break;
+        case 'discord':
+          handle = b + "#" + Math.floor(1000+Math.random()*9000);
+          break;
+        case 'tiktok':
+          handle = "@" + b.toLowerCase();
+          break;
+        case 'roblox':
+          handle = b.replace(/\s+/g,'') + Math.floor(Math.random()*999);
+          break;
+        default:
+          handle = b + Math.floor(Math.random()*999);
+      }
+
+      slotReveal($('ng-output'), handle, { chars: lettersUpper+lettersLower+digits });
     });
 
-    // Final one-off initializations
-    if($('qr-generate')) $('qr-generate').click();
-    if($('hashing-generate')) $('hashing-generate').click();
-    if($('b64-encode')) $('b64-encode').click();
-    if($('slugify-generate')) $('slugify-generate').click();
-    if($('count-input')) $('count-input').dispatchEvent(new Event('input'));
-});
-</script>
+    $('ng-copy').addEventListener('click', async ()=>{
+      const text = $('ng-output').innerText.trim();
+      if(!text) return;
+      await navigator.clipboard.writeText(text);
+      showToast();
+    });
+
+    /* ===== PROJECT NAMES ===== */
+    $('pg-generate').addEventListener('click', ()=>{
+      const base = readStr('pg-base','');
+      const words = [
+        "Galaxy", "Pixel", "Shadow", "Crystal", "Echo", "Storm", "Aurora", "Neon", "Quantum", "Vertex",
+        "Pulse", "Zenith", "Nova", "Vortex", "Hyper", "Orbit", "Phantom", "Infinity", "Cosmic", "Nebula",
+        "Lunar", "Solar", "Titan", "Void", "Obsidian", "Blitz", "Frost", "Ember", "Rift", "Chrome",
+        "Cyber", "Prism", "Hologram", "Synapse", "Mirage", "Catalyst", "Apex", "Horizon", "Terra", "Flux",
+        "Ion", "Zephyr", "Onyx", "Matrix", "Drift", "Cipher", "Pinnacle", "Abyss", "Eon", "Spectra",
+        "Titan", "Vector", "Astral", "Radiance", "Eclipse", "Serpent", "Warp", "Fusion", "Dynamo", "Photon",
+        "Tundra", "Inferno", "Celestial", "Paragon", "Mythic", "Sable", "Vanguard", "Talon", "Rune", "Ether",
+        "Crimson", "Viper", "Spectral", "Obelisk", "Nexus", "Kaleido", "Quasar", "Stratos", "Monolith", "Helix",
+        "Umbra", "Lumen", "Tesseract", "Fractal", "Aegis", "Chronos", "Daemon", "Echelon", "Forge", "Goliath",
+        "Havoc", "Juggernaut", "Kinetix", "Legacy", "Maelstrom", "Nether", "Oculus", "Pandora", "Quill", "Ragnarok"
+      ];
+      const suffixes = [
+        "Network", "United", "Studios", "Collective", "Group", "Systems", "Labs", "Works", "Alliance",
+        "Technologies", "Digital", "Ventures", "Enterprises", "Solutions", "Dynamics", "Industries", "Corp", "Inc",
+        "Interactive", "Media", "Software", "Hardware", "Robotics", "AI", "Cloud", "Data", "Cybernetics", "Nanotech",
+        "Biotech", "Synth", "Automata", "Machina", "Foundry", "Forge", "Fabrications", "Construct", "Mechanics", "Engine",
+        "Design", "Creations", "Innovations", "Inventions", "Patents", "Logic", "Circuit", "Mainframe", "Server", "Node"
+      ];
+      const root = base || randomOf(words);
+      const project = root + " " + randomOf(suffixes);
+      slotReveal($('pg-output'), project, { chars: lettersUpper+lettersLower });
+    });
+
+    $('pg-copy').addEventListener('click', async ()=>{
+      const text = $('pg-output').innerText.trim();
+      if(!text) return;
+      await navigator.clipboard.writeText(text);
+      showToast();
+    });
+
+    /* ===== RULES ===== */
+    $('rg-generate').addEventListener('click', ()=>{
+      const topic = readStr('rg-custom','Server');
+      const count = Math.max(3, Math.min(20, readInt('rg-count', 8)));
+      const stock = [
+        // **General Conduct**  
+        `Respect all members in the ${topic}.`,  
+        `No spamming, harassment, or hate speech.`,  
+        `Keep content appropriate; follow platform TOS.`,  
+        `No cheating, exploiting, or unauthorized mods.`,  
+        `Follow instructions from staff and moderators.`,  
+        `Use the correct channels/categories.`,  
+        `No advertising without permission.`,  
+        `Protect privacy—no doxxing or sharing personal info.`,  
+        `Report bugs/issues to staff, don't abuse them.`,  
+        `Have fun and help others.`,  
+
+        // **Behavior & Communication**  
+        `No trolling, baiting, or flame wars.`,  
+        `Avoid excessive drama or off-topic arguments.`,  
+        `No impersonation of staff or other users.`,  
+        `Use English (or the server's primary language) in public channels.`,  
+        `No excessive caps, emoji, or disruptive formatting.`,  
+        `Keep politics/religion discussions civil or avoid them if volatile.`,  
+        `No NSFW content in non-designated areas.`,  
+        `No begging, guilt-tripping, or manipulative behavior.`,  
+        `Do not backseat moderate (let staff handle rule enforcement).`,  
+        `Use constructive criticism, not personal attacks.`,  
+
+        // **Content & Posting**  
+        `No low-effort posts (e.g., "lol", "this").`,  
+        `No reposting deleted/removed content.`,  
+        `Cite sources for news/claims when possible.`,  
+        `No pirated/illegal content (warez, cracks, etc.).`,  
+        `No shock/gore content.`,  
+        `No misinformation or deliberate spreading of false info.`,  
+        `No unsolicited self-promotion (DM ads = ban).`,  
+        `No AI-generated spam (e.g., ChatGPT floods).`,  
+        `Keep memes in designated areas.`,  
+        `No "upvote farming" or karma manipulation.`,  
+
+        // **Gaming/Competitive**  
+        `No smurfing or account boosting.`,  
+        `No win-trading or match-fixing.`,  
+        `No toxic behavior (e.g., "gg ez", trash talk).`,  
+        `No sharing exploits/cheats.`,  
+        `Respect esports rules if competing.`,  
+        `No false reports against players.`,  
+        `Stream sniping is prohibited.`,  
+        `No account sharing (unless explicitly allowed).`,  
+        `Clans/guilds must follow recruitment rules.`,  
+        `No stat padding or artificial rank inflation.`,  
+
+        // **Tech & Security**  
+        `No sharing malware, phishing links, or IP grabbers.`,  
+        `Do not discuss/encourage illegal hacking.`,  
+        `No unauthorized bot usage.`,  
+        `No scraping/data harvesting without permission.`,  
+        `Report security vulnerabilities responsibly.`,  
+        `No DDoS threats or encouragement.`,  
+        `No bypassing bans (alt accounts = permaban).`,  
+        `No sharing others' work without credit.`,  
+        `Respect licenses (no pirated software talk).`,  
+        `No crypto scams/pyramid schemes.`,  
+
+        // **Moderation & Appeals**  
+        `Appeals must be submitted formally (no DMs).`,  
+        `Ban evasion will extend punishments.`,  
+        `Staff decisions are final (no public arguing).`,  
+        `False reports may result in penalties.`,  
+        `Deleted content is not to be reposted.`,  
+        `No retaliating against rule reports.`,  
+        `Do not @mention staff for trivial issues.`,  
+        `Private chats with staff remain confidential.`,  
+        `Mass-pinging (e.g., @everyone) is staff-only.`,  
+        `No encouraging others to break rules.`,  
+
+        // **Community & Culture**  
+        `New members must read rules before participating.`,  
+        `No elitism or gatekeeping.`,  
+        `Respect cultural differences.`,  
+        `No discriminatory language (even as "jokes").`,  
+        `Use trigger warnings for sensitive topics.`,  
+        `No glorifying self-harm or violence.`,  
+        `Support inclusivity (LGBTQ+, neurodiversity, etc.).`,  
+        `No "us vs. them" mentality (e.g., platform wars).`,  
+        `Be patient with newcomers.`,  
+        `Celebrate others' achievements—no envy.`,  
+
+        // **Voice/Video Chats**  
+        `No earrape, loud noises, or mic spam.`,  
+        `Respect speaking turns (no interruptions).`,  
+        `No voice changers to mislead/deceive.`,  
+        `Keep background noise minimal.`,  
+        `No recording without consent.`,  
+        `Screen-sharing must be appropriate.`,  
+        `Video chats require clothed participants.`,  
+        `No fake cam/avatar misuse.`,  
+        `Raise hands in large VC discussions.`,  
+        `Debates must stay civil (no shouting).`,  
+
+        // **Creators & Artists**  
+        `Credit original artists/creators.`,  
+        `No AI art claiming to be human-made.`,  
+        `Critique must be constructive, not cruel.`,  
+        `No art theft/tracing without permission.`,  
+        `Commissions must follow pricing transparency.`,  
+        `No fake "free reward" scams.`,  
+        `Reposts require artist consent.`,  
+        `No plagiarism of writing/code/designs.`,  
+        `WIPs (works in progress) are welcome!`,  
+        `Feedback should be actionable.`,  
+
+        // **Events & Giveaways**  
+        `No fake giveaways or scams.`,  
+        `Follow event-specific rules.`,  
+        `Winners must claim prizes within deadline.`,  
+        `No bribing judges/voters.`,  
+        `Event staff decisions are final.`,  
+        `No multi-accounting to enter contests.`,  
+        `Giveaways must be approved by staff.`,  
+        `No selling/trading giveaway prizes here.`,  
+        `Respect event time zones/schedules.`,  
+        `Have fun—no sabotage!`  
+      ];
+      let items = [];
+      while(items.length < count){
+        const line = randomOf(stock);
+        if(!items.includes(line)) items.push(line);
+      }
+      const text = items.map((v,i)=>`${i+1}. ${v}`).join('\n');
+      $('rg-output').textContent = text;
+    });
+
+    $('rg-copy').addEventListener('click', async ()=>{
+      const text = $('rg-output').innerText.trim();
+      if(!text) return;
+      await navigator.clipboard.writeText(text);
+      showToast();
+    });
+
+    /* ===== IDEAS ===== */
+    $('ig-generate').addEventListener('click', ()=>{
+      const categories = [
+        "Mini-game", "Content series", "Tool/Utility", "Discord bot", "Plugin", "Challenge mode", "Build theme", "Event idea",
+        "Roguelike", "Metroidvania", "Battle Royale", "Sandbox", "RPG", "Simulator", "Tower Defense", "Idle Game", "Visual Novel", "Text Adventure",
+        "Rhythm Game", "Puzzle Game", "Horror Game", "FPS", "Platformer", "Open World", "Survival", "Stealth", "Racing", "Sports",
+        "Card Game", "Board Game", "Trivia", "MOBA", "MMO", "Tycoon", "Clicker", "Incremental", "Arcade", "Point-and-Click"
+      ];
+      const verbs = [
+        "Auto", "Hyper", "Neo", "Quantum", "Solar", "Pixel", "Crystal", "Echo", "Shadow", "Nova", "Lunar",
+        "Cyber", "Digital", "Virtual", "Atomic", "Nano", "Bio", "Synth", "Robo", "Mecha", "Drone",
+        "AI", "Neural", "Deep", "Machine", "Algorithm", "Blockchain", "Crypto", "Data", "Cloud", "Edge",
+        "Holo", "VR", "AR", "Mixed", "Photon", "Plasma", "Tesla", "Gamma", "Omega", "Alpha"
+      ];
+      const nouns = [
+        "Market", "Tracker", "Arena", "Builder", "Hunt", "Rush", "Dash", "Tycoon", "Craft", "Defense", "Portal", "Studio",
+        "Hub", "Nexus", "Core", "Node", "Terminal", "Gateway", "Dimension", "Realm", "Universe", "Multiverse",
+        "Sanctuary", "Temple", "Shrine", "Archive", "Library", "Museum", "Gallery", "Theater", "Colosseum", "Dojo",
+        "Academy", "University", "Lab", "Factory", "Forge", "Mill", "Mine", "Quarry", "Outpost", "Colony"
+      ];
+      const idea = randomOf(categories)+": "+randomOf(verbs)+" "+randomOf(nouns);
+      slotReveal($('ig-output'), idea, { chars: lettersUpper+lettersLower+digits });
+    });
+
+    $('ig-copy').addEventListener('click', async ()=>{
+      const text = $('ig-output').innerText.trim();
+      if(!text) return;
+      await navigator.clipboard.writeText(text);
+      showToast();
+    });
+
+    /* ===== COLOR PALETTE ===== */
+    function randomHex(){
+      return "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6,"0");
+    }
+    $('cp-generate').addEventListener('click', ()=>{
+      const wrap = $('cp-swatches');
+      wrap.innerHTML = '';
+      const colors = [];
+      for(let i=0;i<5;i++){
+        const hex = randomHex();
+        colors.push(hex);
+        const div = document.createElement('div');
+        div.className = 'swatch';
+        div.style.background = hex;
+        div.textContent = hex;
+        wrap.appendChild(div);
+      }
+      wrap.dataset.colors = colors.join(' ');
+    });
+    $('cp-copy').addEventListener('click', async ()=>{
+      const colors = $('cp-swatches').dataset.colors || '';
+      if(!colors) return;
+      await navigator.clipboard.writeText(colors);
+      showToast("Palette copied!");
+    });
+
+    /* ===== DISCORD WEBHOOK JSON ===== */
+    let lastWebhookJSON = '';
+    $('wh-generate').addEventListener('click', ()=>{
+      const obj = {
+        username: readStr('wh-username',''),
+        avatar_url: readStr('wh-avatar',''),
+        content: readStr('wh-content','')
+      };
+      lastWebhookJSON = JSON.stringify(obj, null, 2);
+      $('wh-output').textContent = lastWebhookJSON;
+    });
+    $('wh-copy-json').addEventListener('click', async ()=>{
+      if(!lastWebhookJSON) return;
+      await navigator.clipboard.writeText(lastWebhookJSON);
+      showToast("JSON copied!");
+    });
+    $('wh-copy-curl').addEventListener('click', async ()=>{
+      if(!lastWebhookJSON) return;
+      const curl = `curl -X POST -H "Content-Type: application/json" -d '${lastWebhookJSON.replace(/'/g,"'\\''")}' https://discord.com/api/webhooks/WEBHOOK_ID/WEBHOOK_TOKEN`;
+      await navigator.clipboard.writeText(curl);
+      showToast("cURL copied!");
+    });
+
+    // Initialize some default values
+    $('cg-generate').click();
+    $('ng-generate').click();
+    $('pg-generate').click();
+    $('rg-generate').click();
+    $('ig-generate').click();
+    $('cp-generate').click();
+  </script>
 </body>
 </html>
