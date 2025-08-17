@@ -7,92 +7,167 @@
   <link rel="icon" type="image/png" href="images/favicon.png">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
   <style>
-    :root {
-      --bg1:#2b0a52; --bg2:#3e1a78; --bg3:#a855f7; --bg4:#ff72c6;
-      --card:#1c0b2b; --text:#f5ecff; --muted:#b9a9c8; --accent:#c084fc;
-      --accent2:#a855f7; --border:rgba(255,255,255,.14);
+    /* ===== Cotton-candy animated background ===== */
+    :root{
+      --bg1:#2b0a52;
+      --bg2:#3e1a78;
+      --bg3:#a855f7;
+      --bg4:#ff72c6;
+      --card:#1c0b2b;
+      --text:#f5ecff;
+      --muted:#b9a9c8;
+      --accent:#c084fc;
+      --accent2:#a855f7;
+      --border:rgba(255,255,255,.14);
       --glass: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04));
       --shadow-color: rgba(168,85,247,.35);
     }
-    body[data-theme="midnight-blur"] {
-      --bg1:#020617; --bg2:#0f172a; --bg3:#3b82f6; --bg4:#38bdf8;
-      --card:#1e293b; --text:#e2e8f0; --muted:#94a3b8; --accent:#60a5fa;
-      --accent2:#3b82f6; --border:rgba(255,255,255,.1);
-      --glass: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      --shadow-color: rgba(59,130,246,.35);
-    }
-    body[data-theme="sunrise-glow"] {
-      --bg1:#450a0a; --bg2:#7f1d1d; --bg3:#f97316; --bg4:#f59e0b;
-      --card:#29110d; --text:#fff7ed; --muted:#fde68a; --accent:#fb923c;
-      --accent2:#f97316; --border:rgba(255,255,255,.12);
-      --glass: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-      --shadow-color: rgba(249,115,22,.35);
-    }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{ margin:0; color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans"; overflow: hidden; background: var(--bg2); }
-    .bg { position: fixed; inset: -10vmax; background: radial-gradient(60vmax 60vmax at 15% 20%, var(--bg4), transparent 60%), radial-gradient(70vmax 70vmax at 85% 30%, var(--bg3), transparent 60%), radial-gradient(80vmax 80vmax at 40% 80%, #6ee7ff55, transparent 60%), linear-gradient(120deg, var(--bg1) 0%, var(--bg2) 40%, var(--bg1) 100%); filter: blur(30px) saturate(120%); animation: float 25s ease-in-out infinite alternate; z-index:-2; }
-    @keyframes float { 0% { transform: translate(0,0) scale(1); } 50%{ transform: translate(-3vmax, 2vmax) scale(1.05); } 100%{ transform: translate(3vmax,-2vmax) scale(1.08); } }
-    .shine{ position: fixed; inset: -20vmax; background: radial-gradient(40vmax 40vmax at 60% 60%, #ffffff18, transparent 60%); animation: drift 16s ease-in-out infinite alternate; z-index:-1; }
-    @keyframes drift { 0% { transform: translate(-4vmax, 2vmax) } 100%{ transform: translate(6vmax,-4vmax) } }
+    body{
+      margin:0; color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
+      overflow: hidden;
+      background: var(--bg2);
+    }
+    /* animated gradient layer */
+    .bg {
+      position: fixed; inset: -10vmax;
+      background: radial-gradient(60vmax 60vmax at 15% 20%, #fface9aa, transparent 60%),
+                  radial-gradient(70vmax 70vmax at 85% 30%, #c084fc99, transparent 60%),
+                  radial-gradient(80vmax 80vmax at 40% 80%, #6ee7ff55, transparent 60%),
+                  linear-gradient(120deg, #2b0a52 0%, #3e1a78 40%, #30124b 100%);
+      filter: blur(30px) saturate(120%);
+      animation: float 25s ease-in-out infinite alternate;
+      z-index:-2;
+    }
+    @keyframes float {
+      0% { transform: translate(0,0) scale(1); }
+      50%{ transform: translate(-3vmax, 2vmax) scale(1.05); }
+      100%{ transform: translate(3vmax,-2vmax) scale(1.08); }
+    }
+    /* soft moving light sheen */
+    .shine{
+      position: fixed; inset: -20vmax;
+      background: radial-gradient(40vmax 40vmax at 60% 60%, #ffffff18, transparent 60%);
+      animation: drift 16s ease-in-out infinite alternate;
+      z-index:-1;
+    }
+    @keyframes drift {
+      0% { transform: translate(-4vmax, 2vmax) }
+      100%{ transform: translate(6vmax,-4vmax) }
+    }
+
+    /* ===== Layout ===== */
     .app { position: relative; display:flex; height:100%; }
-    .sidebar { width: 300px; min-width: 260px; max-width: 340px; padding: 18px 10px; backdrop-filter: blur(12px); background: var(--glass); border-right: 1px solid var(--border); box-shadow: 20px 0 60px rgba(0,0,0,.25); overflow-y: auto; transition: transform .3s ease-in-out; display: flex; flex-direction: column; gap: 10px; }
+    .sidebar {
+      width: 290px; min-width: 240px; max-width: 320px;
+      padding: 18px 10px; backdrop-filter: blur(12px);
+      background: var(--glass);
+      border-right: 1px solid var(--border);
+      box-shadow: 20px 0 60px rgba(0,0,0,.25);
+      overflow-y: auto;
+      transition: transform .3s ease-in-out;
+      display: flex; flex-direction: column; gap: 10px;
+    }
     .sidebar-header { padding: 0 12px; }
-    #gen-search { width: 100%; margin-bottom: 10px; }
-    .theme-switcher { display: flex; align-items: center; gap: 8px; }
-    .theme-switcher label { font-size: 12px; color: var(--muted); }
-    #theme-select { flex: 1; }
     .sidebar::-webkit-scrollbar { width: 4px; } .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
     .brand { display:flex; align-items:center; gap:10px; margin-bottom: 12px; }
-    .brand h1 { margin:0; font-size: 20px; letter-spacing:.4px; color:var(--text); }
-    .brand .dot { width:10px; height:10px; border-radius:50%; background: conic-gradient(from 0deg, var(--bg4), var(--bg3), #6ee7ff); box-shadow: 0 0 16px var(--bg4); }
+    .brand h1 { margin:0; font-size: 20px; letter-spacing:.4px; color:#ffd6ff; }
+    .brand .dot { width:10px; height:10px; border-radius:50%; background: conic-gradient(from 0deg, #ff72c6, #a855f7, #6ee7ff); box-shadow: 0 0 16px #ff72c677; }
     .nav { flex: 1; overflow-y: auto; display:flex; flex-direction:column; gap:8px; padding-right: 5px; }
     .nav-category .title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); padding: 8px 12px; margin-top: 8px; }
-    .tab { display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:12px; border:1px solid transparent; color:var(--text); cursor:pointer; user-select:none; background: transparent; transition: background .15s ease, color .15s ease; }
-    .tab:hover { background: #ffffff14; color: #fff; }
-    .tab.active { background: linear-gradient(180deg, #ffffff18, #ffffff10); border-color: var(--border); color: #fff; }
+    .tab {
+      display:flex; align-items:center; gap:12px;
+      padding:10px 12px; border-radius:14px; border:1px solid transparent;
+      color:var(--text); cursor:pointer; user-select:none;
+      background: transparent; transition: background .15s ease, color .15s ease;
+    }
+    .tab:hover { background: #ffffff14; }
+    .tab.active { background: linear-gradient(180deg, #ffffff18, #ffffff10); border-color: var(--border); }
     .tab svg { width: 20px; height: 20px; stroke-width: 2px; color: var(--accent); transition: color .15s ease; }
     .tab:hover svg, .tab.active svg { color: #f0dfff; }
-    .content { flex:1; overflow-y: auto; padding: 20px 24px; }
-    .topbar{ display:none; }
-    .hamburger{ border:1px solid var(--border); background:#ffffff18; color:var(--text); border-radius:10px; width:40px; height:40px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; cursor:pointer; backdrop-filter: blur(8px); position: fixed; top: 16px; left: 16px; z-index: 100; transition: all 0.3s ease; }
-    .hamburger span { display:block; width: 20px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.3s ease-in-out; }
-    body.sidebar-open .hamburger { transform: translateX(270px); }
-    body.sidebar-open .hamburger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-    body.sidebar-open .hamburger span:nth-child(2) { opacity: 0; }
-    body.sidebar-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .content {
+      flex:1; overflow-y: auto; padding: 20px 24px;
+    }
+    .topbar{
+      display:flex; align-items:center; gap:10px; margin-bottom: 10px;
+    }
+    .hamburger{
+      border:1px solid var(--border); background:#ffffff18; color:var(--text); border-radius:10px;
+      width:40px; height:40px; display:none; align-items:center; justify-content:center;
+      cursor:pointer; backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+    }
+    .hamburger span { display:block; width: 20px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.3s ease-in-out; position: relative; }
+    .hamburger span::before, .hamburger span::after { content: ''; position: absolute; left: 0; width: 100%; height: 100%; background: var(--text); border-radius: 2px; transition: all 0.3s ease-in-out; }
+    .hamburger span::before { transform: translateY(-7px); }
+    .hamburger span::after { transform: translateY(7px); }
+    body.sidebar-open .hamburger span { background: transparent; }
+    body.sidebar-open .hamburger span::before { transform: translateY(0) rotate(45deg); }
+    body.sidebar-open .hamburger span::after { transform: translateY(0) rotate(-45deg); }
     .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40; opacity: 0; pointer-events: none; transition: opacity .3s ease-in-out; }
-    body.sidebar-open .sidebar-overlay { opacity: 1; pointer-events: auto; }
-    .panel { width:100%; max-width: 1100px; background: var(--glass); border:1px solid var(--border); border-radius: 20px; padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.35); backdrop-filter: blur(10px); margin: 0 auto; }
-    .panel h2 { margin: 0 0 6px; color:var(--text); letter-spacing:.3px }
+    
+    .panel {
+      width:min(1100px, 92vw);
+      background: var(--glass);
+      border:1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+      backdrop-filter: blur(10px);
+      margin: 0 auto;
+    }
+    .panel h2 { margin: 0 0 6px; color:#ffe0ff; letter-spacing:.3px }
     .muted { color: var(--muted); margin: 0 0 12px; }
     .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
     .grid-col-1 { grid-template-columns: 1fr; }
     .field { display:flex; flex-direction:column; gap:6px; padding:10px; border-radius:12px; border:1px dashed var(--border); background:#0000002b; }
     .field label { font-size: 12px; color: var(--muted); }
-    .field input, .field select, .field textarea { width:100%; border-radius:12px; border:1px solid var(--border); padding:10px 12px; background:var(--card); color:var(--text); outline:none; resize: vertical; }
+    .field input, .field select, .field textarea {
+      width:100%; border-radius:12px; border:1px solid var(--border); padding:10px 12px;
+      background:#130724; color:var(--text); outline:none; resize: vertical;
+    }
     .field input[type="range"] { padding: 0; } .field input[type="color"] { padding: 4px; height: 40px; }
     .row { display:flex; gap:10px; flex-wrap: wrap; margin-top: 8px; }
-    .btn { appearance:none; border:0; border-radius:14px; padding:12px 16px; font-weight:700; color:white; cursor:pointer; background: linear-gradient(180deg, var(--accent), var(--accent2)); box-shadow: 0 12px 24px var(--shadow-color); transition: all .15s ease; }
-    .btn.secondary { background: linear-gradient(180deg, #ffffff20, #ffffff10); }
+    .btn {
+      appearance:none; border:0; border-radius:14px; padding:12px 16px;
+      font-weight:700; color:white; cursor:pointer;
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      box-shadow: 0 12px 24px var(--shadow-color);
+      transition: transform .12s ease, box-shadow .12s ease, opacity .15s ease;
+    }
+    .btn.secondary { background: linear-gradient(180deg, #d8a6ff, #c084fc); }
+    .btn.ghost { background: #ffffff10; border:1px solid var(--border); }
     .btn:active { transform: translateY(1px); }
-    .btn[disabled] { opacity: .6; cursor: not-allowed; }
-    .codebox { min-height: 70px; display:flex; align-items:center; justify-content:center; text-align:center; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: clamp(14px, 1.6vw + 10px, 24px); letter-spacing:1.5px; background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px; margin-top: 10px; white-space: pre-wrap; word-break: break-all; }
+    .btn[disabled]{ opacity:.6; cursor:not-allowed }
+    .codebox {
+      min-height: 70px; display:flex; align-items:center; justify-content:center; text-align:center;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: clamp(14px, 1.6vw + 10px, 24px);
+      letter-spacing:1.5px; background:#130724; border:1px solid var(--border);
+      border-radius:14px; padding:16px; margin-top: 10px;
+      white-space: pre-wrap; word-break: break-all;
+    }
     .codebox.left-align { text-align: left; justify-content: flex-start; align-items: flex-start; font-size: 1rem; letter-spacing: normal; }
-    .swatches, .tints-shades { display:flex; gap:10px; flex-wrap: wrap; margin-top: 10px; }
-    .swatch, .tint-shade-box { width:100px; height:70px; border-radius:14px; border:1px solid var(--border); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:8px; font-family: ui-monospace; font-size:12px; background:#333; }
+    .swatches { display:flex; gap:10px; flex-wrap: wrap; margin-top: 10px; }
+    .swatch { width:120px; height:80px; border-radius:14px; border:1px solid var(--border); display:flex; align-items:end; justify-content:center; padding:8px; font-family: ui-monospace; background:#333; }
     .preview-box { width: 100%; min-height: 120px; border-radius: 14px; border: 1px solid var(--border); margin-top: 10px; display: grid; place-items: center; }
     .toast{ position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: #00000085; color: white; padding: 10px 14px; border-radius: 999px; border: 1px solid var(--border); box-shadow: 0 10px 20px rgba(0,0,0,.4); opacity: 0; transition: opacity .2s ease, transform .2s ease; z-index: 101; }
     .toast.show{ opacity:1; transform: translateX(-50%) translateY(-6px); }
     #lucky-output span { display: inline-block; min-width: 0.6em; text-align: center; border-bottom: 2px solid transparent; transition: all .2s ease; }
     #lucky-output span.active { border-color: var(--accent); }
+    .badge { font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid var(--border); background:#ffffff14; color:#ffdfff }
+    
     @media (max-width: 900px){
         body{ overflow:auto; }
         .app{ display:block; }
+        .topbar { position: sticky; top: 0; z-index: 45; }
+        .hamburger { display: flex; }
         .sidebar{ position: fixed; top:0; left:0; bottom:0; z-index: 50; transform: translateX(-100%); }
         body.sidebar-open .sidebar { transform: translateX(0); }
-        .content{ padding: 16px; padding-top: 70px; }
-        .topbar{ display:flex; position: fixed; top: 16px; left: 16px; }
+        body.sidebar-open .sidebar-overlay { opacity: 1; pointer-events: auto; }
+        .content{ padding: 16px; }
     }
   </style>
 </head>
@@ -104,14 +179,6 @@
         <div class="sidebar-header">
             <div class="brand"><div class="dot"></div><h1>All-in-One Gen</h1></div>
             <input class="field" type="text" id="gen-search" placeholder="Search generators...">
-            <div class="theme-switcher">
-                <label for="theme-select">Theme:</label>
-                <select id="theme-select" class="field">
-                    <option value="cotton-candy">Cotton Candy</option>
-                    <option value="midnight-blur">Midnight Blur</option>
-                    <option value="sunrise-glow">Sunrise Glow</option>
-                </select>
-            </div>
         </div>
         <div class="nav" id="nav">
             <!-- Sidebar tabs are dynamically inserted here -->
@@ -119,7 +186,8 @@
     </aside>
     <main class="content">
       <div class="topbar">
-        <button class="hamburger" id="hamburger" title="Toggle menu"><span></span><span></span><span></span></button>
+        <button class="hamburger" id="hamburger" title="Toggle menu"><span></span></button>
+        <span class="badge">All-in-One Generator Suite</span>
       </div>
       <!-- Panels are dynamically inserted here -->
     </main>
@@ -128,8 +196,8 @@
 
 <script>
 const generators = [
-    { category: 'Creative Suite', id: 'names', title: 'Name Generator', icon: '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line>', html: `<h2>Name Generators</h2><p class="muted">Generate gamertags, usernames, and handles.</p><div class="grid"><div class="field"><label>Type</label><select id="ng-type"><option value="xbox">Xbox Gamertag</option><option value="discord">Discord Name</option><option value="tiktok">TikTok Handle</option><option value="roblox">Roblox Username</option><option value="username">General Username</option></select></div><div class="field"><label>Base word (optional)</label><input id="ng-base" type="text"></div></div><div class="row"><button class="btn" id="names-generate">Generate</button><button class="btn secondary" data-copy-target="ng-output">Copy</button></div><div class="codebox" id="ng-output"></div>`},
-    { category: 'Creative Suite', id: 'project', title: 'Project Names', icon: '<path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path>', html: `<h2>Project Name Generator</h2><p class="muted">Generate names like “Pixel Network” or “Shadow United”.</p><div class="grid"><div class="field"><label>Base word (optional)</label><input id="pg-base" type="text"></div></div><div class="row"><button class="btn" id="project-generate">Generate</button><button class="btn secondary" data-copy-target="pg-output">Copy</button></div><div class="codebox" id="pg-output"></div>`},
+    { category: 'Creative Suite', id: 'names', title: 'Name Generator', icon: '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line>', html: `<h2>Name Generators</h2><p class="muted">Generate gamertags, usernames, and handles.</p><div class="grid"><div class="field"><label>Type</label><select id="names-type"><option value="xbox">Xbox Gamertag</option><option value="discord">Discord Name</option><option value="tiktok">TikTok Handle</option><option value="roblox">Roblox Username</option><option value="username">General Username</option></select></div><div class="field"><label>Base word (optional)</label><input id="names-base" type="text"></div></div><div class="row"><button class="btn" id="names-generate">Generate</button><button class="btn secondary" data-copy-target="names-output">Copy</button></div><div class="codebox" id="names-output"></div>`},
+    { category: 'Creative Suite', id: 'project', title: 'Project Names', icon: '<path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path>', html: `<h2>Project Name Generator</h2><p class="muted">Generate names like “Pixel Network” or “Shadow United”.</p><div class="grid"><div class="field"><label>Base word (optional)</label><input id="project-base" type="text"></div></div><div class="row"><button class="btn" id="project-generate">Generate</button><button class="btn secondary" data-copy-target="project-output">Copy</button></div><div class="codebox" id="project-output"></div>`},
     { category: 'Creative Suite', id: 'haiku', title: 'Haiku Generator', icon: '<path d="M16 4H8a4 4 0 0 0-4 4v12.01a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8l-6-6z"></path><polyline points="14 2 14 8 20 8"></polyline>', html: `<h2>Haiku Generator</h2><p class="muted">Generate a random, poetic 5-7-5 haiku.</p><div class="row"><button class="btn" id="haiku-generate">Generate</button><button class="btn secondary" data-copy-target="haiku-output">Copy</button></div><div class="codebox left-align" id="haiku-output" style="line-height: 1.6;"></div>`},
     { category: 'Creative Suite', id: 'story', title: 'Story Idea', icon: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>', html: `<h2>Story Idea Generator</h2><p class="muted">Generate a random plot prompt.</p><div class="row"><button class="btn" id="story-generate">Generate</button><button class="btn secondary" data-copy-target="story-output">Copy</button></div><div class="codebox left-align" id="story-output"></div>`},
     { category: 'Creative Suite', id: 'recipe', title: 'Recipe Idea', icon: '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3z"></path>', html: `<h2>Recipe Idea Generator</h2><p class="muted">Get a random idea for your next meal.</p><div class="row"><button class="btn" id="recipe-generate">Generate</button><button class="btn secondary" data-copy-target="recipe-output">Copy</button></div><div class="codebox" id="recipe-output"></div>`},
@@ -169,6 +237,7 @@ const generators = [
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
+    // --- MASTER SETUP ---
     const nav = document.getElementById('nav');
     const content = document.querySelector('.content');
     const categories = {};
@@ -212,8 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const text = targetEl.value !== undefined ? targetEl.value : targetEl.innerText;
         if (text && text.trim()) {
             await navigator.clipboard.writeText(text.trim());
-            const originalText = copyBtn.innerHTML;
-            copyBtn.textContent = 'Copied!';
+            const originalText = copyBtn.innerHTML; copyBtn.textContent = 'Copied!';
             setTimeout(() => { copyBtn.innerHTML = originalText; }, 1200);
         }
     });
@@ -231,11 +299,9 @@ document.addEventListener('DOMContentLoaded', () => {
         $(tab.dataset.target).style.display = '';
         if (window.innerWidth <= 900) document.body.classList.remove('sidebar-open');
     });
-
-    const themeSelect = $('theme-select');
-    const setTheme = theme => { document.body.dataset.theme = theme; localStorage.setItem('generator-theme', theme); themeSelect.value = theme; };
-    themeSelect.addEventListener('change', () => setTheme(themeSelect.value));
-    setTheme(localStorage.getItem('generator-theme') || 'cotton-candy');
+    
+    // REMOVED THEME SWITCHER LOGIC
+    // $('theme-select').style.display = 'none'; // Hide if needed, or remove from HTML
 
     $('gen-search').addEventListener('input', e => {
         const query = e.target.value.toLowerCase();
@@ -249,122 +315,62 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    const initFunctions = {
-        names: () => $('names-generate').addEventListener('click', () => { /* Logic */ }),
-        project: () => $('project-generate').addEventListener('click', () => { /* Logic */ }),
-        haiku: () => $('haiku-generate').addEventListener('click', () => { /* Logic */ }),
-        story: () => $('story-generate').addEventListener('click', () => { /* Logic */ }),
-        recipe: () => $('recipe-generate').addEventListener('click', () => { /* Logic */ }),
-        ideas: () => $('ideas-generate').addEventListener('click', () => { /* Logic */ }),
-        ascii: () => {
-            const arts = { 'Cat': ' /\\_/\\\n( o.o )\n > ^ <', 'Rose': `  ,-_,-.\n / \\  \`;,'\n \`\\ `}""{\n  } ,-\\ \n /,' ( \\ \n \\-.__;=\\ \n  _.,'-',\n 'a' (°)\n_.-~-\`~-._`, 'Heart': '  .--.  .--.  \n ( (\\ \\/ /) ) \n  \\ (    ) /  \n   \\ \\  / /   \n    \\ `´ /    \n     `´´`     ' };
-            const sel = $('ascii-select'); Object.keys(arts).forEach(k => sel.add(new Option(k, k)));
-            const update = () => $('ascii-output').textContent = arts[sel.value];
-            sel.addEventListener('change', update); update();
-        },
-        colors: () => { /* Logic */ },
-        tints: () => { /* Logic */ },
-        gradient: () => { /* Logic */ },
-        boxshadow: () => { /* Logic */ },
-        aspectratio: () => { /* Logic */ },
-        qr: () => { /* Logic */ },
-        code: () => $('code-generate').addEventListener('click', () => { /* Logic */ }),
-        password: () => $('password-generate').addEventListener('click', () => { /* Logic */ }),
-        uuid: () => { /* Logic */ },
-        hashing: () => { /* Logic */ },
-        base64: () => { /* Logic */ },
-        slugify: () => { /* Logic */ },
-        lorem: () => { /* Logic */ },
-        fakedata: () => { /* Logic */ },
-        webhook: () => { /* Logic */ },
-        rules: () => $('rules-generate').addEventListener('click', () => { /* Logic */ }),
-        case: () => { /* Logic */ },
-        counter: () => { /* Logic */ },
-        tip: () => { /* Logic */ },
-        rng: () => { /* Logic */ },
-        lucky: () => {
-            let intervals = [], stoppedIndex = 0;
-            const spinBtn = $('lucky-spin'), stopBtn = $('lucky-stop'), output = $('lucky-output');
-            spinBtn.addEventListener('click', () => {
-                const digits = Math.max(1, Math.min(10, readInt('lucky-digits', 3))), speed = Math.max(20, Math.min(500, readInt('lucky-speed', 50)));
-                output.innerHTML = ''; intervals.forEach(clearInterval); intervals = []; stoppedIndex = 0;
-                for(let i=0; i<digits; i++) {
-                    const span = document.createElement('span'); output.appendChild(span);
-                    intervals.push(setInterval(() => span.textContent = randomInt(0,9), speed));
-                }
-                output.children[0].classList.add('active'); spinBtn.disabled = true; stopBtn.disabled = false;
-            });
-            stopBtn.addEventListener('click', () => {
-                if (stoppedIndex >= intervals.length) return;
-                clearInterval(intervals[stoppedIndex]);
-                if(output.children[stoppedIndex]) output.children[stoppedIndex].classList.remove('active');
-                stoppedIndex++;
-                if (stoppedIndex < intervals.length) { if(output.children[stoppedIndex]) output.children[stoppedIndex].classList.add('active'); }
-                else { stopBtn.disabled = true; spinBtn.disabled = false; }
-            });
-        },
-        dice: () => { /* Logic */ },
-        morse: () => { /* Logic */ },
-        teams: () => { /* Logic */ },
-        workout: () => $('workout-generate').addEventListener('click', () => { /* Logic */ }),
-        shipname: () => { /* Logic */ },
-        magic8: () => { /* Logic */ },
-        excuse: () => { /* Logic */ }
-    };
-
-    // --- FULL LOGIC & INITIALIZATION ---
-    // This replaces the simplified init stubs above with full, working code.
-    for (const gen of generators) {
-        const id = gen.id;
-        const panel = $(`panel-${id}`);
-        if (!panel) continue;
-        
-        // Find the primary generate button for this panel to auto-click it later
+    // --- FULL GENERATOR LOGIC & INITIALIZATION ---
+    generators.forEach(gen => {
+        const panel = $(`panel-${gen.id}`);
+        if (!panel) return;
         const genBtn = panel.querySelector('.btn[id$="-generate"], .btn[id$="-roll"], .btn[id$="-ask"], .btn[id$="-calculate"], .btn[id$="-spin"], .btn[id$="-encode"]');
         
         // Attach event listeners based on ID
-        switch (id) {
-            case 'names': $('names-generate').addEventListener('click', () => { const type=readStr('ng-type','username'),base=readStr('ng-base',''),adjs=["Abyssal","Alpha","Ancient"],nouns=["Abyss","Alpha","Angel"],b=base||(randomOf(adjs)+randomOf(nouns));let h='';switch(type){case'xbox':h=randomOf(["xX","i",""])+b+randomOf(["","HD","Pro"]);break;case'discord':h=b+"#"+randomInt(1000,9999);break;case'tiktok':h="@"+b.toLowerCase().replace(/[^a-z0-9_.]/g,'').slice(0,24);break;default:h=b+randomInt(100,999);}$('ng-output').textContent=h;}); break;
-            case 'project': $('project-generate').addEventListener('click', () => { const b=readStr('pg-base',''),w=["Galaxy","Pixel","Shadow"],s=["Network","United","Studios"];$('pg-output').textContent=(b||randomOf(w))+" "+randomOf(s); }); break;
-            case 'haiku': initFunctions.haiku(); break;
-            case 'story': initFunctions.story(); break;
-            case 'recipe': initFunctions.recipe(); break;
+        switch (gen.id) {
+            case 'names': $('names-generate').addEventListener('click', () => { const type=readStr('names-type','username'),base=readStr('names-base',''),adjs=["Abyssal","Alpha","Ancient","Arcane","Astral","Azure","Berserk","Binary","Black","Blazing"],nouns=["Abyss","Alpha","Angel","Annihilator","Apostle","Armageddon","Assassin","Atrocity","Avatar"],b=base||(randomOf(adjs)+randomOf(nouns));let h='';switch(type){case'xbox':h=randomOf(["xX","i",""])+b+randomOf(["","HD","Pro"]);break;case'discord':h=b+"#"+randomInt(1000,9999);break;case'tiktok':h="@"+b.toLowerCase().replace(/[^a-z0-9_.]/g,'').slice(0,24);break;default:h=b+randomInt(100,999);}$('names-output').textContent=h;}); break;
+            case 'project': $('project-generate').addEventListener('click', () => { const b=readStr('project-base',''),w=["Galaxy","Pixel","Shadow","Crystal","Echo","Storm","Aurora","Neon","Quantum","Vertex"],s=["Network","United","Studios","Collective","Group","Systems","Labs","Works","Alliance"];$('project-output').textContent=(b||randomOf(w))+" "+randomOf(s); }); break;
+            case 'haiku': $('haiku-generate').addEventListener('click', () => { const l1=["An old silent pond","Green twilight, deep woods"],l2=["A frog jumps into the pond—","A cicada's cry deepens the silence"],l3=["Splash! Silence again.","The stillness of the rocks."];$('haiku-output').textContent=`${randomOf(l1)}\n${randomOf(l2)}\n${randomOf(l3)}`; }); break;
+            case 'story': $('story-generate').addEventListener('click', () => { const p=["A cynical detective","A disgraced knight"],s=["in a neon-drenched cyberpunk city","in a forgotten kingdom"],g=["must find a legendary artifact","must clear their name"],o=["but is being hunted by a relentless assassin.","but they are losing their memories."];$('story-output').textContent=`${randomOf(p)} ${randomOf(s)} ${randomOf(g)}, ${randomOf(o)}`; }); break;
+            case 'recipe': $('recipe-generate').addEventListener('click', () => { const c=["Italian","Mexican","Japanese"],m=["Roasted","Grilled","Stir-fried"],p=["Chicken","Beef","Tofu"],s=["with crispy potatoes.","over jasmine rice."];$('recipe-output').textContent=`${randomOf(c)} ${randomOf(m)} ${randomOf(p)} ${randomOf(s)}`;}); break;
             case 'ideas': $('ideas-generate').addEventListener('click', () => { const c=["Mini-game","Tool/Utility"], v=["Auto","Hyper","Neo"], n=["Market","Tracker","Arena"];$('ideas-output').textContent=`${randomOf(c)}: ${randomOf(v)} ${randomOf(n)}`; }); break;
-            case 'ascii': initFunctions.ascii(); break;
-            case 'colors': initFunctions.colors(); break;
-            case 'tints': initFunctions.tints(); break;
-            case 'gradient': $('gradient-generate').addEventListener('click', () => { const a=randomInt(0,360),c1="#"+Math.random().toString(16).slice(2,8),c2="#"+Math.random().toString(16).slice(2,8), css=`background: linear-gradient(${a}deg, ${c1}, ${c2});`;$('gradient-preview').style.background=`linear-gradient(${a}deg, ${c1}, ${c2})`;$('gradient-output').textContent=css;}); break;
-            case 'boxshadow': initFunctions.boxshadow(); break;
-            case 'aspectratio': initFunctions.aspectratio(); break;
-            case 'qr': initFunctions.qr(); break;
-            case 'code': $('code-generate').addEventListener('click', () => { const s=readInt('code-segments',3), l=readInt('code-seglen',4), p=readStr('code-sep','-'); let a=''; if(checked('code-upper'))a+='ABCDEFGHIJKLMNOPQRSTUVWXYZ'; if(checked('code-nums'))a+='0123456789'; if(!a)a='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; $('code-output').textContent=Array.from({length:s},()=>Array.from({length:l},()=>randomOf(a)).join('')).join(p); }); break;
-            case 'password': $('password-generate').addEventListener('click', () => { const l=readInt('pw-len',16); let p=''; if(checked('pw-upper'))p+='ABCDEFGHIJKLMNOPQRSTUVWXYZ'; if(checked('pw-lower'))p+='abcdefghijklmnopqrstuvwxyz'; if(checked('pw-nums'))p+='0123456789'; if(checked('pw-spec'))p+='!@#$%^&*()'; if(!p)p='abc123'; $('password-output').textContent=Array.from({length:l},()=>randomOf(p)).join(''); }); break;
-            case 'uuid': initFunctions.uuid(); break;
-            case 'hashing': initFunctions.hashing(); break;
-            case 'base64': initFunctions.base64(); break;
-            case 'slugify': initFunctions.slugify(); break;
-            case 'lorem': $('lorem-generate').addEventListener('click', () => { const pC=readInt('li-p',3),sC=readInt('li-s',5),w=['lorem','ipsum','dolor','sit','amet']; let r=[]; for(let i=0;i<pC;i++){let p=[];for(let j=0;j<sC;j++){let s=Array.from({length:randomInt(8,15)},()=>randomOf(w)).join(' ');p.push(s[0].toUpperCase()+s.slice(1)+'.');}r.push(p.join(' '));}$('lorem-output').textContent=r.join('\n\n');}); break;
-            case 'fakedata': initFunctions.fakedata(); break;
-            case 'webhook': initFunctions.webhook(); break;
-            case 'rules': $('rules-generate').addEventListener('click', () => { const t=readStr('rules-topic','Server'),c=readInt('rules-count',8),s=[`Respect all members in the ${t}.`,`No spamming.`,`No cheating.`]; $('rules-output').textContent=s.slice(0,c).map((v,i)=>`${i+1}. ${v}`).join('\n'); }); break;
-            case 'case': initFunctions.case(); break;
-            case 'counter': initFunctions.counter(); break;
-            case 'tip': initFunctions.tip(); break;
-            case 'rng': $('rng-generate').addEventListener('click', () => $('rng-output').textContent = randomInt(readInt('rng-min',1), readInt('rng-max',100))); break;
-            case 'lucky': initFunctions.lucky(); break;
-            case 'dice': $('dice-roll').addEventListener('click', () => { const m=readStr('dice-notation','1d20').match(/(\d+)d(\d+)/); if(!m){$('dice-output').textContent='Invalid';return;} const[_,n,s]=m.map(Number); let r=[],t=0; for(let i=0;i<n;i++){const roll=randomInt(1,s);r.push(roll);t+=roll;}$('dice-output').textContent=`Total: ${t}\nRolls: [${r.join(', ')}]`;}); break;
-            case 'morse': initFunctions.morse(); break;
-            case 'teams': $('teams-generate').addEventListener('click', () => { const n=readStr('teams-names','').split('\n').map(x=>x.trim()).filter(Boolean),c=readInt('teams-count',2); if(n.length<c){$('teams-output').textContent='Not enough people.';return;}const s=n.sort(()=>0.5-Math.random()),t=Array.from({length:c},()=>[]);s.forEach((name,i)=>t[i%c].push(name));$('teams-output').textContent=t.map((team,i)=>`Team ${i+1}:\n- ${team.join('\n- ')}`).join('\n\n');}); break;
-            case 'workout': $('workout-generate').addEventListener('click', () => { const u=["Push-ups"],l=["Squats"],c=["Plank"],ca=["Jumping Jacks"];$('workout-output').textContent=`1. Warm-up: 5 min ${randomOf(ca)}\n2. Upper: 3x10 ${randomOf(u)}\n3. Lower: 3x12 ${randomOf(l)}\n4. Core: 3x15 ${randomOf(c)}`;}); break;
-            case 'shipname': initFunctions.shipname(); break;
-            case 'magic8': $('m8-ask').addEventListener('click', () => { const a=["Yes.","No.","Maybe."];$('m8-answer').textContent=randomOf(a); }); break;
-            case 'excuse': $('ex-generate').addEventListener('click', () => { const e=["My dog ate my Wi-Fi.","A wizard did it."];$('ex-output').textContent=randomOf(e); }); break;
+            case 'ascii': { const arts={'Cat':' /\\_/\\\n( o.o )\n > ^ <','Rose':`  ,-_,-.\n / \\  \`;,'\n \`\\ `}""{\n  } ,-\\ \n /,' ( \\ \n \\-.__;=\\ \n  _.,'-',\n 'a' (°)\n_.-~-\`~-._`},sel=$('ascii-select');Object.keys(arts).forEach(k=>sel.add(new Option(k,k)));const u=()=>$('ascii-output').textContent=arts[sel.value];sel.addEventListener('change',u);u(); break; }
+            case 'colors': { const gen=()=>{const w=$('colors-swatches');w.innerHTML='';const c=Array.from({length:5},()=>"#"+Math.floor(Math.random()*16777215).toString(16).padStart(6,"0"));c.forEach(h=>{const d=document.createElement('div');d.className='swatch';d.style.background=h;d.textContent=h;w.appendChild(d);});w.dataset.colors=c.join(' ');};$('colors-generate').addEventListener('click',gen);$('colors-copy').addEventListener('click',async()=>{const c=$('colors-swatches').dataset.colors||'';if(c){await navigator.clipboard.writeText(c);showToast("Palette copied!");}}); break; }
+            case 'tints': { const htr=h=>{let r=0,g=0,b=0;if(h.length==4){r=parseInt(h[1]+h[1],16);g=parseInt(h[2]+h[2],16);b=parseInt(h[3]+h[3],16);}else if(h.length==7){r=parseInt(h.substring(1,3),16);g=parseInt(h.substring(3,5),16);b=parseInt(h.substring(5,7),16);}return{r,g,b};},rth=(r,g,b)=>'#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');const gen=()=>{const b=readStr('tints-color','#a855f7'),{r,g,b:B}=htr(b),o=$('tints-output');o.innerHTML='';let a=[];for(let i=5;i>0;i--){const p=i*0.2,tR=Math.round(r+(255-r)*p),tG=Math.round(g+(255-g)*p),tB=Math.round(B+(255-B)*p),h=rth(tR,tG,tB);a.push(h);const d=document.createElement('div');d.className='tint-shade-box';d.style.background=h;d.innerHTML=`<span>${h}</span><small style="opacity:0.7">Tint</small>`;o.appendChild(d);}for(let i=1;i<=5;i++){const p=i*0.2,sR=Math.round(r*(1-p)),sG=Math.round(g*(1-p)),sB=Math.round(B*(1-p)),h=rth(sR,sG,sB);a.push(h);const d=document.createElement('div');d.className='tint-shade-box';d.style.background=h;d.innerHTML=`<span>${h}</span><small style="opacity:0.7">Shade</small>`;o.appendChild(d);}o.dataset.colors=a.join(' ');};$('tints-generate').addEventListener('click',gen);$('tints-color').addEventListener('input',gen);$('tints-copy').addEventListener('click',async()=>{const c=$('tints-output').dataset.colors||'';if(c){await navigator.clipboard.writeText(c);showToast("Colors copied!");}}); break; }
+            case 'gradient': $('gradient-generate').addEventListener('click', () => { const a=randomInt(0,360),c1="#"+Math.random().toString(16).slice(2,8).padEnd(6,'0'),c2="#"+Math.random().toString(16).slice(2,8).padEnd(6,'0'),css=`background: linear-gradient(${a}deg, ${c1}, ${c2});`;$('gradient-preview').style.background=`linear-gradient(${a}deg, ${c1}, ${c2})`;$('gradient-output').textContent=css;}); break;
+            case 'boxshadow': { const u=()=>{const h=$('bs-h').value,v=$('bs-v').value,b=$('bs-b').value,s=$('bs-s').value,c=$('bs-c').value,i=checked('bs-i')?'inset':'';const css=`box-shadow: ${i} ${h}px ${v}px ${b}px ${s}px ${c};`.replace('  ',' ');$('bs-preview').style.boxShadow=`${i} ${h}px ${v}px ${b}px ${s}px ${c}`;$('bs-output').textContent=css;};['bs-h','bs-v','bs-b','bs-s','bs-c','bs-i'].forEach(id=>$(id)?.addEventListener('input',u));u(); break; }
+            case 'aspectratio': ['ar-w1','ar-h1','ar-w2','ar-h2'].forEach(id=>$(id)?.addEventListener('input',e=>{const w1=readInt('ar-w1',0),h1=readInt('ar-h1',0),w2=readInt('ar-w2',0),h2=readInt('ar-h2',0);if(w1<=0||h1<=0)return;const s=e.target.id;if(s==='ar-w2'&&w2)$('ar-h2').value=Math.round((w2/w1)*h1)||'';else if(s==='ar-h2'&&h2)$('ar-w2').value=Math.round((h2/h1)*w1)||'';else if(s==='ar-w1'||s==='ar-h1'){if(w2)$('ar-h2').value=Math.round((w2/w1)*h1)||'';else if(h2)$('ar-w2').value=Math.round((h2/h1)*w1)||'';}})); break;
+            case 'qr': $('qr-generate').addEventListener('click',()=>{const t=readStr('qr-text','https://example.com'),s=readInt('qr-size',200),c=$('qr-canvas'),d=$('qr-download');new QRious({element:c,value:t,size:s,padding:10});d.href=c.toDataURL('image/png');d.style.display='inline-block';});$('qr-text').value='https://github.com/google/gemini'; break;
+            case 'code': $('code-generate').addEventListener('click',()=>{const s=readInt('code-segments',3),l=readInt('code-seglen',4),p=readStr('code-sep','-');let a='';if(checked('code-upper'))a+='ABCDEFGHIJKLMNOPQRSTUVWXYZ';if(checked('code-nums'))a+='0123456789';if(!a)a='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';$('code-output').textContent=Array.from({length:s},()=>Array.from({length:l},()=>randomOf(a)).join('')).join(p);}); break;
+            case 'password': $('password-generate').addEventListener('click',()=>{const l=readInt('pw-len',16);let p='';if(checked('pw-upper'))p+='ABCDEFGHIJKLMNOPQRSTUVWXYZ';if(checked('pw-lower'))p+='abcdefghijklmnopqrstuvwxyz';if(checked('pw-nums'))p+='0123456789';if(checked('pw-spec'))p+='!@#$%^&*()';if(!p)p='abc123';$('password-output').textContent=Array.from({length:l},()=>randomOf(p)).join('');}); break;
+            case 'uuid': $('uuid-generate').addEventListener('click',()=>$('uuid-output').textContent=([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,c=>(c^crypto.getRandomValues(new Uint8Array(1))[0]&15>>c/4).toString(16))); break;
+            case 'hashing': $('hashing-generate').addEventListener('click',async()=>{const i=readStr('hash-input',''),d=new TextEncoder().encode(i),a=['SHA-1','SHA-256','SHA-512'];let o='';for(const l of a){const hB=await crypto.subtle.digest(l,d),hA=Array.from(new Uint8Array(hB)),hH=hA.map(b=>b.toString(16).padStart(2,'0')).join('');o+=`${l}:\n${hH}\n\n`;}$('hashing-output').textContent=o.trim();}); break;
+            case 'base64': $('b64-encode').addEventListener('click',()=>$('b64-encoded').value=btoa(readStr('b64-text','')));$('b64-decode').addEventListener('click',()=>{try{$('b64-text').value=atob(readStr('b64-encoded',''));}catch(e){$('b64-text').value='Invalid Base64';}}); break;
+            case 'slugify': { const u=()=>$('slugify-output').textContent=readStr('slug-input','').toLowerCase().trim().replace(/[^\w\s-]/g,'').replace(/[\s_-]+/g,'-').replace(/^-+|-+$/g,'');$('slugify-generate').addEventListener('click',u);$('slug-input').addEventListener('input',u); break; }
+            case 'lorem': $('lorem-generate').addEventListener('click',()=>{const pC=readInt('li-p',3),sC=readInt('li-s',5),w=['lorem','ipsum','dolor','sit','amet'];let r=[];for(let i=0;i<pC;i++){let p=[];for(let j=0;j<sC;j++){let s=Array.from({length:randomInt(8,15)},()=>randomOf(w)).join(' ');p.push(s[0].toUpperCase()+s.slice(1)+'.');}r.push(p.join(' '));}$('lorem-output').textContent=r.join('\n\n');}); break;
+            case 'fakedata': $('fakedata-generate').addEventListener('click',()=>{const c=readInt('fakedata-count',3),f=['Olivia','Liam','Emma'],l=['Smith','Johnson','Williams'];const u=Array.from({length:c},(_,i)=>{const a=randomOf(f),n=randomOf(l);return{id:i+1,name:`${a} ${n}`,email:`${a.toLowerCase()}.${n.toLowerCase()}${randomInt(1,99)}@example.com`};});$('fakedata-output').textContent=JSON.stringify(u,null,2);}); break;
+            case 'webhook': { let l='';$('webhook-generate').addEventListener('click',()=>{const o={username:readStr('wh-username',''),avatar_url:readStr('wh-avatar',''),content:readStr('wh-content','')};l=JSON.stringify(o,null,2);$('webhook-output').textContent=l;});$('wh-copy-json').addEventListener('click',async()=>{if(l){await navigator.clipboard.writeText(l);showToast("JSON copied!");}}); break; }
+            case 'rules': $('rules-generate').addEventListener('click',()=>{const t=readStr('rules-topic','Server'),c=readInt('rules-count',8),s=[`Respect all members in the ${t}.`,`No spamming.`,`No cheating.`];$('rules-output').textContent=s.slice(0,c).map((v,i)=>`${i+1}. ${v}`).join('\n');}); break;
+            case 'case': panel.addEventListener('click',e=>{if(!e.target.matches('.btn'))return;const i=$('case-input'),t=i.value,p=e.target.dataset.case;if(p==='upper')i.value=t.toUpperCase();else if(p==='lower')i.value=t.toLowerCase();else if(p==='title')i.value=t.toLowerCase().replace(/\b\w/g,s=>s.toUpperCase());else if(p==='sentence')i.value=t.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g,c=>c.toUpperCase());}); break;
+            case 'counter': $('count-input').addEventListener('input',e=>{const t=e.target.value,w=t.split(/\s+/).filter(Boolean).length;$('count-output').textContent=`Words: ${w} | Characters: ${t.length}`;}); break;
+            case 'tip': $('tip-calculate').addEventListener('click',()=>{const b=parseFloat(readStr('tip-bill','0')),p=parseFloat(readStr('tip-percent','0')),e=readInt('tip-people',1);if(b<=0||e<=0){$('tip-output').textContent="Invalid numbers.";return;}const t=b*(p/100),o=b+t,a=o/e;$('tip-output').textContent=`Tip: $${t.toFixed(2)}\nTotal: $${o.toFixed(2)}\nPer Person: $${a.toFixed(2)}`;}); break;
+            case 'rng': $('rng-generate').addEventListener('click',()=>$('rng-output').textContent=randomInt(readInt('rng-min',1),readInt('rng-max',100))); break;
+            case 'lucky': { let i=[],s=0;const b=$('lucky-spin'),t=$('lucky-stop'),o=$('lucky-output');b.addEventListener('click',()=>{const d=Math.max(1,Math.min(10,readInt('lucky-digits',3))),p=Math.max(20,Math.min(500,readInt('lucky-speed',50)));o.innerHTML='';i.forEach(clearInterval);i=[];s=0;for(let c=0;c<d;c++){const n=document.createElement('span');o.appendChild(n);i.push(setInterval(()=>n.textContent=randomInt(0,9),p));}o.children[0].classList.add('active');b.disabled=true;t.disabled=false;});t.addEventListener('click',()=>{if(s>=i.length)return;clearInterval(i[s]);if(o.children[s])o.children[s].classList.remove('active');s++;if(s<i.length){if(o.children[s])o.children[s].classList.add('active');}else{t.disabled=true;b.disabled=false;}}); break; }
+            case 'dice': $('dice-roll').addEventListener('click',()=>{const m=readStr('dice-notation','1d20').match(/(\d+)d(\d+)/);if(!m){$('dice-output').textContent='Invalid';return;}const[_,n,s]=m.map(Number);let r=[],t=0;for(let i=0;i<n;i++){const o=randomInt(1,s);r.push(o);t+=o;}$('dice-output').textContent=`Total: ${t}\nRolls: [${r.join(', ')}]`;}); break;
+            case 'morse': { const m={'A':'.-','B':'-...','C':'-.-.','D':'-..','E':'.','F':'..-.','G':'--.','H':'....','I':'..','J':'.---','K':'-.-','L':'.-..','M':'--','N':'-.','O':'---','P':'.--.','Q':'--.-','R':'.-.','S':'...','T':'-','U':'..-','V':'...-','W':'.--','X':'-..-','Y':'-.--','Z':'--..','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.','0':'-----',' ':'/'},t=Object.fromEntries(Object.entries(m).map(a=>a.reverse()));$('morse-to-morse').addEventListener('click',()=>$('morse-code').value=readStr('morse-text','').toUpperCase().split('').map(c=>m[c]||'').join(' '));$('morse-to-text').addEventListener('click',()=>$('morse-text').value=readStr('morse-code','').split(' ').map(c=>t[c]||'').join('')); break; }
+            case 'teams': $('teams-generate').addEventListener('click',()=>{const n=readStr('teams-names','').split('\n').map(x=>x.trim()).filter(Boolean),c=readInt('teams-count',2);if(n.length<c){$('teams-output').textContent='Not enough people.';return;}const s=n.sort(()=>0.5-Math.random()),t=Array.from({length:c},()=>[]);s.forEach((name,i)=>t[i%c].push(name));$('teams-output').textContent=t.map((team,i)=>`Team ${i+1}:\n- ${team.join('\n- ')}`).join('\n\n');}); break;
+            case 'workout': $('workout-generate').addEventListener('click',()=>{const u=["Push-ups"],l=["Squats"],c=["Plank"],ca=["Jumping Jacks"];$('workout-output').textContent=`1. Warm-up: 5 min ${randomOf(ca)}\n2. Upper Body: 3x10 ${randomOf(u)}\n3. Lower Body: 3x12 ${randomOf(l)}\n4. Core: 3x15 ${randomOf(c)}`;}); break;
+            case 'shipname': $('ship-generate').addEventListener('click',()=>{const n1=readStr('ship-name1',''),n2=readStr('ship-name2','');if(!n1||!n2){$('ship-output').textContent='Enter two names.';return;}$('ship-output').textContent=n1.slice(0,Math.ceil(n1.length/2))+n2.slice(Math.floor(n2.length/2));}); break;
+            case 'magic8': $('m8-ask').addEventListener('click',()=>{const a=["It is certain.","Without a doubt.","Yes.","Reply hazy, try again.","Don't count on it.","My sources say no."];$('m8-answer').textContent=randomOf(a);}); break;
+            case 'excuse': $('ex-generate').addEventListener('click',()=>{const e=["My dog ate my Wi-Fi.","A wizard did it.","I was abducted by aliens."];$('ex-output').textContent=randomOf(e);}); break;
         }
 
         if (genBtn && !['qr-generate', 'webhook-generate', 'hashing-generate', 'lucky-spin', 'case-generate'].includes(genBtn.id)) {
             genBtn.click();
         }
-    }
+    });
+
+    // Final one-off initializations
+    if($('qr-generate')) $('qr-generate').click();
+    if($('hashing-generate')) $('hashing-generate').click();
+    if($('b64-encode')) $('b64-encode').click();
+    if($('slugify-generate')) $('slugify-generate').click();
+    if($('count-input')) $('count-input').dispatchEvent(new Event('input'));
 });
 </script>
 </body>
