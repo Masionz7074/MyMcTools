@@ -1,61 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="amethyst">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Code Generator</title>
+  <title>Generator Hub</title>
   <link rel="icon" href="favicon.png" type="image/png">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <style>
-    /* ===== Cotton-candy animated background ===== */
     :root{
-      --bg1:#2b0a52;
-      --bg2:#3e1a78;
-      --bg3:#a855f7;
-      --bg4:#ff72c6;
-      --card:#1c0b2b;
-      --text:#f5ecff;
-      --muted:#b9a9c8;
-      --accent:#c084fc;
-      --accent2:#a855f7;
-      --border:rgba(255,255,255,.14);
-      --glass: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04));
+      --bg1: #201a3c; --bg2: #2a224f; --bg3: #8a2be2; --bg4: #9370db;
+      --card: rgba(26, 20, 50, 0.5); --text: #e0d9ef; --muted: #9f91c7;
+      --accent: #9370db; --accent2: #8a2be2; --border: rgba(147, 112, 219, 0.2);
+      --glass: rgba(20, 16, 40, 0.6);
+      --brand-text: #f0e8ff; --brand-dot: conic-gradient(from 0deg, #9370db, #8a2be2, #a684e0);
+      --btn-text: #ffffff; --input-bg: #161228; --input-text: #d4c5f7;
+      --header: #ffffff;
+      --sidebar-header: #7f6eab;
+    }
+    html[data-theme="dark"] {
+      --bg1:#111827; --bg2:#1f2937; --bg3:#4f46e5; --bg4:#3b82f6;
+      --card:#1f2937; --text:#e5e7eb; --muted:#9ca3af;
+      --accent:#6366f1; --accent2:#4f46e5; --border:rgba(255,255,255,.1);
+      --glass:rgba(31,41,55,.6); --brand-text:#c7d2fe; 
+      --brand-dot:conic-gradient(from 0deg, #3b82f6, #6366f1, #818cf8);
+      --input-bg:#374151; --header:#ffffff; --sidebar-header: #9ca3af;
+    }
+    html[data-theme="halloween"] {
+      --bg1:#2d1d0c; --bg2:#4b3113; --bg3:#f97316; --bg4:#f59e0b;
+      --card:#422006; --text:#fed7aa; --muted:#d97706;
+      --accent:#fb923c; --accent2:#f97316; --border:rgba(255,255,255,.2);
+      --glass:rgba(66,32,6,.6); --brand-text:#fef3c7; 
+      --brand-dot:conic-gradient(from 0deg, #f59e0b, #f97316, #ea580c);
+      --input-bg:#513112; --header:#ffffff; --sidebar-header: #d97706;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0; color:var(--text);
       font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
-      overflow: hidden;
+      overflow: hidden; background: var(--bg1); transition: background-color .3s;
     }
-    /* animated gradient layer */
     .bg {
       position: fixed; inset: -10vmax;
-      background: radial-gradient(60vmax 60vmax at 15% 20%, #fface9aa, transparent 60%),
-                  radial-gradient(70vmax 70vmax at 85% 30%, #c084fc99, transparent 60%),
-                  radial-gradient(80vmax 80vmax at 40% 80%, #6ee7ff55, transparent 60%),
-                  linear-gradient(120deg, #2b0a52 0%, #3e1a78 40%, #30124b 100%);
+      background: radial-gradient(60vmax 60vmax at 15% 20%, var(--bg4), transparent 60%),
+                  radial-gradient(70vmax 70vmax at 85% 30%, var(--bg3), transparent 60%),
+                  linear-gradient(120deg, var(--bg1) 0%, var(--bg2) 40%, var(--bg1) 100%);
       filter: blur(30px) saturate(120%);
       animation: float 25s ease-in-out infinite alternate;
-      z-index:-2;
+      z-index:-2; transition: background .3s;
     }
-    @keyframes float {
-      0% { transform: translate(0,0) scale(1); }
-      50%{ transform: translate(-3vmax, 2vmax) scale(1.05); }
-      100%{ transform: translate(3vmax,-2vmax) scale(1.08); }
-    }
-    /* soft moving light sheen */
-    .shine{
-      position: fixed; inset: -20vmax;
-      background: radial-gradient(40vmax 40vmax at 60% 60%, #ffffff18, transparent 60%);
-      animation: drift 16s ease-in-out infinite alternate;
-      z-index:-1;
-    }
-    @keyframes drift {
-      0% { transform: translate(-4vmax, 2vmax) }
-      100%{ transform: translate(6vmax,-4vmax) }
-    }
+    @keyframes float { 0% { transform: translate(0,0); } 100%{ transform: translate(4vmax,-2vmax); } }
 
-    /* ===== Layout ===== */
     .app { position: relative; display:flex; height:100%; }
     .sidebar {
       width: 290px; min-width: 240px; max-width: 320px;
@@ -64,791 +60,532 @@
       border-right: 1px solid var(--border);
       box-shadow: 20px 0 60px rgba(0,0,0,.25);
       overflow-y: auto;
-      transition: transform .2s ease;
+      transition: transform .3s ease, background-color .3s, border-color .3s;
+      display: flex; flex-direction: column; z-index: 10;
     }
     .sidebar.hide { transform: translateX(-100%); }
     .brand { display:flex; align-items:center; gap:10px; margin-bottom: 12px; }
-    .brand h1 { margin:0; font-size: 20px; letter-spacing:.4px; color:#ffd6ff; }
-    .brand .dot { width:10px; height:10px; border-radius:50%; background: conic-gradient(from 0deg, #ff72c6, #a855f7, #6ee7ff); box-shadow: 0 0 16px #ff72c677; }
-    .nav { display:flex; flex-direction:column; gap:8px; }
+    .brand h1 { margin:0; font-size: 20px; letter-spacing:.4px; color: var(--brand-text); }
+    .brand .dot { width:10px; height:10px; border-radius:50%; background: var(--brand-dot); box-shadow: 0 0 16px var(--bg4); }
+    .nav { display:flex; flex-direction:column; gap:2px; flex: 1; }
+    .nav-header { padding: 12px 12px 4px; color: var(--sidebar-header); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; }
     .tab {
       display:flex; align-items:center; gap:10px;
-      padding:12px 12px; border-radius:14px; border:1px solid transparent;
+      padding:10px 12px; border-radius:8px; border:1px solid transparent;
       color:var(--text); cursor:pointer; user-select:none;
-      background: transparent; transition: background .15s ease, transform .12s ease;
+      background: transparent; transition: background .15s ease, color .15s ease; font-size: 14px;
     }
-    .tab:hover { background: #ffffff14; }
-    .tab.active { background: linear-gradient(180deg, #ffffff18, #ffffff10); border-color: var(--border); }
-    .tab .emoji { width:28px; height:28px; display:grid; place-items:center; font-size:18px; background:#00000030; border:1px solid var(--border); border-radius:10px; }
+    .tab:hover { background: rgba(255,255,255,.05); }
+    .tab.active { color: var(--brand-text); font-weight: 600; background: color-mix(in srgb, var(--accent) 15%, transparent); border-color: color-mix(in srgb, var(--accent) 10%, transparent); }
+    .tab .symbol { font-size: 16px; width: 22px; text-align:center; color: var(--muted); }
+    .tab.active .symbol { color: var(--accent); }
 
-    .content {
-      flex:1; overflow-y: auto; padding: 20px 24px; display:grid; place-items: start; position: relative;
-    }
-    .topbar{
-      position: sticky; top:0; left:0; right:0; z-index: 2;
-      display:flex; align-items:center; gap:10px; margin-bottom: 10px;
-    }
+    .content { flex:1; overflow-y: auto; padding: 20px 24px; }
+    .topbar{ position: sticky; top:0; z-index: 2; display:flex; align-items:center; gap:10px; margin-bottom: 10px; }
     .hamburger{
-      border:1px solid var(--border); background:#ffffff18; color:var(--text); border-radius:10px;
-      width:40px; height:40px; display:grid; place-items:center; cursor:pointer;
-      backdrop-filter: blur(8px);
+      border:1px solid var(--border); background:rgba(255,255,255,.05); color:var(--text); border-radius:10px;
+      width:40px; height:40px; display:grid; place-items:center; cursor:pointer; backdrop-filter: blur(8px);
     }
-
     .panel {
-      width:min(1100px, 92vw);
-      background: var(--glass);
-      border:1px solid var(--border);
-      borderRadius: 20px;
-      padding: 20px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.35);
-      backdrop-filter: blur(10px);
+      width:min(1100px, 92vw); background: var(--card);
+      border:1px solid var(--border); borderRadius: 20px;
+      padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,.35);
       margin: 0 auto;
     }
-    .panel h2 { margin: 0 0 6px; color:#ffe0ff; letter-spacing:.3px }
-    .muted { color: var(--muted); margin: 0 0 12px; }
+    .panel h2 { margin: 0 0 6px; color:var(--header); letter-spacing:.3px; font-size: 28px; font-weight: 700; }
+    .muted { color: var(--muted); margin: 0 0 24px; }
 
-    .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
-    .field { display:flex; flex-direction:column; gap:6px; padding:10px; border-radius:12px; border:1px dashed var(--border); background:#0000002b; }
-    .field label { font-size: 12px; color: var(--muted); }
-    .field input, .field select, .field textarea {
-      width:100%; border-radius:12px; border:1px solid var(--border); padding:10px 12px;
-      background:#130724; color:var(--text); outline:none; resize: vertical;
+    .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .field { display:flex; flex-direction:column; gap:6px; background: transparent; padding: 0; border:0; }
+    .field label { font-size: 13px; color: var(--muted); font-weight: 500; }
+    .field input, .field select, .field textarea, .output-box {
+      width:100%; border-radius:10px; border:1px solid var(--border); padding:10px 14px;
+      background:var(--input-bg); color:var(--input-text); outline:none; resize: vertical;
+      font-family: ui-sans-serif, system-ui, sans-serif; font-size: 15px;
+      transition: border-color .2s, background-color .2s;
     }
-    .row { display:flex; gap:10px; flex-wrap: wrap; margin-top: 8px; }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
+    textarea.output-box {
+        margin-top: 20px; min-height: 90px; white-space: pre-wrap; word-break: break-all;
+        line-height: 1.6; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 16px; padding: 20px; text-align: center;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .row { display:flex; gap:10px; flex-wrap: wrap; margin-top: 16px; }
     .btn {
-      appearance:none; border:0; border-radius:14px; padding:12px 16px;
-      font-weight:700; color:white; cursor:pointer;
+      appearance:none; border:0; border-radius:10px; padding:12px 20px; font-size: 15px;
+      font-weight:700; color:var(--btn-text); cursor:pointer;
       background: linear-gradient(180deg, var(--accent), var(--accent2));
-      box-shadow: 0 12px 24px rgba(168,85,247,.35);
-      transition: transform .12s ease, box-shadow .12s ease, opacity .15s ease;
+      box-shadow: 0 8px 24px color-mix(in srgb, var(--accent2) 30%, transparent);
+      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
     }
-    .btn.secondary { background: linear-gradient(180deg, #d8a6ff, #c084fc); }
-    .btn.ghost { background: #ffffff10; border:1px solid var(--border); }
-    .btn:active { transform: translateY(1px); }
-    .btn[disabled]{ opacity:.6; cursor:not-allowed }
+    .btn:hover { filter: brightness(1.1); }
+    .btn:active { transform: translateY(1px); box-shadow: 0 4px 12px color-mix(in srgb, var(--accent2) 25%, transparent); }
 
-    .codebox {
-      min-height: 70px; display:flex; align-items:center; justify-content:center; text-align:center;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: clamp(18px, 1.6vw + 12px, 30px);
-      letter-spacing:1.5px; background:#130724; border:1px solid var(--border);
-      border-radius:14px; padding:16px; margin-top: 10px;
-      white-space: pre-wrap;
-    }
-    .flex { display:flex; gap:12px; flex-wrap:wrap; }
-    .badge { font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid var(--border); background:#ffffff14; color:#ffdfff }
+    #qr-code-output { background: white; padding: 10px; width: fit-content; margin: 20px auto; border-radius: 10px; }
+    #md-preview { text-align: left; border: 1px solid var(--border); padding: 20px; border-radius: 10px; margin-top: 20px; background: var(--input-bg); }
+    #md-preview h1, #md-preview h2 { border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+    #md-preview a { color: var(--accent); } #md-preview code { background: color-mix(in srgb, var(--input-bg) 50%, #000); padding: 2px 5px; border-radius: 5px; }
+    #palette-output { display: flex; gap: 10px; margin-top: 20px; flex-wrap:wrap; }
+    #palette-output .swatch { flex: 1; min-width:80px; height: 80px; border-radius: 10px; border: 1px solid var(--border); display:flex; justify-content:center; align-items:flex-end; padding-bottom: 8px; font-family:monospace; color:#fff; text-shadow: 0 0 5px #000;}
 
-    /* Color swatches */
-    .swatches { display:flex; gap:10px; flex-wrap: wrap; margin-top: 10px; }
-    .swatch { width:120px; height:80px; border-radius:14px; border:1px solid var(--border); display:flex; align-items:end; justify-content:center; padding:8px; font-family: ui-monospace; background:#333; }
-
-    /* Slot-machine animation characters */
-    .slot {
-      display:inline-block; min-width: .65em; transform: translateZ(0);
-    }
-    .slot.spin { animation: pop .22s ease; }
-    @keyframes pop {
-      0%{ transform: scale(.9); opacity:.4 }
-      100%{ transform: scale(1); opacity:1 }
-    }
-
-    /* Toast */
     .toast{
-      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
-      background: #00000085; color: white; padding: 10px 14px; border-radius: 999px;
-      border: 1px solid var(--border); box-shadow: 0 10px 20px rgba(0,0,0,.4);
-      opacity: 0; transition: opacity .2s ease, transform .2s ease; z-index: 5;
+      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 99;
+      background: #111; color: white; padding: 10px 14px; border-radius: 8px;
+      border: 1px solid #333; box-shadow: 0 10px 20px rgba(0,0,0,.4); opacity: 0; transition: all .2s ease;
     }
     .toast.show{ opacity:1; transform: translateX(-50%) translateY(-6px); }
 
-    /* Make page scrollable on small screens */
     @media (max-width: 900px){
-      body{ overflow:auto; }
-      .app{ display:block; }
-      .sidebar{ position: fixed; top:0; left:0; bottom:0; z-index:3; }
-      .content{ padding: 16px; }
-      .topbar{ position: sticky; top:0; }
+      body{ overflow:auto; } .app{ display:block; }
+      .sidebar{ position: fixed; top:0; left:0; bottom:0; }
+      .sidebar.hide { transform: translateX(0); }
+      .sidebar:not(.hide){ transform: translateX(-100%); }
+      .content{ padding: 16px; } .grid-2 { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <div class="bg"></div>
-  <div class="shine"></div>
 
   <div class="app">
     <aside class="sidebar" id="sidebar">
-      <div class="brand">
-        <div class="dot"></div>
-        <h1>Code Generator</h1>
-      </div>
+      <div class="brand"><div class="dot"></div><h1>Generator Hub</h1></div>
       <div class="nav" id="nav">
-        <div class="tab active" data-target="panel-code"><span class="emoji">🔢</span> Code Generator</div>
-        <div class="tab" data-target="panel-names"><span class="emoji">👤</span> Name Generators</div>
-        <div class="tab" data-target="panel-project"><span class="emoji">🚀</span> Project Names</div>
-        <div class="tab" data-target="panel-rules"><span class="emoji">📜</span> Rules Generator</div>
-        <div class="tab" data-target="panel-ideas"><span class="emoji">💡</span> Random Ideas</div>
-        <div class="tab" data-target="panel-colors"><span class="emoji">🎨</span> Color Palettes</div>
-        <div class="tab" data-target="panel-webhook"><span class="emoji">🤖</span> Discord Webhook JSON</div>
+          <div class="nav-header">Developer Kit</div>
+          <div class="tab active" data-target="panel-password"><span class="symbol">🔑</span>Password</div>
+          <div class="tab" data-target="panel-uuid"><span class="symbol">🌐</span>UUID</div>
+          <div class="tab" data-target="panel-hashing"><span class="symbol">🎯</span>Hashing</div>
+          <div class="tab" data-target="panel-json"><span class="symbol">{}</span>JSON Formatter</div>
+          <div class="tab" data-target="panel-jwt"><span class="symbol">🪪</span>JWT Decoder</div>
+          <div class="tab" data-target="panel-base64"><span class="symbol">ⓑ</span>Base64</div>
+          <div class="tab" data-target="panel-url"><span class="symbol">🔗</span>URL Encoder</div>
+          <div class="tab" data-target="panel-html"><span class="symbol">◧</span>HTML Entities</div>
+          <div class="tab" data-target="panel-unix"><span class="symbol">🕒</span>Unix Timestamp</div>
+          <div class="tab" data-target="panel-cron"><span class="symbol">⚙️</span>Cron Job</div>
+          <div class="tab" data-target="panel-color"><span class="symbol">🎨</span>Color Converter</div>
+          <div class="tab" data-target="panel-gradient"><span class="symbol">🌈</span>CSS Gradient</div>
+          <div class="tab" data-target="panel-cssmin"><span class="symbol"> nhỏ</span>CSS Minifier</div>
+          <div class="tab" data-target="panel-jsmin"><span class="symbol">ⓙⓢ</span>JS Minifier</div>
+
+          <div class="nav-header">Text & Data</div>
+          <div class="tab" data-target="panel-lorem"><span class="symbol">¶</span>Lorem Ipsum</div>
+          <div class="tab" data-target="panel-case"><span class="symbol">Aa</span>Case Converter</div>
+          <div class="tab" data-target="panel-slugify"><span class="symbol">→</span>Slugify</div>
+          <div class="tab" data-target="panel-diff"><span class="symbol">Δ</span>Text Difference</div>
+          <div class="tab" data-target="panel-markdown"><span class="symbol">𝕄</span>Markdown Preview</div>
+          <div class="tab" data-target="panel-morse"><span class="symbol">∿</span>Morse Translator</div>
+          <div class="tab" data-target="panel-binary"><span class="symbol">01</span>Binary Translator</div>
+          <div class="tab" data-target="panel-ascii"><span class="symbol">▒</span>ASCII Art</div>
+          <div class="tab" data-target="panel-qr"><span class="symbol">◩</span>QR Code</div>
+          <div class="tab" data-target="panel-data"><span class="symbol">👨‍💻</span>Fake Data</div>
+          
+          <div class="nav-header">Utilities & Fun</div>
+          <div class="tab" data-target="panel-code"><span class="symbol">&lt;/&gt;</span>Code</div>
+          <div class="tab" data-target="panel-rules"><span class="symbol">📜</span>Rules</div>
+          <div class="tab" data-target="panel-number"><span class="symbol">🎲</span>Random Number</div>
+          <div class="tab" data-target="panel-dice"><span class="symbol">🎲</span>Dice Roller</div>
+          <div class="tab" data-target="panel-teams"><span class="symbol">👥</span>Team Generator</div>
+          <div class="tab" data-target="panel-names"><span class="symbol">👤</span>Username</div>
+          <div class="tab" data-target="panel-project"><span class="symbol">🚀</span>Project Name</div>
+          <div class="tab" data-target="panel-ideas"><span class="symbol">💡</span>Random Ideas</div>
+          <div class="tab" data-target="panel-palette"><span class="symbol">🎨</span>Color Palette</div>
+          <div class="tab" data-target="panel-webhook"><span class="symbol">💬</span>Discord Webhook</div>
+          <div class="tab" data-target="panel-magic8"><span class="symbol">🎱</span>Magic 8-Ball</div>
+          <div class="tab" data-target="panel-quote"><span class="symbol">❝</span>Quote Generator</div>
+          <div class="tab" data-target="panel-story"><span class="symbol">📖</span>Story Prompt</div>
+
+          <div class="tab" data-target="panel-settings"><span class="symbol">⚙️</span>Settings</div>
       </div>
     </aside>
 
     <main class="content">
-      <div class="topbar">
-        <button class="hamburger" id="hamburger" title="Toggle menu">☰</button>
-        <span class="badge">Cotton-candy animated theme</span>
-      </div>
-
-      <!-- ===== Code Generator ===== -->
-      <section class="panel" id="panel-code">
-        <h2>Code Generator</h2>
-        <p class="muted">Make codes like <code>XXXX-XXXX-XXXX</code>. Slot-machine reveal included. All fields are optional.</p>
-
-        <div class="grid">
-          <div class="field"><label>Segments</label><input id="cg-segments" type="number" inputmode="numeric" placeholder="3" value="3"></div>
-          <div class="field"><label>Segment length</label><input id="cg-seglen" type="number" inputmode="numeric" placeholder="4" value="4"></div>
-          <div class="field"><label>Separator</label><input id="cg-sep" type="text" placeholder="-" value="-"></div>
-          <div class="field"><label>Prefix (optional)</label><input id="cg-prefix" type="text" placeholder=""></div>
-          <div class="field"><label>Suffix (optional)</label><input id="cg-suffix" type="text" placeholder=""></div>
-          <div class="field">
-            <label>Font size (px)</label>
-            <input id="cg-font" type="number" inputmode="numeric" placeholder="30" value="30">
-          </div>
-
-          <div class="field">
-            <label>Character sets</label>
-            <div class="row">
-              <label class="badge"><input id="cg-upper" type="checkbox" checked> &nbsp;Uppercase</label>
-              <label class="badge"><input id="cg-lower" type="checkbox"> &nbsp;Lowercase</label>
-              <label class="badge"><input id="cg-nums"  type="checkbox" checked> &nbsp;Numbers</label>
-              <label class="badge"><input id="cg-spec"  type="checkbox"> &nbsp;Special</label>
-              <label class="badge"><input id="cg-words" type="checkbox"> &nbsp;Words</label>
-            </div>
-          </div>
-          <div class="field">
-            <label class="row"><input id="cg-dupe" type="checkbox" checked> Allow duplicate characters (per segment)</label>
-          </div>
-
-          <div class="field">
-            <label>Easter egg words (comma separated)</label>
-            <input id="cg-eggs" type="text" placeholder="VIP,PRO,BETA,ALPHA">
-          </div>
-          <div class="field">
-            <label>Easter egg chance (%)</label>
-            <input id="cg-eggchance" type="number" inputmode="numeric" placeholder="10" value="10">
-          </div>
-        </div>
-
-        <div class="row">
-          <button class="btn" id="cg-generate">Generate</button>
-          <button class="btn secondary" id="cg-copy">Copy</button>
-        </div>
-
-        <div class="codebox" id="cg-output" aria-live="polite">Your code will appear here</div>
-      </section>
-
-      <!-- ===== Name Generators (Xbox/Discord/TikTok/Roblox/General) ===== -->
-      <section class="panel" id="panel-names" style="display:none">
-        <h2>Name Generators</h2>
-        <p class="muted">Choose a style and generate a name. Slot-machine reveal included.</p>
-
-        <div class="grid">
-          <div class="field">
-            <label>Type</label>
-            <select id="ng-type">
-              <option value="xbox">Xbox Gamertag</option>
-              <option value="discord">Discord Name</option>
-              <option value="tiktok">TikTok Handle</option>
-              <option value="roblox">Roblox Username</option>
-              <option value="username">General Username</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Base word (optional)</label>
-            <input id="ng-base" type="text" placeholder="">
-          </div>
-        </div>
-
-        <div class="row">
-          <button class="btn" id="ng-generate">Generate</button>
-          <button class="btn secondary" id="ng-copy">Copy</button>
-        </div>
-
-        <div class="codebox" id="ng-output">Your name will appear here</div>
-      </section>
-
-      <!-- ===== Project Names ===== -->
-      <section class="panel" id="panel-project" style="display:none">
-        <h2>Project Name Generator</h2>
-        <p class="muted">Generate names like "Pixel Network" or "Shadow United".</p>
-        <div class="grid">
-          <div class="field">
-            <label>Base word (optional)</label>
-            <input id="pg-base" type="text" placeholder="">
-          </div>
-        </div>
-        <div class="row">
-          <button class="btn" id="pg-generate">Generate</button>
-          <button class="btn secondary" id="pg-copy">Copy</button>
-        </div>
-        <div class="codebox" id="pg-output">Your project name will appear here</div>
-      </section>
-
-      <!-- ===== Rules Generator ===== -->
-      <section class="panel" id="panel-rules" style="display:none">
-        <h2>Rules Generator</h2>
-        <p class="muted">Enter a topic (e.g., Minecraft, Discord, Roblox, Lethal Company) and choose count.</p>
-
-        <div class="grid">
-          <div class="field">
-            <label>Custom topic</label>
-            <input id="rg-custom" type="text" placeholder="Server" value="Server">
-          </div>
-          <div class="field">
-            <label>How many rules?</label>
-            <input id="rg-count" type="number" inputmode="numeric" placeholder="8" value="8">
-          </div>
-        </div>
-
-        <div class="row">
-          <button class="btn" id="rg-generate">Generate</button>
-          <button class="btn secondary" id="rg-copy">Copy</button>
-        </div>
-
-        <div class="codebox" id="rg-output">Your rules will appear here</div>
-      </section>
-
-      <!-- ===== Ideas Generator ===== -->
-      <section class="panel" id="panel-ideas" style="display:none">
-        <h2>Random Ideas</h2>
-        <p class="muted">One click sparks project concepts, minigames, content prompts, etc.</p>
-        <div class="row">
-          <button class="btn" id="ig-generate">Generate Idea</button>
-          <button class="btn secondary" id="ig-copy">Copy</button>
-        </div>
-        <div class="codebox" id="ig-output">Your idea will appear here</div>
-      </section>
-
-      <!-- ===== Color Palette Generator ===== -->
-      <section class="panel" id="panel-colors" style="display:none">
-        <h2>Color Palette</h2>
-        <p class="muted">Generate a 5‑color palette. Click copy to grab all hex values.</p>
-        <div class="row">
-          <button class="btn" id="cp-generate">Generate Palette</button>
-          <button class="btn secondary" id="cp-copy">Copy</button>
-        </div>
-        <div class="swatches" id="cp-swatches"></div>
-      </section>
-
-      <!-- ===== Discord Webhook JSON (no send, just generate) ===== -->
-      <section class="panel" id="panel-webhook" style="display:none">
-        <h2>Discord Webhook JSON</h2>
-        <p class="muted">Fill the fields and copy the JSON or cURL. (Static page—no sending.)</p>
-
-        <div class="grid">
-          <div class="field"><label>Username</label><input id="wh-username" type="text" placeholder="Webhook Bot"></div>
-          <div class="field"><label>Avatar URL</label><input id="wh-avatar" type="text" placeholder="https://example.com/avatar.png"></div>
-          <div class="field"><label>Content (message)</label><textarea id="wh-content" rows="3" placeholder="Hello from the webhook!"></textarea></div>
-        </div>
-
-        <div class="row">
-          <button class="btn" id="wh-generate">Generate JSON</button>
-          <button class="btn secondary" id="wh-copy-json">Copy JSON</button>
-          <button class="btn ghost" id="wh-copy-curl">Copy cURL</button>
-        </div>
-
-        <div class="codebox" id="wh-output">Webhook JSON will appear here</div>
-      </section>
+      <div class="topbar"><button class="hamburger" id="hamburger" title="Toggle menu">☰</button></div>
     </main>
   </div>
-
   <div class="toast" id="toast">Copied!</div>
 
   <script>
-    /* ===== Tab nav & sidebar ===== */
-    const nav = document.getElementById('nav');
-    const tabs = [...nav.querySelectorAll('.tab')];
-    const panels = [...document.querySelectorAll('.panel')];
-    nav.addEventListener('click', (e)=>{
-      const tab = e.target.closest('.tab');
-      if(!tab) return;
-      const target = tab.dataset.target;
-      tabs.forEach(t=>t.classList.toggle('active', t===tab));
-      panels.forEach(p=> p.style.display = (p.id === target) ? '' : 'none');
-    });
-    const sidebar = document.getElementById('sidebar');
-    document.getElementById('hamburger').addEventListener('click', ()=>{
-      sidebar.classList.toggle('hide');
-    });
-
-    /* ===== Toast ===== */
-    function showToast(msg="Copied!"){
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      clearTimeout(showToast._timer);
-      showToast._timer = setTimeout(()=> t.classList.remove('show'), 1200);
-    }
-
-    /* ===== Helpers ===== */
-    const $ = (id)=>document.getElementById(id);
-    const readInt = (id, def) => {
-      const v = parseInt(($(id).value || '').trim(), 10);
-      return Number.isFinite(v) ? v : def;
-    };
-    const readStr = (id, def) => {
-      const v = (($(id).value || '').trim());
-      return v !== '' ? v : def;
-    };
-    const checked = (id)=> !!$(id).checked;
-
-    const randomOf = (arr)=>arr[Math.floor(Math.random()*arr.length)];
-    const lettersUpper="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const lettersLower="abcdefghijklmnopqrstuvwxyz";
-    const digits="0123456789";
-    const special="!@#$%^&*()_+[]{}<>?/~";
-
-    /* ===== Reusable slot-machine reveal ===== */
-    async function slotReveal(el, finalText, opts={}){
-      const alphabet = opts.chars || (lettersUpper + digits);
-      const delay = opts.delay || 30;
-      const perCharSpins = opts.perCharSpins || 12;
-
-      el.style.fontSize = (opts.fontSize || '').toString().trim() ? opts.fontSize + 'px' : '';
-      el.innerHTML = '';
-      const spans = [...finalText].map((ch)=>{
-        const s = document.createElement('span');
-        s.className = 'slot';
-        s.textContent = ' ';
-        el.appendChild(s);
-        return s;
-      });
-
-      for(let i=0;i<spans.length;i++){
-        await new Promise(res=>setTimeout(res, 20)); // stagger start
-        let spins = 0;
-        const timer = setInterval(()=>{
-          spans[i].textContent = alphabet[Math.floor(Math.random()*alphabet.length)];
-          spins++;
-          if(spins >= perCharSpins || finalText[i] === '-' || finalText[i] === ' '){
-            clearInterval(timer);
-            spans[i].textContent = finalText[i];
-            spans[i].classList.add('spin');
-          }
-        }, delay);
-      }
-      // resolve when last char set
-      await new Promise(res=>setTimeout(res, perCharSpins*delay + 60));
-    }
-
-    /* ===== CODE GENERATOR ===== */
-    $('cg-generate').addEventListener('click', ()=>{
-      const segments   = readInt('cg-segments', 3);
-      const segLen     = readInt('cg-seglen', 4);
-      const sep        = readStr('cg-sep', '-');
-      const prefix     = readStr('cg-prefix','');
-      const suffix     = readStr('cg-suffix','');
-      const fontSize   = readInt('cg-font', 0);
-
-      const useUpper   = checked('cg-upper');
-      const useLower   = checked('cg-lower');
-      const useNums    = checked('cg-nums');
-      const useSpec    = checked('cg-spec');
-      const useWords   = checked('cg-words');
-      const allowDupes = checked('cg-dupe');
-
-      let alphabet = '';
-      if(useUpper) alphabet += lettersUpper;
-      if(useLower) alphabet += lettersLower;
-      if(useNums)  alphabet += digits;
-      if(useSpec)  alphabet += special;
-      if(!alphabet && !useWords){ alphabet = lettersUpper + digits; }
-
-      const eggChance = Math.max(0, Math.min(100, readInt('cg-eggchance', 0)));
-      const eggList = readStr('cg-eggs','').split(',').map(s=>s.trim()).filter(Boolean);
-
-      const wordsPool = ["CAT","DOG","STAR","NOVA","ECHO","WAVE","PINK","LUNA","VOID","RUSH","GLOW","FIZZ","MINT","BYTE","CORE"];
-
-      const parts = [];
-      for(let i=0;i<segments;i++){
-        let seg = '';
-        if(useWords){
-          // word segment
-          const pool = eggList.length ? wordsPool.concat(eggList.map(w=>w.toUpperCase())) : wordsPool;
-          seg = randomOf(pool);
-          if(segLen>0) seg = seg.slice(0, segLen).padEnd(segLen, 'X');
-        }else{
-          const chars = alphabet || (lettersUpper + digits);
-          const chosen = new Set();
-          while(seg.length < segLen){
-            const ch = chars[Math.floor(Math.random()*chars.length)];
-            if(allowDupes || !chosen.has(ch)){
-              seg += ch;
-              chosen.add(ch);
-            }
-          }
-          // Easter egg injection chance: replace whole segment with an egg
-          if(eggList.length && Math.random()*100 < eggChance){
-            const egg = randomOf(eggList).toUpperCase();
-            seg = egg.slice(0, segLen).padEnd(segLen, 'X');
-          }
-        }
-        parts.push(seg);
-      }
-
-      let finalCode = parts.join(sep || '-');
-      if(prefix) finalCode = prefix + (sep || '-') + finalCode;
-      if(suffix) finalCode = finalCode + (sep || '-') + suffix;
-
-      slotReveal($('cg-output'), finalCode, { chars: alphabet || (lettersUpper+digits), fontSize });
-    });
-
-    $('cg-copy').addEventListener('click', async ()=>{
-      const text = $('cg-output').innerText.trim();
-      if(!text) return;
-      await navigator.clipboard.writeText(text);
-      showToast();
-    });
-
-    /* ===== NAME GENERATORS ===== */
-    $('ng-generate').addEventListener('click', ()=>{
-      const type = readStr('ng-type','username');
-      const base = readStr('ng-base','');
-      const adjectives = [
-        "Abyssal", "Alpha", "Ancient", "Arcane", "Astral", "Azure", "Berserk", "Binary", "Black", "Blazing",
-        "Bleak", "Blitz", "Blood", "Bone", "Brutal", "Celestial", "Chaos", "Chrome", "Cobalt", "Corrupt",
-        "Cosmic", "Crimson", "Cursed", "Cyber", "Dark", "Deadly", "Death", "Deep", "Demonic", "Desolate",
-        "Digital", "Doom", "Dread", "Ebon", "Eclipse", "Eldritch", "Electric", "Elemental", "Elite", "Ember",
-        "Enchanted", "Endless", "Eternal", "Fallen", "Feral", "Fiendish", "Fierce", "Final", "Frozen", "Fury",
-        "Ghostly", "Glacial", "Gloom", "Grim", "Hallow", "Hateful", "Haunted", "Hellish", "Hex", "Hollow",
-        "Hyper", "Ice", "Infernal", "Infinite", "Iron", "Jagged", "Killer", "Lich", "Lunar", "Lurking",
-        "Mad", "Magma", "Malevolent", "Malicious", "Merciless", "Midnight", "Mighty", "Mystic", "Nebula", "Necro",
-        "Nether", "Neon", "Night", "Oblivion", "Obsidian", "Omega", "Onyx", "Phantom", "Plague", "Prime",
-        "Quantum", "Radiant", "Rage", "Raven", "Reaper", "Relentless", "Rogue", "Ruin", "Rust", "Sable",
-        "Savage", "Scarlet", "Scorched", "Shadow", "Sharp", "Shifting", "Silent", "Silver", "Sinister", "Solar",
-        "Soul", "Specter", "Steel", "Storm", "Strange", "Sulfur", "Swift", "Thorn", "Thunder", "Titan",
-        "Twilight", "Umbral", "Unholy", "Vengeful", "Venom", "Vicious", "Vile", "Void", "Volt", "Warp",
-        "Wicked", "Wild", "Wither", "Wraith", "Xeno", "Zero"
-      ];
-      const nouns = [
-        "Abyss", "Alpha", "Angel", "Annihilator", "Apostle", "Armageddon", "Assassin", "Atrocity", "Avatar", "Bane",
-        "Beast", "Berserker", "Betrayer", "Blackout", "Blade", "Blight", "Bloodletter", "Bonebreaker", "Brute", "Butcher",
-        "Carnage", "Centurion", "Champion", "Chimera", "Colossus", "Conqueror", "Corruptor", "Corsair", "Creature", "Crusher",
-        "Crypt", "Cyclops", "Dagger", "Darkness", "Death", "Defiler", "Demon", "Desecrator", "Destroyer", "Devastator",
-        "Devil", "Diablo", "Dismember", "Dominator", "Doom", "Dragon", "Draugr", "Dreadnought", "Drifter", "Eclipse",
-        "Emperor", "Enforcer", "Entity", "Eradicator", "Eviscerator", "Executioner", "Exile", "Fallen", "Fang", "Fate",
-        "Fiend", "Fist", "Flayer", "Forsaken", "Frostbite", "Fury", "Gargoyle", "Ghoul", "Gladiator", "Glaive",
-        "Golem", "Goliath", "Grave", "Grimoire", "Guardian", "Harbinger", "Hate", "Hatred", "Hellion", "Herald",
-        "Horror", "Hunter", "Husk", "Hydra", "Hyena", "Immortal", "Impaler", "Incarnate", "Inferno", "Inquisitor",
-        "Juggernaut", "Katana", "Killer", "King", "Knight", "Kraken", "Lament", "Legion", "Leviathan", "Lich",
-        "Lord", "Lurker", "Mace", "Machine", "Maelstrom", "Mage", "Maggot", "Marauder", "Maw", "Menace",
-        "Mercenary", "Monarch", "Monster", "Mortal", "Mutilator", "Necro", "Nemesis", "Nightmare", "Oblivion", "Ogre",
-        "Omega", "Omen", "Onslaught", "Oracle", "Overlord", "Paladin", "Paragon", "Phantom", "Phoenix", "Pit",
-        "Predator", "Priest", "Prince", "Prodigy", "Prophet", "Psycho", "Punisher", "Pyre", "Queen", "Rage",
-        "Raider", "Ranger", "Ravager", "Reaper", "Revenant", "Rider", "Ripper", "Rogue", "Ruiner", "Saber",
-        "Sage", "Samurai", "Savage", "Scar", "Scourge", "Seeker", "Sentinel", "Serpent", "Shadow", "Shaman",
-        "Shard", "Shield", "Shogun", "Sickle", "Skull", "Slayer", "Soul", "Specter", "Spell", "Spine",
-        "Stalker", "Storm", "Stranger", "Sunder", "Surgeon", "Sword", "Talon", "Terror", "Thief", "Thorn",
-        "Thunder", "Titan", "Torment", "Torturer", "Toxin", "Tyrant", "Undead", "Valkyrie", "Vandal", "Vanguard",
-        "Vengeance", "Venom", "Vermin", "Viper", "Void", "Vortex", "Warden", "Warlock", "Warlord", "Warrior",
-        "Watcher", "Wendigo", "Whisper", "Widow", "Wight", "Witch", "Wolf", "Wraith", "Wyrm", "Zealot"
-      ];
-
-      function pickBase(){
-        return base || (randomOf(adjectives) + randomOf(nouns));
-      }
-
-      let handle = '';
-      const b = pickBase();
-
-      switch(type){
-        case 'xbox':
-          handle = randomOf(["xX","i","The",""]) + b + randomOf(["","HD","Pro","360","77"]) + randomOf(["xX","",""]);
-          break;
-        case 'discord':
-          handle = b; // No # as requested
-          break;
-        case 'tiktok':
-          handle = "@" + b.toLowerCase().replace(/\s+/g,'.');
-          break;
-        case 'roblox':
-          handle = b.replace(/\s+/g,'') + Math.floor(Math.random()*999);
-          break;
-        default:
-          handle = b + Math.floor(Math.random()*999);
-      }
-
-      slotReveal($('ng-output'), handle, { chars: lettersUpper+lettersLower+digits });
-    });
-
-    $('ng-copy').addEventListener('click', async ()=>{
-      const text = $('ng-output').innerText.trim();
-      if(!text) return;
-      await navigator.clipboard.writeText(text);
-      showToast();
-    });
-
-    /* ===== PROJECT NAMES ===== */
-    $('pg-generate').addEventListener('click', ()=>{
-      const base = readStr('pg-base','');
-      const words = [
-        "Galaxy", "Pixel", "Shadow", "Crystal", "Echo", "Storm", "Aurora", "Neon", "Quantum", "Vertex",
-        "Pulse", "Zenith", "Nova", "Vortex", "Hyper", "Orbit", "Phantom", "Infinity", "Cosmic", "Nebula",
-        "Lunar", "Solar", "Titan", "Void", "Obsidian", "Blitz", "Frost", "Ember", "Rift", "Chrome",
-        "Cyber", "Prism", "Hologram", "Synapse", "Mirage", "Catalyst", "Apex", "Horizon", "Terra", "Flux",
-        "Ion", "Zephyr", "Onyx", "Matrix", "Drift", "Cipher", "Pinnacle", "Abyss", "Eon", "Spectra",
-        "Titan", "Vector", "Astral", "Radiance", "Eclipse", "Serpent", "Warp", "Fusion", "Dynamo", "Photon",
-        "Tundra", "Inferno", "Celestial", "Paragon", "Mythic", "Sable", "Vanguard", "Talon", "Rune", "Ether",
-        "Crimson", "Viper", "Spectral", "Obelisk", "Nexus", "Kaleido", "Quasar", "Stratos", "Monolith", "Helix",
-        "Umbra", "Lumen", "Tesseract", "Fractal", "Aegis", "Chronos", "Daemon", "Echelon", "Forge", "Goliath",
-        "Havoc", "Juggernaut", "Kinetix", "Legacy", "Maelstrom", "Nether", "Oculus", "Pandora", "Quill", "Ragnarok"
-      ];
-      const suffixes = [
-        "Network", "United", "Studios", "Collective", "Group", "Systems", "Labs", "Works", "Alliance",
-        "Technologies", "Digital", "Ventures", "Enterprises", "Solutions", "Dynamics", "Industries", "Corp", "Inc",
-        "Interactive", "Media", "Software", "Hardware", "Robotics", "AI", "Cloud", "Data", "Cybernetics", "Nanotech",
-        "Biotech", "Synth", "Automata", "Machina", "Foundry", "Forge", "Fabrications", "Construct", "Mechanics", "Engine",
-        "Design", "Creations", "Innovations", "Inventions", "Patents", "Logic", "Circuit", "Mainframe", "Server", "Node"
-      ];
-      const root = base || randomOf(words);
-      const project = root + " " + randomOf(suffixes);
-      slotReveal($('pg-output'), project, { chars: lettersUpper+lettersLower });
-    });
-
-    $('pg-copy').addEventListener('click', async ()=>{
-      const text = $('pg-output').innerText.trim();
-      if(!text) return;
-      await navigator.clipboard.writeText(text);
-      showToast();
-    });
-
-    /* ===== RULES ===== */
-    $('rg-generate').addEventListener('click', ()=>{
-      const topic = readStr('rg-custom','Server');
-      const count = Math.max(3, Math.min(20, readInt('rg-count', 8)));
-      const stock = [
-        // **General Conduct**
-        `Respect all members in the ${topic}.`,
-        `No spamming, harassment, or hate speech.`,
-        `Keep content appropriate; follow platform TOS.`,
-        `No cheating, exploiting, or unauthorized mods.`,
-        `Follow instructions from staff and moderators.`,
-        `Use the correct channels/categories.`,
-        `No advertising without permission.`,
-        `Protect privacy—no doxxing or sharing personal info.`,
-        `Report bugs/issues to staff, don't abuse them.`,
-        `Have fun and help others.`,
-
-        // **Behavior & Communication**
-        `No trolling, baiting, or flame wars.`,
-        `Avoid excessive drama or off-topic arguments.`,
-        `No impersonation of staff or other users.`,
-        `Use English (or the server's primary language) in public channels.`,
-        `No excessive caps, emoji, or disruptive formatting.`,
-        `Keep politics/religion discussions civil or avoid them if volatile.`,
-        `No NSFW content in non-designated areas.`,
-        `No begging, guilt-tripping, or manipulative behavior.`,
-        `Do not backseat moderate (let staff handle rule enforcement).`,
-        `Use constructive criticism, not personal attacks.`,
-
-        // **Content & Posting**
-        `No low-effort posts (e.g., "lol", "this").`,
-        `No reposting deleted/removed content.`,
-        `Cite sources for news/claims when possible.`,
-        `No pirated/illegal content (warez, cracks, etc.).`,
-        `No shock/gore content.`,
-        `No misinformation or deliberate spreading of false info.`,
-        `No unsolicited self-promotion (DM ads = ban).`,
-        `No AI-generated spam (e.g., ChatGPT floods).`,
-        `Keep memes in designated areas.`,
-        `No "upvote farming" or karma manipulation.`,
-
-        // **Gaming/Competitive**
-        `No smurfing or account boosting.`,
-        `No win-trading or match-fixing.`,
-        `No toxic behavior (e.g., "gg ez", trash talk).`,
-        `No sharing exploits/cheats.`,
-        `Respect esports rules if competing.`,
-        `No false reports against players.`,
-        `Stream sniping is prohibited.`,
-        `No account sharing (unless explicitly allowed).`,
-        `Clans/guilds must follow recruitment rules.`,
-        `No stat padding or artificial rank inflation.`,
-
-        // **Tech & Security**
-        `No sharing malware, phishing links, or IP grabbers.`,
-        `Do not discuss/encourage illegal hacking.`,
-        `No unauthorized bot usage.`,
-        `No scraping/data harvesting without permission.`,
-        `Report security vulnerabilities responsibly.`,
-        `No DDoS threats or encouragement.`,
-        `No bypassing bans (alt accounts = permaban).`,
-        `No sharing others' work without credit.`,
-        `Respect licenses (no pirated software talk).`,
-        `No crypto scams/pyramid schemes.`,
-
-        // **Moderation & Appeals**
-        `Appeals must be submitted formally (no DMs).`,
-        `Ban evasion will extend punishments.`,
-        `Staff decisions are final (no public arguing).`,
-        `False reports may result in penalties.`,
-        `Deleted content is not to be reposted.`,
-        `No retaliating against rule reports.`,
-        `Do not @mention staff for trivial issues.`,
-        `Private chats with staff remain confidential.`,
-        `Mass-pinging (e.g., @everyone) is staff-only.`,
-        `No encouraging others to break rules.`,
-
-        // **Community & Culture**
-        `New members must read rules before participating.`,
-        `No elitism or gatekeeping.`,
-        `Respect cultural differences.`,
-        `No discriminatory language (even as "jokes").`,
-        `Use trigger warnings for sensitive topics.`,
-        `No glorifying self-harm or violence.`,
-        `Support inclusivity (LGBTQ+, neurodiversity, etc.).`,
-        `No "us vs. them" mentality (e.g., platform wars).`,
-        `Be patient with newcomers.`,
-        `Celebrate others' achievements—no envy.`,
-
-        // **Voice/Video Chats**
-        `No earrape, loud noises, or mic spam.`,
-        `Respect speaking turns (no interruptions).`,
-        `No voice changers to mislead/deceive.`,
-        `Keep background noise minimal.`,
-        `No recording without consent.`,
-        `Screen-sharing must be appropriate.`,
-        `Video chats require clothed participants.`,
-        `No fake cam/avatar misuse.`,
-        `Raise hands in large VC discussions.`,
-        `Debates must stay civil (no shouting).`,
-
-        // **Creators & Artists**
-        `Credit original artists/creators.`,
-        `No AI art claiming to be human-made.`,
-        `Critique must be constructive, not cruel.`,
-        `No art theft/tracing without permission.`,
-        `Commissions must follow pricing transparency.`,
-        `No fake "free reward" scams.`,
-        `Reposts require artist consent.`,
-        `No plagiarism of writing/code/designs.`,
-        `WIPs (works in progress) are welcome!`,
-        `Feedback should be actionable.`,
-
-        // **Events & Giveaways**
-        `No fake giveaways or scams.`,
-        `Follow event-specific rules.`,
-        `Winners must claim prizes within deadline.`,
-        `No bribing judges/voters.`,
-        `Event staff decisions are final.`,
-        `No multi-accounting to enter contests.`,
-        `Giveaways must be approved by staff.`,
-        `No selling/trading giveaway prizes here.`,
-        `Respect event time zones/schedules.`,
-        `Have fun—no sabotage!`
-      ];
-      let items = [];
-      while(items.length < count){
-        const line = randomOf(stock);
-        if(!items.includes(line)) items.push(line);
-      }
-      const text = items.map((v,i)=>`${i+1}. ${v}`).join('\n');
-      $('rg-output').textContent = text;
-    });
-
-    $('rg-copy').addEventListener('click', async ()=>{
-      const text = $('rg-output').innerText.trim();
-      if(!text) return;
-      await navigator.clipboard.writeText(text);
-      showToast();
-    });
-
-    /* ===== IDEAS ===== */
-    $('ig-generate').addEventListener('click', ()=>{
-      const categories = [
-        "Mini-game", "Content series", "Tool/Utility", "Discord bot", "Plugin", "Challenge mode", "Build theme", "Event idea",
-        "Roguelike", "Metroidvania", "Battle Royale", "Sandbox", "RPG", "Simulator", "Tower Defense", "Idle Game", "Visual Novel", "Text Adventure",
-        "Rhythm Game", "Puzzle Game", "Horror Game", "FPS", "Platformer", "Open World", "Survival", "Stealth", "Racing", "Sports",
-        "Card Game", "Board Game", "Trivia", "MOBA", "MMO", "Tycoon", "Clicker", "Incremental", "Arcade", "Point-and-Click"
-      ];
-      const verbs = [
-        "Auto", "Hyper", "Neo", "Quantum", "Solar", "Pixel", "Crystal", "Echo", "Shadow", "Nova", "Lunar",
-        "Cyber", "Digital", "Virtual", "Atomic", "Nano", "Bio", "Synth", "Robo", "Mecha", "Drone",
-        "AI", "Neural", "Deep", "Machine", "Algorithm", "Blockchain", "Crypto", "Data", "Cloud", "Edge",
-        "Holo", "VR", "AR", "Mixed", "Photon", "Plasma", "Tesla", "Gamma", "Omega", "Alpha"
-      ];
-      const nouns = [
-        "Market", "Tracker", "Arena", "Builder", "Hunt", "Rush", "Dash", "Tycoon", "Craft", "Defense", "Portal", "Studio",
-        "Hub", "Nexus", "Core", "Node", "Terminal", "Gateway", "Dimension", "Realm", "Universe", "Multiverse",
-        "Sanctuary", "Temple", "Shrine", "Archive", "Library", "Museum", "Gallery", "Theater", "Colosseum", "Dojo",
-        "Academy", "University", "Lab", "Factory", "Forge", "Mill", "Mine", "Quarry", "Outpost", "Colony"
-      ];
-      const idea = randomOf(categories)+": "+randomOf(verbs)+" "+randomOf(nouns);
-      slotReveal($('ig-output'), idea, { chars: lettersUpper+lettersLower+digits });
-    });
-
-    $('ig-copy').addEventListener('click', async ()=>{
-      const text = $('ig-output').innerText.trim();
-      if(!text) return;
-      await navigator.clipboard.writeText(text);
-      showToast();
-    });
-
-    /* ===== COLOR PALETTE ===== */
-    function randomHex(){
-      return "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6,"0");
-    }
-    $('cp-generate').addEventListener('click', ()=>{
-      const wrap = $('cp-swatches');
-      wrap.innerHTML = '';
-      const colors = [];
-      for(let i=0;i<5;i++){
-        const hex = randomHex();
-        colors.push(hex);
-        const div = document.createElement('div');
-        div.className = 'swatch';
-        div.style.background = hex;
-        div.textContent = hex;
-        wrap.appendChild(div);
-      }
-      wrap.dataset.colors = colors.join(' ');
-    });
-    $('cp-copy').addEventListener('click', async ()=>{
-      const colors = $('cp-swatches').dataset.colors || '';
-      if(!colors) return;
-      await navigator.clipboard.writeText(colors);
-      showToast("Palette copied!");
-    });
-
-    /* ===== DISCORD WEBHOOK JSON ===== */
-    let lastWebhookJSON = '';
-    $('wh-generate').addEventListener('click', ()=>{
-      const obj = {
-        username: readStr('wh-username',''),
-        avatar_url: readStr('wh-avatar',''),
-        content: readStr('wh-content','')
+    document.addEventListener('DOMContentLoaded', () => {
+      const $ = (id) => document.getElementById(id);
+      const mainContent = document.querySelector('.content');
+      let isMobile = window.innerWidth <= 900;
+      let qrCodeInstance = null;
+      
+      const showToast = (msg = "Copied!") => {
+        const t = $('toast'); t.textContent = msg; t.classList.add('show');
+        clearTimeout(t._timer); t._timer = setTimeout(() => t.classList.remove('show'), 1500);
       };
-      lastWebhookJSON = JSON.stringify(obj, null, 2);
-      $('wh-output').textContent = lastWebhookJSON;
-    });
-    $('wh-copy-json').addEventListener('click', async ()=>{
-      if(!lastWebhookJSON) return;
-      await navigator.clipboard.writeText(lastWebhookJSON);
-      showToast("JSON copied!");
-    });
-    $('wh-copy-curl').addEventListener('click', async ()=>{
-      if(!lastWebhookJSON) return;
-      const curl = `curl -X POST -H "Content-Type: application/json" -d '${lastWebhookJSON.replace(/'/g,"'\\''")}' https://discord.com/api/webhooks/WEBHOOK_ID/WEBHOOK_TOKEN`;
-      await navigator.clipboard.writeText(curl);
-      showToast("cURL copied!");
-    });
 
-    // Initialize some default values
-    $('cg-generate').click();
-    $('ng-generate').click();
-    $('pg-generate').click();
-    $('rg-generate').click();
-    $('ig-generate').click();
-    $('cp-generate').click();
+      const copyToClipboard = (elementId) => {
+        const el = $(elementId); const text = el?.value ?? el?.textContent;
+        if (text) navigator.clipboard.writeText(text).then(() => showToast(), () => showToast("Failed to copy!"));
+      };
+
+      const addPanel = (id, title, content, setupLogic) => {
+        const panel = document.createElement('section'); panel.id = `panel-${id}`; panel.className = 'panel'; panel.style.display = 'none';
+        panel.innerHTML = `<h2>${title}</h2>` + content; mainContent.appendChild(panel);
+        if (setupLogic) setupLogic(panel);
+      };
+      
+      const setupSidebarAndTabs = () => {
+        const sidebar = $('sidebar'); const hamburger = $('hamburger'); const nav = $('nav');
+        if (isMobile) sidebar.classList.add('hide');
+        hamburger.addEventListener('click', () => sidebar.classList.toggle('hide'));
+        window.addEventListener('resize', () => {
+          const mobileState = window.innerWidth <= 900;
+          if (mobileState !== isMobile) { isMobile = mobileState; sidebar.classList.toggle('hide', isMobile); }
+        });
+
+        nav.addEventListener('click', (e) => {
+          const tab = e.target.closest('.tab'); if (!tab) return;
+          nav.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); tab.classList.add('active');
+          document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
+          const targetPanel = $(tab.dataset.target); if (targetPanel) targetPanel.style.display = 'block';
+          if (isMobile) sidebar.classList.add('hide');
+        });
+        const activeTab = nav.querySelector('.tab.active') || nav.querySelector('.tab'); if (activeTab) activeTab.click();
+      };
+      
+      const randomOf = arr => arr[Math.floor(Math.random()*arr.length)];
+
+      addPanel('password','Password',`<p class="muted">Create strong, secure passwords.</p><div class="grid"><div class="field"><label>Length</label><input id="pass-len" type="number" value="16"></div><div class="field"><label><input type="checkbox" id="pass-upper" checked> Uppercase</label></div><div class="field"><label><input type="checkbox" id="pass-lower" checked> Lowercase</label></div><div class="field"><label><input type="checkbox" id="pass-nums" checked> Numbers</label></div><div class="field"><label><input type="checkbox" id="pass-spec"> Special</label></div></div><div class="row"><button id="pass-gen" class="btn">Generate</button><button onclick="copyToClipboard('pass-output')" class="btn">Copy</button></div><textarea id="pass-output" class="output-box" readonly></textarea>`,p=>{const gen=()=>{let c='',res='';const l=$('pass-len').value;if($('pass-upper').checked)c+='ABCDEFGHIJKLMNPQRSTUVWXYZ';if($('pass-lower').checked)c+='abcdefghijklmnpqrstuvwxyz';if($('pass-nums').checked)c+='123456789';if($('pass-spec').checked)c+='!@#$%^&*()_+';if(c==='')c='...';for(let i=0;i<l;i++)res+=c.charAt(Math.floor(Math.random()*c.length));$('pass-output').value=res;};p.querySelector('#pass-gen').onclick=gen;gen();});
+      addPanel('uuid', 'UUID', `<p class="muted">Generate universally unique identifiers (v4).</p><div class="row"><button id="uuid-gen" class="btn">Generate</button><button onclick="copyToClipboard('uuid-output')" class="btn">Copy</button></div><textarea id="uuid-output" class="output-box" readonly></textarea>`,p=>{const gen=()=>$('uuid-output').value=crypto.randomUUID();p.querySelector('#uuid-gen').onclick=gen;gen();});
+      addPanel('hashing','Hashing',`<p class="muted">Compute a cryptographic hash of any text.</p><div class="grid"><div class="field"><label>Input Text</label><textarea id="hash-input" rows="4">hello world</textarea></div><div class="field"><label>Algorithm</label><select id="hash-algo"><option>SHA-1</option><option>SHA-256</option><option>SHA-384</option><option>SHA-512</option></select></div></div><div class="row"><button id="hash-gen" class="btn">Generate Hash</button><button onclick="copyToClipboard('hash-output')" class="btn">Copy</button></div><textarea id="hash-output" class="output-box" readonly></textarea>`,p=>{const gen=async()=>{const a=$('hash-algo').value,t=$('hash-input').value,b=new TextEncoder().encode(t),hb=await crypto.subtle.digest(a,b),ha=Array.from(new Uint8Array(hb));$('hash-output').value=ha.map(b=>b.toString(16).padStart(2,'0')).join('')};p.querySelector('#hash-gen').onclick=gen;gen()});
+      addPanel('json', 'JSON Formatter', `<p class="muted">Format or minify JSON data for readability or efficiency.</p><textarea id="json-input" rows="10">{"hello":"world", "data":[1,2,3]}</textarea><div class="row"><button id="json-format" class="btn">Format</button><button id="json-minify" class="btn">Minify</button><button onclick="copyToClipboard('json-input')" class="btn">Copy</button></div>`,p=>{const i=$('json-input');p.querySelector('#json-format').onclick=()=>{try{i.value=JSON.stringify(JSON.parse(i.value),null,2)}catch(e){i.value='Invalid JSON'}};p.querySelector('#json-minify').onclick=()=>{try{i.value=JSON.stringify(JSON.parse(i.value))}catch(e){i.value='Invalid JSON'}}});
+      addPanel('jwt', 'JWT Decoder', `<p class="muted">Decode a JSON Web Token to view its header and payload.</p><div class="field"><label>JWT String</label><textarea id="jwt-input" rows="5"></textarea></div><div class="row"><button id="jwt-decode" class="btn">Decode</button></div><textarea id="jwt-output" class="output-box" readonly></textarea>`,p=>p.querySelector('#jwt-decode').onclick=()=>{const t=$('jwt-input').value.split('.');if(t.length!==3){$('jwt-output').value='Invalid JWT';return}try{const h=JSON.stringify(JSON.parse(atob(t[0].replace(/-/g,'+').replace(/_/g,'/'))),null,2),p=JSON.stringify(JSON.parse(atob(t[1].replace(/-/g,'+').replace(/_/g,'/'))),null,2);$('jwt-output').value=`Header:\n${h}\n\nPayload:\n${p}`}catch(e){$('jwt-output').value='Error decoding JWT'}});
+      addPanel('base64','Base64',`<p class="muted">Encode text to Base64 or decode it back.</p><div class="grid grid-2"><div class="field"><label>Text</label><textarea id="b64-text" rows="5"></textarea></div><div class="field"><label>Base64</label><textarea id="b64-base64" rows="5"></textarea></div></div>`,p=>{const t=$('b64-text'),b=$('b64-base64');t.oninput=()=>{try{b.value=btoa(t.value)}catch(e){}};b.oninput=()=>{try{t.value=atob(b.value)}catch(e){}}});
+      addPanel('url','URL Encoder',`<p class="muted">Encode or decode strings for use in URLs.</p><div class="grid grid-2"><div class="field"><label>Decoded</label><textarea id="url-text" rows="5"></textarea></div><div class="field"><label>Encoded</label><textarea id="url-encoded" rows="5"></textarea></div></div>`,p=>{const t=$('url-text'),e=$('url-encoded');t.oninput=()=>e.value=encodeURIComponent(t.value);e.oninput=()=>{try{t.value=decodeURIComponent(e.value)}catch(err){}}});
+      addPanel('html','HTML Entities',`<p class="muted">Convert special characters to their HTML entities.</p><div class="grid grid-2"><div class="field"><label>Text</label><textarea id="html-text" rows="5"><p>Hello World!</p></textarea></div><div class="field"><label>Entities</label><textarea id="html-entities" rows="5"></textarea></div></div>`,p=>{const t=$('html-text'),e=$('html-entities'),d=document.createElement('div');const enc=s=>{d.textContent=s;return d.innerHTML};const dec=s=>{d.innerHTML=s;return d.textContent};t.oninput=()=>e.value=enc(t.value);e.oninput=()=>t.value=dec(e.value);e.value=enc(t.value)});
+      addPanel('unix','Unix Timestamp',`<p class="muted">Convert between Unix timestamps and human-readable dates.</p><div class="grid grid-2"><div class="field"><label>Timestamp</label><input id="unix-time" type="number"></div><div class="field"><label>Date/Time</label><input id="unix-date" type="text"></div></div><div class="row"><button id="unix-now" class="btn">Now</button></div>`,p=>{const t=$('unix-time'),d=$('unix-date'),set=()=>{const now=new Date();d.value=now.toLocaleString();t.value=Math.floor(now.getTime()/1000)};t.oninput=()=>{const ts=parseInt(t.value)*1000;if(!isNaN(ts))d.value=new Date(ts).toLocaleString()};d.oninput=()=>{const dt=new Date(d.value);if(!isNaN(dt.getTime()))t.value=Math.floor(dt.getTime()/1000)};p.querySelector('#unix-now').onclick=set;set()});
+      addPanel('cron','Cron Job',`<p class="muted">A simple helper to generate common cron job schedules.</p><select id="cron-select"><option value="* * * * *">Every minute</option><option value="0 * * * *">Every hour</option><option value="0 0 * * *">Every day at midnight</option><option value="0 0 * * 0">Every Sunday at midnight</option><option value="0 0 1 * *">First day of every month</option></select><textarea id="cron-output" class="output-box" readonly></textarea>`,p=>{const s=$('cron-select'),o=$('cron-output');const u=()=>o.value=`${s.value} /path/to/command`;s.onchange=u;u()});
+      addPanel('color','Color Converter',`<p class="muted">Convert between HEX, RGB, and HSL formats.</p><div class="grid"><div class="field"><label>HEX</label><input id="c-hex" value="#9370db"></div><div class="field"><label>RGB</label><input id="c-rgb"></div><div class="field"><label>HSL</label><input id="c-hsl"></div></div>`,p=>{const hexI=$('c-hex'),rgbI=$('c-rgb'),hslI=$('c-hsl');function update(source){let r,g,b,h,s,l;if(source==='hex'){let hex=hexI.value.replace('#','');if(hex.length===3)hex=hex.split('').map(c=>c+c).join('');[r,g,b]=[parseInt(hex.substring(0,2),16),parseInt(hex.substring(2,4),16),parseInt(hex.substring(4,6),16)];if([r,g,b].some(isNaN))return;rgbI.value=`rgb(${r}, ${g}, ${b})`;}else{return;}r/=255;g/=255;b/=255;const max=Math.max(r,g,b),min=Math.min(r,g,b);l=(max+min)/2;if(max===min){h=s=0}else{const d=max-min;s=l>0.5?d/(2-max-min):d/(max+min);switch(max){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;case b:h=(r-g)/d+4;break;}h/=6}hslI.value=`hsl(${Math.round(h*360)}, ${Math.round(s*100)}%, ${Math.round(l*100)}%)`}hexI.oninput=()=>update('hex');update('hex')});
+      addPanel('gradient','CSS Gradient',`<p class="muted">Generate CSS code for a linear gradient background.</p><div class="grid"><div class="field"><label>Color 1</label><input type="color" id="grad-c1" value="#8a2be2"></div><div class="field"><label>Color 2</label><input type="color" id="grad-c2" value="#9370db"></div><div class="field"><label>Angle (deg)</label><input type="range" id="grad-angle" min="0" max="360" value="90"></div></div><div class="row"><button onclick="copyToClipboard('grad-output')" class="btn">Copy CSS</button></div><textarea id="grad-output" class="output-box" readonly></textarea>`,p=>{const c1=$('grad-c1'),c2=$('grad-c2'),a=$('grad-angle'),o=$('grad-output');const u=()=>o.value=`background: linear-gradient(${a.value}deg, ${c1.value}, ${c2.value});`;[c1,c2,a].forEach(el=>el.oninput=u);u()});
+      addPanel('cssmin', 'CSS Minifier', `<p class="muted">Reduce the size of CSS code by removing comments and whitespace.</p><textarea id="cssmin-input" rows="10"></textarea><div class="row"><button id="cssmin-btn" class="btn">Minify</button><button onclick="copyToClipboard('cssmin-input')" class="btn">Copy</button></div>`, p => p.querySelector('#cssmin-btn').onclick = () => { let t = $('cssmin-input'); t.value = t.value.replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, '').replace(/\s{2,}/g,' ').replace(/; /g,';').replace(/ }/g,'}').replace(/{ /g,'{').replace(/, /g,',').replace(/: /g,':').trim(); });
+      addPanel('jsmin', 'JS Minifier', `<p class="muted">A very basic minifier for JavaScript code.</p><textarea id="jsmin-input" rows="10"></textarea><div class="row"><button id="jsmin-btn" class="btn">Minify</button><button onclick="copyToClipboard('jsmin-input')" class="btn">Copy</button></div>`, p => p.querySelector('#jsmin-btn').onclick = () => { let t = $('jsmin-input'); t.value = t.value.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').replace(/\s+/g, ' ').replace(/\s*([{};:,=()!])\s*/g, '$1').trim(); });
+      addPanel('lorem','Lorem Ipsum',`<p class="muted">Generate placeholder text.</p><div class="field"><label>Paragraphs</label><input type="number" id="lorem-p" value="3"></div><div class="row"><button id="lorem-gen" class="btn">Generate</button></div><textarea id="lorem-output" rows="8" class="output-box" readonly></textarea>`,p=>{const txt="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";const gen=()=>{let o='';const count=Math.max(1,$('lorem-p').value);for(let i=0;i<count;i++)o+=txt+'\n\n';$('lorem-output').value=o.trim()};p.querySelector('#lorem-gen').onclick=gen;gen()});
+      addPanel('case','Case Converter',`<p class="muted">Convert text to different cases.</p><textarea id="case-input" rows="5">Sample Text For Conversion</textarea><div class="row"><button data-case="upper">UPPER</button><button data-case="lower">lower</button><button data-case="title">Title Case</button></div>`,p=>p.querySelectorAll('button').forEach(b=>{b.className='btn';b.onclick=()=>{const i=$('case-input');switch(b.dataset.case){case 'upper':i.value=i.value.toUpperCase();break;case 'lower':i.value=i.value.toLowerCase();break;case 'title':i.value=i.value.replace(/\b\w/g,c=>c.toUpperCase());break;}}}));
+      addPanel('slugify','Slugify',`<p class="muted">Convert a string into a URL-friendly slug.</p><div class="field"><label>Input String</label><input id="slug-input" type="text" value="This is a Test String!"></div><div class="row"><button onclick="copyToClipboard('slug-output')" class="btn">Copy</button></div><textarea id="slug-output" class="output-box" readonly></textarea>`,p=>{const i=$('slug-input'),o=$('slug-output');const update=()=>o.value=i.value.toLowerCase().trim().replace(/[^\w\s-]/g,'').replace(/[\s_-]+/g,'-').replace(/^-+|-+$/g,'');i.oninput=update;update()});
+      addPanel('diff','Text Difference',`<p class="muted">Currently under construction. Check back soon!</p>`,p=>{});
+      addPanel('morse','Morse Translator',`<p class="muted">Translate text to and from Morse code.</p><div class="grid grid-2"><div class="field"><label>Text</label><textarea id="morse-text" rows="5"></textarea></div><div class="field"><label>Morse</label><textarea id="morse-code" rows="5"></textarea></div></div>`, p => {const map = { 'A':'.-', 'B':'-...', 'C':'-.-.', 'D':'-..', 'E':'.', 'F':'..-.', 'G':'--.', 'H':'....', 'I':'..', 'J':'.---', 'K':'-.-', 'L':'.-..', 'M':'--', 'N':'-.', 'O':'---', 'P':'.--.', 'Q':'--.-', 'R':'.-.', 'S':'...', 'T':'-', 'U':'..-', 'V':'...-', 'W':'.--', 'X':'-..-', 'Y':'-.--', 'Z':'--..', '1':'.----', '2':'..---', '3':'...--', '4':'....-', '5':'.....', '6':'-....', '7':'--...', '8':'---..', '9':'----.', '0':'-----', ' ':'/'}; const revMap = Object.fromEntries(Object.entries(map).map(a=>a.reverse())); $('morse-text').oninput=(e)=> $('morse-code').value=e.target.value.toUpperCase().split('').map(c=>map[c]||'').join(' '); $('morse-code').oninput=(e)=>$('morse-text').value=e.target.value.trim().split(' ').map(c=>revMap[c]||'').join('')});
+      addPanel('binary','Binary Translator',`<p class="muted">Translate text to and from binary code.</p><div class="grid grid-2"><div class="field"><label>Text</label><textarea id="bin-text" rows="5"></textarea></div><div class="field"><label>Binary</label><textarea id="bin-code" rows="5"></textarea></div></div>`,p=>{const t=$('bin-text'),b=$('bin-code');t.oninput=()=>b.value=t.value.split('').map(c=>c.charCodeAt(0).toString(2).padStart(8,'0')).join(' ');b.oninput=()=>t.value=b.value.split(' ').map(c=>String.fromCharCode(parseInt(c,2))).join('')});
+      addPanel('ascii','ASCII Art',`<p class="muted">Generate simple text-based art.</p><select id="ascii-select"><option>Cat</option><option>Heart</option><option>Star</option></select><div class="row"><button onclick="copyToClipboard('ascii-output')" class="btn">Copy</button></div><textarea id="ascii-output" class="output-box" readonly></textarea>`,p=>{const arts={Cat:" /\\_/\\\n( o.o )\n > ^ <",Heart:"  _.-._\n | | | |\n \\ ` / \n  `,'",Star:"   /\\\n  /  \\\n /____\\\n \\  / \\\n  \\/\\/"};const s=$('ascii-select'),o=$('ascii-output');const u=()=>o.value=arts[s.value];s.onchange=u;u()});
+      addPanel('data','Fake Data',`<p class="muted">Generate random fake data for testing.</p><select id="data-type"><option>Full Name</option><option>Email</option><option>Phone Number</option></select><div class="row"><button id="data-gen" class="btn">Generate</button></div><textarea id="data-output" class="output-box" readonly></textarea>`,p=>{const f=["John","Jane","Alex"],l=["Doe","Smith","Lee"];const gen=()=>{const t=$('data-type').value,o=$('data-output');if(t==='Full Name')o.value=`${randomOf(f)} ${randomOf(l)}`;else if(t==='Email')o.value=`${randomOf(f).toLowerCase()}.${randomOf(l).toLowerCase()}${Math.floor(Math.random()*99)}@example.com`;else o.value=`555-${String(Math.floor(100+Math.random()*900))}-${String(Math.floor(1000+Math.random()*9000))}`};p.querySelector('#data-gen').onclick=gen;gen()});
+      addPanel('code', 'Code', `<p class="muted">Create simple random codes like XXXX-XXXX-XXXX.</p><div class="row"><button id="code-gen" class="btn">Generate</button><button onclick="copyToClipboard('code-output')" class="btn">Copy</button></div><textarea id="code-output" class="output-box" readonly></textarea>`, p=>{const gen=()=>$('code-output').value = [...Array(3)].map(() => [...Array(4)].map(()=>'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random()*36)]).join('')).join('-');p.querySelector('#code-gen').onclick=gen;gen()});
+      addPanel('rules', 'Rules', `<p class="muted">Generate a generic set of community rules.</p><div class="row"><button id="rules-gen" class="btn">Generate</button><button onclick="copyToClipboard('rules-output')" class="btn">Copy</button></div><textarea id="rules-output" class="output-box" rows="8" readonly></textarea>`, p => p.querySelector('#rules-gen').onclick = () => $('rules-output').value = "1. Be respectful to all members.\n2. No spamming or self-promotion.\n3. Do not share inappropriate content.\n4. Listen to the staff team.");
+      addPanel('number', 'Random Number', `<p class="muted">Generate a random number within a specific range.</p><div class="grid grid-2"><div class="field"><label>Min</label><input id="num-min" type="number" value="1"></div><div class="field"><label>Max</label><input id="num-max" type="number" value="100"></div></div><div class="row"><button id="num-gen" class="btn">Generate</button></div><textarea id="num-output" class="output-box" readonly></textarea>`, p => p.querySelector('#num-gen').onclick = () => { const min=parseInt($('num-min').value),max=parseInt($('num-max').value); $('num-output').value = Math.floor(Math.random()*(max-min+1))+min; });
+      addPanel('dice', 'Dice Roller', `<p class="muted">Configure your roll and see the outcome.</p><div class="grid grid-2"><div class="field"><label># of Dice</label><input id="dice-count" type="number" value="2"></div><div class="field"><label>Sides</label><input id="dice-sides" type="number" value="6"></div></div><div class="row"><button id="dice-roll" class="btn">Roll</button></div><textarea id="dice-output" class="output-box" readonly></textarea>`,p=>p.querySelector('#dice-roll').onclick=()=>{const c=parseInt($('dice-count').value),s=parseInt($('dice-sides').value);let r=[],t=0;for(let i=0;i<c;i++){const n=Math.floor(Math.random()*s)+1;r.push(n);t+=n;}$('dice-output').value=`Rolls: [${r.join(', ')}]\nTotal: ${t}`;});
+      addPanel('teams','Team Generator',`<p class="muted">Enter names and split them into teams.</p><div class="grid grid-2"><div class="field"><label>Names (one per line)</label><textarea id="team-names" rows="8"></textarea></div><div class="field"><label># of Teams</label><input id="team-count" type="number" value="2"></div></div><div class="row"><button id="team-gen" class="btn">Generate</button></div><textarea id="team-output" class="output-box" readonly></textarea>`,p=>p.querySelector('#team-gen').onclick=()=>{let n=$('team-names').value.split('\n').map(x=>x.trim()).filter(Boolean);const c=parseInt($('team-count').value);for(let i=n.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[n[i],n[j]]=[n[j],n[i]];}const t=Array.from({length:c},()=>[]);n.forEach((x,i)=>t[i%c].push(x));$('team-output').value=t.map((x,i)=>`--- Team ${i+1} ---\n${x.join('\n')}`).join('\n\n')});
+      addPanel('names', 'Username', `<p class="muted">Generate a unique username.</p><div class="row"><button id="name-gen" class="btn">Generate</button></div><textarea id="name-output" class="output-box" readonly></textarea>`, p => p.querySelector('#name-gen').onclick = () => { const a = ["Shadow", "Cyber", "Void", "Quantum", "Solar"]; const n = ["Dragon", "Wolf", "Knight", "Fox", "Reaper"]; $('name-output').value = randomOf(a) + randomOf(n) + Math.floor(10+Math.random()*90); });
+      addPanel('project', 'Project Name', `<p class="muted">Get a name for your next big project.</p><div class="row"><button id="proj-gen" class="btn">Generate</button></div><textarea id="proj-output" class="output-box" readonly></textarea>`, p => p.querySelector('#proj-gen').onclick = () => { const a = ["Project", "System", "Protocol", "Initiative"]; const n = ["Nebula", "Orion", "Apex", "Genesis"]; $('proj-output').value = randomOf(a) + " " + randomOf(n); });
+      addPanel('ideas', 'Random Ideas', `<p class="muted">Spark creativity with a random idea prompt.</p><div class="row"><button id="idea-gen" class="btn">Generate</button></div><textarea id="idea-output" class="output-box" readonly></textarea>`, p => p.querySelector('#idea-gen').onclick = () => { const a = ["A social network for", "A survival game about", "A utility that helps with"]; const n = ["pets", "time travelers", "cooking"]; $('idea-output').value = randomOf(a) + " " + randomOf(n) + "."; });
+      addPanel('palette', 'Color Palette', `<p class="muted">Generate a random 5-color palette.</p><div class="row"><button id="palette-gen" class="btn">Generate</button><button onclick="copyToClipboard('palette-hex')" class="btn">Copy HEX Codes</button></div><div id="palette-output"></div><input id="palette-hex" style="opacity:0; position:absolute; z-index:-1;">`,p=>{const gen=()=>{let o=$('palette-output'),h=$('palette-hex'),c=[];o.innerHTML='';for(let i=0;i<5;i++){const hex='#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');c.push(hex);const s=document.createElement('div');s.className='swatch';s.style.background=hex;s.textContent=hex;o.appendChild(s)}h.value=c.join(' ')};p.querySelector('#palette-gen').onclick=gen;gen()});
+      addPanel('webhook', 'Discord Webhook', `<p class="muted">Generate the JSON for a simple Discord webhook message.</p><div class="field"><label>Message Content</label><textarea id="hook-content" rows="4"></textarea></div><div class="row"><button id="hook-gen" class="btn">Generate</button><button onclick="copyToClipboard('hook-output')" class="btn">Copy</button></div><textarea id="hook-output" class="output-box" readonly></textarea>`, p => p.querySelector('#hook-gen').onclick = () => $('hook-output').value = JSON.stringify({ content: $('hook-content').value }, null, 2));
+      addPanel('quote','Quote Generator',`<p class="muted">Find some inspiration with a random quote.</p><div class="row"><button class="btn" id="quote-gen">New Quote</button></div><textarea id="quote-output" class="output-box" readonly></textarea>`,p=>{const q=[["The only way to do great work is to love what you do.","Steve Jobs"],["Success is not final, failure is not fatal: it is the courage to continue that counts.","Winston Churchill"],["Believe you can and you're halfway there.","Theodore Roosevelt"]];const gen=()=>{const[qt,au]=randomOf(q);$('quote-output').value=`"${qt}"\n\n— ${au}`};p.querySelector('#quote-gen').onclick=gen;gen()});
+      addPanel('story', 'Story Prompt', `<p class="muted">Get a prompt to kickstart your next story.</p><div class="row"><button id="story-gen" class="btn">Generate</button></div><textarea id="story-output" class="output-box" readonly></textarea>`, p => p.querySelector('#story-gen').onclick = () => $('story-output').value = `A character finds an object that can ${randomOf(['control time', 'talk to animals', 'see the future'])} but there's a catch...`);
+      addPanel('markdown', 'Markdown Preview', `<p class="muted">Write Markdown and see it rendered live.</p><div class="grid grid-2"><div class="field"><label>Markdown</label><textarea id="md-input" rows="12"># Hello, World!\n\nThis is a **Markdown** preview.\n\n- List Item 1\n- List Item 2\n\nVisit [my website](https://google.com)!</textarea></div><div class="field"><label>Preview</label><div id="md-preview"></div></div></div>`,p=>{const i=$('md-input'),o=$('md-preview');const u=()=>o.innerHTML=marked.parse(i.value);i.addEventListener('input',u);u()});
+      addPanel('qr','QR Code',`<p class="muted">Generate a QR code from any text.</p><div class="field"><label>Content</label><input id="qr-input" type="text" value="https://google.com"></div><div class="row"><button id="qr-gen" class="btn">Generate</button></div><div id="qr-code-output"></div>`,p=>{const gen=()=>{const t=$('qr-input').value,o=$('qr-code-output');o.innerHTML='';if(t){qrInstance=new QRCode(o,{text:t,width:128,height:128})}};p.querySelector('#qr-gen').onclick=gen;gen()});
+      addPanel('magic8', 'Magic 8-Ball', `<p class="muted">Ask a yes-no question and find your fortune.</p><div class="field"><label>Your Question</label><input type="text" id="m8-question" placeholder="Will I succeed?"></div><div class="row"><button class="btn" id="m8-ask">Ask</button></div><div id="m8-output" class="output-box"></div>`,p=>{const ans=["It is certain.","It is decidedly so.","Without a doubt.","Yes – definitely.","You may rely on it.","As I see it, yes.","Most likely.","Outlook good.","Yes.","Signs point to yes.","Reply hazy, try again.","Ask again later.","Better not tell you now.","Cannot predict now.","Concentrate and ask again.","Don't count on it.","My reply is no.","My sources say no.","Outlook not so good.","Very doubtful."];p.querySelector('#m8-ask').onclick=()=>{const out=$('m8-output');out.textContent='...';setTimeout(()=>out.textContent=randomOf(ans),400)}});
+      addPanel('settings', 'Settings', `<p class="muted">Change the look and feel of the application.</p><div class="field"><label>Theme</label><select id="theme-switcher"><option value="amethyst">Amethyst</option><option value="dark">Dark</option><option value="halloween">Halloween</option></select></div>`, p=>{const s=$('theme-switcher'),h=document.documentElement;const current=localStorage.getItem('theme')||'amethyst';h.dataset.theme=current;s.value=current;s.onchange=e=>{h.dataset.theme=e.target.value;localStorage.setItem('theme',e.target.value)}});
+      
+      setupSidebarAndTabs();
+    });
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en" data-theme="amethyst">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Generator Hub</title>
+  <link rel="icon" href="favicon.png" type="image/png">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <style>
+    :root{
+      --bg1: #201a3c; --bg2: #2a224f; --bg3: #8a2be2; --bg4: #9370db;
+      --card: rgba(26, 20, 50, 0.5); --text: #e0d9ef; --muted: #9f91c7;
+      --accent: #9370db; --accent2: #8a2be2; --border: rgba(147, 112, 219, 0.2);
+      --glass: rgba(20, 16, 40, 0.6);
+      --brand-text: #f0e8ff; --brand-dot: conic-gradient(from 0deg, #9370db, #8a2be2, #a684e0);
+      --btn-text: #ffffff; --input-bg: #161228; --input-text: #d4c5f7;
+      --header: #ffffff;
+      --sidebar-header: #7f6eab;
+    }
+    html[data-theme="dark"] {
+      --bg1:#111827; --bg2:#1f2937; --bg3:#4f46e5; --bg4:#3b82f6;
+      --card:#1f2937; --text:#e5e7eb; --muted:#9ca3af;
+      --accent:#6366f1; --accent2:#4f46e5; --border:rgba(255,255,255,.1);
+      --glass:rgba(31,41,55,.6); --brand-text:#c7d2fe; 
+      --brand-dot:conic-gradient(from 0deg, #3b82f6, #6366f1, #818cf8);
+      --input-bg:#374151; --header:#ffffff; --sidebar-header: #9ca3af;
+    }
+    html[data-theme="halloween"] {
+      --bg1:#2d1d0c; --bg2:#4b3113; --bg3:#f97316; --bg4:#f59e0b;
+      --card:#422006; --text:#fed7aa; --muted:#d97706;
+      --accent:#fb923c; --accent2:#f97316; --border:rgba(255,255,255,.2);
+      --glass:rgba(66,32,6,.6); --brand-text:#fef3c7; 
+      --brand-dot:conic-gradient(from 0deg, #f59e0b, #f97316, #ea580c);
+      --input-bg:#513112; --header:#ffffff; --sidebar-header: #d97706;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
+      overflow: hidden; background: var(--bg1); transition: background-color .3s;
+    }
+    .bg {
+      position: fixed; inset: -10vmax;
+      background: radial-gradient(60vmax 60vmax at 15% 20%, var(--bg4), transparent 60%),
+                  radial-gradient(70vmax 70vmax at 85% 30%, var(--bg3), transparent 60%),
+                  linear-gradient(120deg, var(--bg1) 0%, var(--bg2) 40%, var(--bg1) 100%);
+      filter: blur(30px) saturate(120%);
+      animation: float 25s ease-in-out infinite alternate;
+      z-index:-2; transition: background .3s;
+    }
+    @keyframes float { 0% { transform: translate(0,0); } 100%{ transform: translate(4vmax,-2vmax); } }
+
+    .app { position: relative; display:flex; height:100%; }
+    .sidebar {
+      width: 290px; min-width: 240px; max-width: 320px;
+      padding: 18px 14px; backdrop-filter: blur(12px);
+      background: var(--glass);
+      border-right: 1px solid var(--border);
+      box-shadow: 20px 0 60px rgba(0,0,0,.25);
+      overflow-y: auto;
+      transition: transform .3s ease, background-color .3s, border-color .3s;
+      display: flex; flex-direction: column; z-index: 10;
+    }
+    .sidebar.hide { transform: translateX(-100%); }
+    .brand { display:flex; align-items:center; gap:10px; margin-bottom: 12px; }
+    .brand h1 { margin:0; font-size: 20px; letter-spacing:.4px; color: var(--brand-text); }
+    .brand .dot { width:10px; height:10px; border-radius:50%; background: var(--brand-dot); box-shadow: 0 0 16px var(--bg4); }
+    .nav { display:flex; flex-direction:column; gap:2px; flex: 1; }
+    .nav-header { padding: 12px 12px 4px; color: var(--sidebar-header); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; }
+    .tab {
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px; border-radius:8px; border:1px solid transparent;
+      color:var(--text); cursor:pointer; user-select:none;
+      background: transparent; transition: background .15s ease, color .15s ease; font-size: 14px;
+    }
+    .tab:hover { background: rgba(255,255,255,.05); }
+    .tab.active { color: var(--brand-text); font-weight: 600; background: color-mix(in srgb, var(--accent) 15%, transparent); border-color: color-mix(in srgb, var(--accent) 10%, transparent); }
+    .tab .symbol { font-size: 16px; width: 22px; text-align:center; color: var(--muted); }
+    .tab.active .symbol { color: var(--accent); }
+
+    .content { flex:1; overflow-y: auto; padding: 20px 24px; }
+    .topbar{ position: sticky; top:0; z-index: 2; display:flex; align-items:center; gap:10px; margin-bottom: 10px; }
+    .hamburger{
+      border:1px solid var(--border); background:rgba(255,255,255,.05); color:var(--text); border-radius:10px;
+      width:40px; height:40px; display:grid; place-items:center; cursor:pointer; backdrop-filter: blur(8px);
+    }
+    .panel {
+      width:min(1100px, 92vw); background: var(--card);
+      border:1px solid var(--border); borderRadius: 20px;
+      padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,.35);
+      margin: 0 auto;
+    }
+    .panel h2 { margin: 0 0 6px; color:var(--header); letter-spacing:.3px; font-size: 28px; font-weight: 700; }
+    .muted { color: var(--muted); margin: 0 0 24px; }
+
+    .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .field { display:flex; flex-direction:column; gap:6px; background: transparent; padding: 0; border:0; }
+    .field label { font-size: 13px; color: var(--muted); font-weight: 500; }
+    .field input, .field select, .field textarea, .output-box {
+      width:100%; border-radius:10px; border:1px solid var(--border); padding:10px 14px;
+      background:var(--input-bg); color:var(--input-text); outline:none; resize: vertical;
+      font-family: ui-sans-serif, system-ui, sans-serif; font-size: 15px;
+      transition: border-color .2s, background-color .2s;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
+    textarea.output-box {
+        margin-top: 20px; min-height: 90px; white-space: pre-wrap; word-break: break-all;
+        line-height: 1.6; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 16px; padding: 20px; text-align: center;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .row { display:flex; gap:10px; flex-wrap: wrap; margin-top: 16px; }
+    .btn {
+      appearance:none; border:0; border-radius:10px; padding:12px 20px; font-size: 15px;
+      font-weight:700; color:var(--btn-text); cursor:pointer;
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      box-shadow: 0 8px 24px color-mix(in srgb, var(--accent2) 30%, transparent);
+      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+    }
+    .btn:hover { filter: brightness(1.1); }
+    .btn:active { transform: translateY(1px); box-shadow: 0 4px 12px color-mix(in srgb, var(--accent2) 25%, transparent); }
+
+    #qr-code-output { background: white; padding: 10px; width: fit-content; margin: 20px auto; border-radius: 10px; }
+    #md-preview { text-align: left; border: 1px solid var(--border); padding: 20px; border-radius: 10px; margin-top: 20px; background: var(--input-bg); }
+    #md-preview h1, #md-preview h2 { border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+    #md-preview a { color: var(--accent); } #md-preview code { background: color-mix(in srgb, var(--input-bg) 50%, #000); padding: 2px 5px; border-radius: 5px; }
+    #palette-output { display: flex; gap: 10px; margin-top: 20px; flex-wrap:wrap; }
+    #palette-output .swatch { flex: 1; min-width:80px; height: 80px; border-radius: 10px; border: 1px solid var(--border); display:flex; justify-content:center; align-items:flex-end; padding-bottom: 8px; font-family:monospace; color:#fff; text-shadow: 0 0 5px #000;}
+
+    .toast{
+      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 99;
+      background: #111; color: white; padding: 10px 14px; border-radius: 8px;
+      border: 1px solid #333; box-shadow: 0 10px 20px rgba(0,0,0,.4); opacity: 0; transition: all .2s ease;
+    }
+    .toast.show{ opacity:1; transform: translateX(-50%) translateY(-6px); }
+
+    @media (max-width: 900px){
+      body{ overflow:auto; } .app{ display:block; }
+      .sidebar{ position: fixed; top:0; left:0; bottom:0; }
+      .sidebar.hide { transform: translateX(0); }
+      .sidebar:not(.hide){ transform: translateX(-100%); }
+      .content{ padding: 16px; } .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand"><div class="dot"></div><h1>Generator Hub</h1></div>
+      <div class="nav" id="nav">
+          <div class="nav-header">Developer Kit</div>
+          <div class="tab active" data-target="panel-password"><span class="symbol">🔑</span>Password</div>
+          <div class="tab" data-target="panel-uuid"><span class="symbol">🌐</span>UUID</div>
+          <div class="tab" data-target="panel-hashing"><span class="symbol">🎯</span>Hashing</div>
+          <div class="tab" data-target="panel-json"><span class="symbol">{}</span>JSON Formatter</div>
+          <div class="tab" data-target="panel-jwt"><span class="symbol">🪪</span>JWT Decoder</div>
+          <div class="tab" data-target="panel-base64"><span class="symbol">ⓑ</span>Base64</div>
+          <div class="tab" data-target="panel-url"><span class="symbol">🔗</span>URL Encoder</div>
+          <div class="tab" data-target="panel-html"><span class="symbol">◧</span>HTML Entities</div>
+          <div class="tab" data-target="panel-unix"><span class="symbol">🕒</span>Unix Timestamp</div>
+          <div class="tab" data-target="panel-cron"><span class="symbol">⚙️</span>Cron Job</div>
+          <div class="tab" data-target="panel-color"><span class="symbol">🎨</span>Color Converter</div>
+          <div class="tab" data-target="panel-gradient"><span class="symbol">🌈</span>CSS Gradient</div>
+          <div class="tab" data-target="panel-cssmin"><span class="symbol"> nhỏ</span>CSS Minifier</div>
+          <div class="tab" data-target="panel-jsmin"><span class="symbol">ⓙⓢ</span>JS Minifier</div>
+
+          <div class="nav-header">Text & Data</div>
+          <div class="tab" data-target="panel-lorem"><span class="symbol">¶</span>Lorem Ipsum</div>
+          <div class="tab" data-target="panel-case"><span class="symbol">Aa</span>Case Converter</div>
+          <div class="tab" data-target="panel-slugify"><span class="symbol">→</span>Slugify</div>
+          <div class="tab" data-target="panel-diff"><span class="symbol">Δ</span>Text Difference</div>
+          <div class="tab" data-target="panel-markdown"><span class="symbol">𝕄</span>Markdown Preview</div>
+          <div class="tab" data-target="panel-morse"><span class="symbol">∿</span>Morse Translator</div>
+          <div class="tab" data-target="panel-binary"><span class="symbol">01</span>Binary Translator</div>
+          <div class="tab" data-target="panel-ascii"><span class="symbol">▒</span>ASCII Art</div>
+          <div class="tab" data-target="panel-qr"><span class="symbol">◩</span>QR Code</div>
+          <div class="tab" data-target="panel-data"><span class="symbol">👨‍💻</span>Fake Data</div>
+          
+          <div class="nav-header">Utilities & Fun</div>
+          <div class="tab" data-target="panel-code"><span class="symbol">&lt;/&gt;</span>Code</div>
+          <div class="tab" data-target="panel-rules"><span class="symbol">📜</span>Rules</div>
+          <div class="tab" data-target="panel-number"><span class="symbol">🎲</span>Random Number</div>
+          <div class="tab" data-target="panel-dice"><span class="symbol">🎲</span>Dice Roller</div>
+          <div class="tab" data-target="panel-teams"><span class="symbol">👥</span>Team Generator</div>
+          <div class="tab" data-target="panel-names"><span class="symbol">👤</span>Username</div>
+          <div class="tab" data-target="panel-project"><span class="symbol">🚀</span>Project Name</div>
+          <div class="tab" data-target="panel-ideas"><span class="symbol">💡</span>Random Ideas</div>
+          <div class="tab" data-target="panel-palette"><span class="symbol">🎨</span>Color Palette</div>
+          <div class="tab" data-target="panel-webhook"><span class="symbol">💬</span>Discord Webhook</div>
+          <div class="tab" data-target="panel-magic8"><span class="symbol">🎱</span>Magic 8-Ball</div>
+          <div class="tab" data-target="panel-quote"><span class="symbol">❝</span>Quote Generator</div>
+          <div class="tab" data-target="panel-story"><span class="symbol">📖</span>Story Prompt</div>
+
+          <div class="tab" data-target="panel-settings"><span class="symbol">⚙️</span>Settings</div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="topbar"><button class="hamburger" id="hamburger" title="Toggle menu">☰</button></div>
+    </main>
+  </div>
+  <div class="toast" id="toast">Copied!</div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const $ = (id) => document.getElementById(id);
+      const mainContent = document.querySelector('.content');
+      let isMobile = window.innerWidth <= 900;
+      let qrCodeInstance = null;
+      
+      const showToast = (msg = "Copied!") => {
+        const t = $('toast'); t.textContent = msg; t.classList.add('show');
+        clearTimeout(t._timer); t._timer = setTimeout(() => t.classList.remove('show'), 1500);
+      };
+
+      const copyToClipboard = (elementId) => {
+        const el = $(elementId); const text = el?.value ?? el?.textContent;
+        if (text) navigator.clipboard.writeText(text).then(() => showToast(), () => showToast("Failed to copy!"));
+      };
+
+      const addPanel = (id, title, content, setupLogic) => {
+        const panel = document.createElement('section'); panel.id = `panel-${id}`; panel.className = 'panel'; panel.style.display = 'none';
+        panel.innerHTML = `<h2>${title}</h2>` + content; mainContent.appendChild(panel);
+        if (setupLogic) setupLogic(panel);
+      };
+      
+      const setupSidebarAndTabs = () => {
+        const sidebar = $('sidebar'); const hamburger = $('hamburger'); const nav = $('nav');
+        if (isMobile) sidebar.classList.add('hide');
+        hamburger.addEventListener('click', () => sidebar.classList.toggle('hide'));
+        window.addEventListener('resize', () => {
+          const mobileState = window.innerWidth <= 900;
+          if (mobileState !== isMobile) { isMobile = mobileState; sidebar.classList.toggle('hide', isMobile); }
+        });
+
+        nav.addEventListener('click', (e) => {
+          const tab = e.target.closest('.tab'); if (!tab) return;
+          nav.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); tab.classList.add('active');
+          document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
+          const targetPanel = $(tab.dataset.target); if (targetPanel) targetPanel.style.display = 'block';
+          if (isMobile) sidebar.classList.add('hide');
+        });
+        const activeTab = nav.querySelector('.tab.active') || nav.querySelector('.tab'); if (activeTab) activeTab.click();
+      };
+      
+      const randomOf = arr => arr[Math.floor(Math.random()*arr.length)];
+
+      addPanel('password','Password',`<p class="muted">Create strong, secure passwords.</p><div class="grid"><div class="field"><label>Length</label><input id="pass-len" type="number" value="16"></div><div class="field"><label><input type="checkbox" id="pass-upper" checked> Uppercase</label></div><div class="field"><label><input type="checkbox" id="pass-lower" checked> Lowercase</label></div><div class="field"><label><input type="checkbox" id="pass-nums" checked> Numbers</label></div><div class="field"><label><input type="checkbox" id="pass-spec"> Special</label></div></div><div class="row"><button id="pass-gen" class="btn">Generate</button><button onclick="copyToClipboard('pass-output')" class="btn">Copy</button></div><textarea id="pass-output" class="output-box" readonly></textarea>`,p=>{const gen=()=>{let c='',res='';const l=$('pass-len').value;if($('pass-upper').checked)c+='ABCDEFGHIJKLMNPQRSTUVWXYZ';if($('pass-lower').checked)c+='abcdefghijklmnpqrstuvwxyz';if($('pass-nums').checked)c+='123456789';if($('pass-spec').checked)c+='!@#$%^&*()_+';if(c==='')c='...';for(let i=0;i<l;i++)res+=c.charAt(Math.floor(Math.random()*c.length));$('pass-output').value=res;};p.querySelector('#pass-gen').onclick=gen;gen();});
+      addPanel('uuid', 'UUID', `<p class="muted">Generate universally unique identifiers (v4).</p><div class="row"><button id="uuid-gen" class="btn">Generate</button><button onclick="copyToClipboard('uuid-output')" class="btn">Copy</button></div><textarea id="uuid-output" class="output-box" readonly></textarea>`,p=>{const gen=()=>$('uuid-output').value=crypto.randomUUID();p.querySelector('#uuid-gen').onclick=gen;gen();});
+      addPanel('hashing','Hashing',`<p class="muted">Compute a cryptographic hash of any text.</p><div class="grid"><div class="field"><label>Input Text</label><textarea id="hash-input" rows="4">hello world</textarea></div><div class="field"><label>Algorithm</label><select id="hash-algo"><option>SHA-1</option><option>SHA-256</option><option>SHA-384</option><option>SHA-512</option></select></div></div><div class="row"><button id="hash-gen" class="btn">Generate Hash</button><button onclick="copyToClipboard('hash-output')" class="btn">Copy</button></div><textarea id="hash-output" class="output-box" readonly></textarea>`,p=>{const gen=async()=>{const a=$('hash-algo').value,t=$('hash-input').value,b=new TextEncoder().encode(t),hb=await crypto.subtle.digest(a,b),ha=Array.from(new Uint8Array(hb));$('hash-output').value=ha.map(b=>b.toString(16).padStart(2,'0')).join('')};p.querySelector('#hash-gen').onclick=gen;gen()});
+      addPanel('json', 'JSON Formatter', `<p class="muted">Format or minify JSON data for readability or efficiency.</p><textarea id="json-input" rows="10">{"hello":"world", "data":[1,2,3]}</textarea><div class="row"><button id="json-format" class="btn">Format</button><button id="json-minify" class="btn">Minify</button><button onclick="copyToClipboard('json-input')" class="btn">Copy</button></div>`,p=>{const i=$('json-input');p.querySelector('#json-format').onclick=()=>{try{i.value=JSON.stringify(JSON.parse(i.value),null,2)}catch(e){i.value='Invalid JSON'}};p.querySelector('#json-minify').onclick=()=>{try{i.value=JSON.stringify(JSON.parse(i.value))}catch(e){i.value='Invalid JSON'}}});
+      addPanel('jwt', 'JWT Decoder', `<p class="muted">Decode a JSON Web Token to view its header and payload.</p><div class="field"><label>JWT String</label><textarea id="jwt-input" rows="5"></textarea></div><div class="row"><button id="jwt-decode" class="btn">Decode</button></div><textarea id="jwt-output" class="output-box" readonly></textarea>`,p=>p.querySelector('#jwt-decode').onclick=()=>{const t=$('jwt-input').value.split('.');if(t.length!==3){$('jwt-output').value='Invalid JWT';return}try{const h=JSON.stringify(JSON.parse(atob(t[0].replace(/-/g,'+').replace(/_/g,'/'))),null,2),p=JSON.stringify(JSON.parse(atob(t[1].replace(/-/g,'+').replace(/_/g,'/'))),null,2);$('jwt-output').value=`Header:\n${h}\n\nPayload:\n${p}`}catch(e){$('jwt-output').value='Error decoding JWT'}});
+      addPanel('base64','Base64',`<p class="muted">Encode text to Base64 or decode it back.</p><div class="grid grid-2"><div class="field"><label>Text</label><textarea id="b64-text" rows="5"></textarea></div><div class="field"><label>Base64</label><textarea id="b64-base64" rows="5"></textarea></div></div>`,p=>{const t=$('b64-text'),b=$('b64-base64');t.oninput=()=>{try{b.value=btoa(t.value)}catch(e){}};b.oninput=()=>{try{t.value=atob(b.value)}catch(e){}}});
+      addPanel('url','URL Encoder',`<p class="muted">Encode or decode strings for use in URLs.</p><div class="grid grid-2"><div class="field"><label>Decoded</label><textarea id="url-text" rows="5"></textarea></div><div class="field"><label>Encoded</label><textarea id="url-encoded" rows="5"></textarea></div></div>`,p=>{const t=$('url-text'),e=$('url-encoded');t.oninput=()=>e.value=encodeURIComponent(t.value);e.oninput=()=>{try{t.value=decodeURIComponent(e.value)}catch(err){}}});
+      addPanel('html','HTML Entities',`<p class="muted">Convert special characters to their HTML entities.</p><div class="grid grid-2"><div class="field"><label>Text</label><textarea id="html-text" rows="5"><p>Hello World!</p></textarea></div><div class="field"><label>Entities</label><textarea id="html-entities" rows="5"></textarea></div></div>`,p=>{const t=$('html-text'),e=$('html-entities'),d=document.createElement('div');const enc=s=>{d.textContent=s;return d.innerHTML};const dec=s=>{d.innerHTML=s;return d.textContent};t.oninput=()=>e.value=enc(t.value);e.oninput=()=>t.value=dec(e.value);e.value=enc(t.value)});
+      addPanel('unix','Unix Timestamp',`<p class="muted">Convert between Unix timestamps and human-readable dates.</p><div class="grid grid-2"><div class="field"><label>Timestamp</label><input id="unix-time" type="number"></div><div class="field"><label>Date/Time</label><input id="unix-date" type="text"></div></div><div class="row"><button id="unix-now" class="btn">Now</button></div>`,p=>{const t=$('unix-time'),d=$('unix-date'),set=()=>{const now=new Date();d.value=now.toLocaleString();t.value=Math.floor(now.getTime()/1000)};t.oninput=()=>{const ts=parseInt(t.value)*1000;if(!isNaN(ts))d.value=new Date(ts).toLocaleString()};d.oninput=()=>{const dt=new Date(d.value);if(!isNaN(dt.getTime()))t.value=Math.floor(dt.getTime()/1000)};p.querySelector('#unix-now').onclick=set;set()});
+      addPanel('cron','Cron Job',`<p class="muted">A simple helper to generate common cron job schedules.</p><select id="cron-select"><option value="* * * * *">Every minute</option><option value="0 * * * *">Every hour</option><option value="0 0 * * *">Every day at midnight</option><option value="0 0 * * 0">Every Sunday at midnight</option><option value="0 0 1 * *">First day of every month</option></select><textarea id="cron-output" class="output-box" readonly></textarea>`,p=>{const s=$('cron-select'),o=$('cron-output');const u=()=>o.value=`${s.value} /path/to/command`;s.onchange=u;u()});
+      addPanel('color','Color Converter',`<p class="muted">Convert between HEX, RGB, and HSL formats.</p><div class="grid"><div class="field"><label>HEX</label><input id="c-hex" value="#9370db"></div><div class="field"><label>RGB</label><input id="c-rgb"></div><div class="field"><label>HSL</label><input id="c-hsl"></div></div>`,p=>{const hexI=$('c-hex'),rgbI=$('c-rgb'),hslI=$('c-hsl');function update(source){let r,g,b,h,s,l;if(source==='hex'){let hex=hexI.value.replace('#','');if(hex.length===3)hex=hex.split('').map(c=>c+c).join('');[r,g,b]=[parseInt(hex.substring(0,2),16),parseInt(hex.substring(2,4),16),parseInt(hex.substring(4,6),16)];if([r,g,b].some(isNaN))return;rgbI.value=`rgb(${r}, ${g}, ${b})`;}else{return;}r/=255;g/=255;b/=255;const max=Math.max(r,g,b),min=Math.min(r,g,b);l=(max+min)/2;if(max===min){h=s=0}else{const d=max-min;s=l>0.5?d/(2-max-min):d/(max+min);switch(max){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;case b:h=(r-g)/d+4;break;}h/=6}hslI.value=`hsl(${Math.round(h*360)}, ${Math.round(s*100)}%, ${Math.round(l*100)}%)`}hexI.oninput=()=>update('hex');update('hex')});
+      addPanel('gradient','CSS Gradient',`<p class="muted">Generate CSS code for a linear gradient background.</p><div class="grid"><div class="field"><label>Color 1</label><input type="color" id="grad-c1" value="#8a2be2"></div><div class="field"><label>Color 2</label><input type="color" id="grad-c2" value="#9370db"></div><div class="field"><label>Angle (deg)</label><input type="range" id="grad-angle" min="0" max="360" value="90"></div></div><div class="row"><button onclick="copyToClipboard('grad-output')" class="btn">Copy CSS</button></div><textarea id="grad-output" class="output-box" readonly></textarea>`,p=>{const c1=$('grad-c1'),c2=$('grad-c2'),a=$('grad-angle'),o=$('grad-output');const u=()=>o.value=`background: linear-gradient(${a.value}deg, ${c1.value}, ${c2.value});`;[c1,c2,a].forEach(el=>el.oninput=u);u()});
+      addPanel('cssmin', 'CSS Minifier', `<p class="muted">Reduce the size of CSS code by removing comments and whitespace.</p><textarea id="cssmin-input" rows="10"></textarea><div class="row"><button id="cssmin-btn" class="btn">Minify</button><button onclick="copyToClipboard('cssmin-input')" class="btn">Copy</button></div>`, p => p.querySelector('#cssmin-btn').onclick = () => { let t = $('cssmin-input'); t.value = t.value.replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, '').replace(/\s{2,}/g,' ').replace(/; /g,';').replace(/ }/g,'}').replace(/{ /g,'{').replace(/, /g,',').replace(/: /g,':').trim(); });
+      addPanel('jsmin', 'JS Minifier', `<p class="muted">A very basic minifier for JavaScript code.</p><textarea id="jsmin-input" rows="10"></textarea><div class="row"><button id="jsmin-btn" class="btn">Minify</button><button onclick="copyToClipboard('jsmin-input')" class="btn">Copy</button></div>`, p => p.querySelector('#jsmin-btn').onclick = () => { let t = $('jsmin-input'); t.value = t.value.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').replace(/\s+/g, ' ').replace(/\s*([{};:,=()!])\s*/g, '$1').trim(); });
+      addPanel('lorem','Lorem Ipsum',`<p class="muted">Generate placeholder text.</p><div class="field"><label>Paragraphs</label><input type="number" id="lorem-p" value="3"></div><div class="row"><button id="lorem-gen" class="btn">Generate</button></div><textarea id="lorem-output" rows="8" class="output-box" readonly></textarea>`,p=>{const txt="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";const gen=()=>{let o='';const count=Math.max(1,$('lorem-p').value);for(let i=0;i<count;i++)o+=txt+'\n\n';$('lorem-output').value=o.trim()};p.querySelector('#lorem-gen').onclick=gen;gen()});
+      addPanel('case','Case Converter',`<p class="muted">Convert text to different cases.</p><textarea id="case-input" rows="5">Sample Text For Conversion</textarea><div class="row"><button data-case="upper">UPPER</button><button data-case="lower">lower</button><button data-case="title">Title Case</button></div>`,p=>p.querySelectorAll('button').forEach(b=>{b.className='btn';b.onclick=()=>{const i=$('case-input');switch(b.dataset.case){case 'upper':i.value=i.value.toUpperCase();break;case 'lower':i.value=i.value.toLowerCase();break;case 'title':i.value=i.value.replace(/\b\w/g,c=>c.toUpperCase());break;}}}));
+      addPanel('slugify','Slugify',`<p class="muted">Convert a string into a URL-friendly slug.</p><div class="field"><label>Input String</label><input id="slug-input" type="text" value="This is a Test String!"></div><div class="row"><button onclick="copyToClipboard('slug-output')" class="btn">Copy</button></div><textarea id="slug-output" class="output-box" readonly></textarea>`,p=>{const i=$('slug-input'),o=$('slug-output');const update=()=>o.value=i.value.toLowerCase().trim().replace(/[^\w\s-]/g,'').replace(/[\s_-]+/g,'-').replace(/^-+|-+$/g,'');i.oninput=update;update()});
+      addPanel('diff','Text Difference',`<p class="muted">Currently under construction. Check back soon!</p>`,p=>{});
+      addPanel('morse','Morse Translator',`<p class="muted">Translate text to and from Morse code.</p><div class="grid grid-2"><div class="field"><label>Text</label><textarea id="morse-text" rows="5"></textarea></div><div class="field"><label>Morse</label><textarea id="morse-code" rows="5"></textarea></div></div>`, p => {const map = { 'A':'.-', 'B':'-...', 'C':'-.-.', 'D':'-..', 'E':'.', 'F':'..-.', 'G':'--.', 'H':'....', 'I':'..', 'J':'.---', 'K':'-.-', 'L':'.-..', 'M':'--', 'N':'-.', 'O':'---', 'P':'.--.', 'Q':'--.-', 'R':'.-.', 'S':'...', 'T':'-', 'U':'..-', 'V':'...-', 'W':'.--', 'X':'-..-', 'Y':'-.--', 'Z':'--..', '1':'.----', '2':'..---', '3':'...--', '4':'....-', '5':'.....', '6':'-....', '7':'--...', '8':'---..', '9':'----.', '0':'-----', ' ':'/'}; const revMap = Object.fromEntries(Object.entries(map).map(a=>a.reverse())); $('morse-text').oninput=(e)=> $('morse-code').value=e.target.value.toUpperCase().split('').map(c=>map[c]||'').join(' '); $('morse-code').oninput=(e)=>$('morse-text').value=e.target.value.trim().split(' ').map(c=>revMap[c]||'').join('')});
+      addPanel('binary','Binary Translator',`<p class="muted">Translate text to and from binary code.</p><div class="grid grid-2"><div class="field"><label>Text</label><textarea id="bin-text" rows="5"></textarea></div><div class="field"><label>Binary</label><textarea id="bin-code" rows="5"></textarea></div></div>`,p=>{const t=$('bin-text'),b=$('bin-code');t.oninput=()=>b.value=t.value.split('').map(c=>c.charCodeAt(0).toString(2).padStart(8,'0')).join(' ');b.oninput=()=>t.value=b.value.split(' ').map(c=>String.fromCharCode(parseInt(c,2))).join('')});
+      addPanel('ascii','ASCII Art',`<p class="muted">Generate simple text-based art.</p><select id="ascii-select"><option>Cat</option><option>Heart</option><option>Star</option></select><div class="row"><button onclick="copyToClipboard('ascii-output')" class="btn">Copy</button></div><textarea id="ascii-output" class="output-box" readonly></textarea>`,p=>{const arts={Cat:" /\\_/\\\n( o.o )\n > ^ <",Heart:"  _.-._\n | | | |\n \\ ` / \n  `,'",Star:"   /\\\n  /  \\\n /____\\\n \\  / \\\n  \\/\\/"};const s=$('ascii-select'),o=$('ascii-output');const u=()=>o.value=arts[s.value];s.onchange=u;u()});
+      addPanel('data','Fake Data',`<p class="muted">Generate random fake data for testing.</p><select id="data-type"><option>Full Name</option><option>Email</option><option>Phone Number</option></select><div class="row"><button id="data-gen" class="btn">Generate</button></div><textarea id="data-output" class="output-box" readonly></textarea>`,p=>{const f=["John","Jane","Alex"],l=["Doe","Smith","Lee"];const gen=()=>{const t=$('data-type').value,o=$('data-output');if(t==='Full Name')o.value=`${randomOf(f)} ${randomOf(l)}`;else if(t==='Email')o.value=`${randomOf(f).toLowerCase()}.${randomOf(l).toLowerCase()}${Math.floor(Math.random()*99)}@example.com`;else o.value=`555-${String(Math.floor(100+Math.random()*900))}-${String(Math.floor(1000+Math.random()*9000))}`};p.querySelector('#data-gen').onclick=gen;gen()});
+      addPanel('code', 'Code', `<p class="muted">Create simple random codes like XXXX-XXXX-XXXX.</p><div class="row"><button id="code-gen" class="btn">Generate</button><button onclick="copyToClipboard('code-output')" class="btn">Copy</button></div><textarea id="code-output" class="output-box" readonly></textarea>`, p=>{const gen=()=>$('code-output').value = [...Array(3)].map(() => [...Array(4)].map(()=>'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random()*36)]).join('')).join('-');p.querySelector('#code-gen').onclick=gen;gen()});
+      addPanel('rules', 'Rules', `<p class="muted">Generate a generic set of community rules.</p><div class="row"><button id="rules-gen" class="btn">Generate</button><button onclick="copyToClipboard('rules-output')" class="btn">Copy</button></div><textarea id="rules-output" class="output-box" rows="8" readonly></textarea>`, p => p.querySelector('#rules-gen').onclick = () => $('rules-output').value = "1. Be respectful to all members.\n2. No spamming or self-promotion.\n3. Do not share inappropriate content.\n4. Listen to the staff team.");
+      addPanel('number', 'Random Number', `<p class="muted">Generate a random number within a specific range.</p><div class="grid grid-2"><div class="field"><label>Min</label><input id="num-min" type="number" value="1"></div><div class="field"><label>Max</label><input id="num-max" type="number" value="100"></div></div><div class="row"><button id="num-gen" class="btn">Generate</button></div><textarea id="num-output" class="output-box" readonly></textarea>`, p => p.querySelector('#num-gen').onclick = () => { const min=parseInt($('num-min').value),max=parseInt($('num-max').value); $('num-output').value = Math.floor(Math.random()*(max-min+1))+min; });
+      addPanel('dice', 'Dice Roller', `<p class="muted">Configure your roll and see the outcome.</p><div class="grid grid-2"><div class="field"><label># of Dice</label><input id="dice-count" type="number" value="2"></div><div class="field"><label>Sides</label><input id="dice-sides" type="number" value="6"></div></div><div class="row"><button id="dice-roll" class="btn">Roll</button></div><textarea id="dice-output" class="output-box" readonly></textarea>`,p=>p.querySelector('#dice-roll').onclick=()=>{const c=parseInt($('dice-count').value),s=parseInt($('dice-sides').value);let r=[],t=0;for(let i=0;i<c;i++){const n=Math.floor(Math.random()*s)+1;r.push(n);t+=n;}$('dice-output').value=`Rolls: [${r.join(', ')}]\nTotal: ${t}`;});
+      addPanel('teams','Team Generator',`<p class="muted">Enter names and split them into teams.</p><div class="grid grid-2"><div class="field"><label>Names (one per line)</label><textarea id="team-names" rows="8"></textarea></div><div class="field"><label># of Teams</label><input id="team-count" type="number" value="2"></div></div><div class="row"><button id="team-gen" class="btn">Generate</button></div><textarea id="team-output" class="output-box" readonly></textarea>`,p=>p.querySelector('#team-gen').onclick=()=>{let n=$('team-names').value.split('\n').map(x=>x.trim()).filter(Boolean);const c=parseInt($('team-count').value);for(let i=n.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[n[i],n[j]]=[n[j],n[i]];}const t=Array.from({length:c},()=>[]);n.forEach((x,i)=>t[i%c].push(x));$('team-output').value=t.map((x,i)=>`--- Team ${i+1} ---\n${x.join('\n')}`).join('\n\n')});
+      addPanel('names', 'Username', `<p class="muted">Generate a unique username.</p><div class="row"><button id="name-gen" class="btn">Generate</button></div><textarea id="name-output" class="output-box" readonly></textarea>`, p => p.querySelector('#name-gen').onclick = () => { const a = ["Shadow", "Cyber", "Void", "Quantum", "Solar"]; const n = ["Dragon", "Wolf", "Knight", "Fox", "Reaper"]; $('name-output').value = randomOf(a) + randomOf(n) + Math.floor(10+Math.random()*90); });
+      addPanel('project', 'Project Name', `<p class="muted">Get a name for your next big project.</p><div class="row"><button id="proj-gen" class="btn">Generate</button></div><textarea id="proj-output" class="output-box" readonly></textarea>`, p => p.querySelector('#proj-gen').onclick = () => { const a = ["Project", "System", "Protocol", "Initiative"]; const n = ["Nebula", "Orion", "Apex", "Genesis"]; $('proj-output').value = randomOf(a) + " " + randomOf(n); });
+      addPanel('ideas', 'Random Ideas', `<p class="muted">Spark creativity with a random idea prompt.</p><div class="row"><button id="idea-gen" class="btn">Generate</button></div><textarea id="idea-output" class="output-box" readonly></textarea>`, p => p.querySelector('#idea-gen').onclick = () => { const a = ["A social network for", "A survival game about", "A utility that helps with"]; const n = ["pets", "time travelers", "cooking"]; $('idea-output').value = randomOf(a) + " " + randomOf(n) + "."; });
+      addPanel('palette', 'Color Palette', `<p class="muted">Generate a random 5-color palette.</p><div class="row"><button id="palette-gen" class="btn">Generate</button><button onclick="copyToClipboard('palette-hex')" class="btn">Copy HEX Codes</button></div><div id="palette-output"></div><input id="palette-hex" style="opacity:0; position:absolute; z-index:-1;">`,p=>{const gen=()=>{let o=$('palette-output'),h=$('palette-hex'),c=[];o.innerHTML='';for(let i=0;i<5;i++){const hex='#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');c.push(hex);const s=document.createElement('div');s.className='swatch';s.style.background=hex;s.textContent=hex;o.appendChild(s)}h.value=c.join(' ')};p.querySelector('#palette-gen').onclick=gen;gen()});
+      addPanel('webhook', 'Discord Webhook', `<p class="muted">Generate the JSON for a simple Discord webhook message.</p><div class="field"><label>Message Content</label><textarea id="hook-content" rows="4"></textarea></div><div class="row"><button id="hook-gen" class="btn">Generate</button><button onclick="copyToClipboard('hook-output')" class="btn">Copy</button></div><textarea id="hook-output" class="output-box" readonly></textarea>`, p => p.querySelector('#hook-gen').onclick = () => $('hook-output').value = JSON.stringify({ content: $('hook-content').value }, null, 2));
+      addPanel('quote','Quote Generator',`<p class="muted">Find some inspiration with a random quote.</p><div class="row"><button class="btn" id="quote-gen">New Quote</button></div><textarea id="quote-output" class="output-box" readonly></textarea>`,p=>{const q=[["The only way to do great work is to love what you do.","Steve Jobs"],["Success is not final, failure is not fatal: it is the courage to continue that counts.","Winston Churchill"],["Believe you can and you're halfway there.","Theodore Roosevelt"]];const gen=()=>{const[qt,au]=randomOf(q);$('quote-output').value=`"${qt}"\n\n— ${au}`};p.querySelector('#quote-gen').onclick=gen;gen()});
+      addPanel('story', 'Story Prompt', `<p class="muted">Get a prompt to kickstart your next story.</p><div class="row"><button id="story-gen" class="btn">Generate</button></div><textarea id="story-output" class="output-box" readonly></textarea>`, p => p.querySelector('#story-gen').onclick = () => $('story-output').value = `A character finds an object that can ${randomOf(['control time', 'talk to animals', 'see the future'])} but there's a catch...`);
+      addPanel('markdown', 'Markdown Preview', `<p class="muted">Write Markdown and see it rendered live.</p><div class="grid grid-2"><div class="field"><label>Markdown</label><textarea id="md-input" rows="12"># Hello, World!\n\nThis is a **Markdown** preview.\n\n- List Item 1\n- List Item 2\n\nVisit [my website](https://google.com)!</textarea></div><div class="field"><label>Preview</label><div id="md-preview"></div></div></div>`,p=>{const i=$('md-input'),o=$('md-preview');const u=()=>o.innerHTML=marked.parse(i.value);i.addEventListener('input',u);u()});
+      addPanel('qr','QR Code',`<p class="muted">Generate a QR code from any text.</p><div class="field"><label>Content</label><input id="qr-input" type="text" value="https://google.com"></div><div class="row"><button id="qr-gen" class="btn">Generate</button></div><div id="qr-code-output"></div>`,p=>{const gen=()=>{const t=$('qr-input').value,o=$('qr-code-output');o.innerHTML='';if(t){qrInstance=new QRCode(o,{text:t,width:128,height:128})}};p.querySelector('#qr-gen').onclick=gen;gen()});
+      addPanel('magic8', 'Magic 8-Ball', `<p class="muted">Ask a yes-no question and find your fortune.</p><div class="field"><label>Your Question</label><input type="text" id="m8-question" placeholder="Will I succeed?"></div><div class="row"><button class="btn" id="m8-ask">Ask</button></div><div id="m8-output" class="output-box"></div>`,p=>{const ans=["It is certain.","It is decidedly so.","Without a doubt.","Yes – definitely.","You may rely on it.","As I see it, yes.","Most likely.","Outlook good.","Yes.","Signs point to yes.","Reply hazy, try again.","Ask again later.","Better not tell you now.","Cannot predict now.","Concentrate and ask again.","Don't count on it.","My reply is no.","My sources say no.","Outlook not so good.","Very doubtful."];p.querySelector('#m8-ask').onclick=()=>{const out=$('m8-output');out.textContent='...';setTimeout(()=>out.textContent=randomOf(ans),400)}});
+      addPanel('settings', 'Settings', `<p class="muted">Change the look and feel of the application.</p><div class="field"><label>Theme</label><select id="theme-switcher"><option value="amethyst">Amethyst</option><option value="dark">Dark</option><option value="halloween">Halloween</option></select></div>`, p=>{const s=$('theme-switcher'),h=document.documentElement;const current=localStorage.getItem('theme')||'amethyst';h.dataset.theme=current;s.value=current;s.onchange=e=>{h.dataset.theme=e.target.value;localStorage.setItem('theme',e.target.value)}});
+      
+      setupSidebarAndTabs();
+    });
   </script>
 </body>
 </html>
