@@ -6,78 +6,35 @@
   <title>Developer Hub</title>
   <link rel="icon" id="favicon" href="favicon.png" type="image/png">
   <style>
-    /* ===== THEME DEFINITIONS ===== */
     :root { --radius: 0.8rem; --sidebar-width: 300px;}
-    html[data-theme="cosmic"] {
-      --background: 240 10% 4%; --foreground: 220 15% 90%; --card: 240 8% 12%; --primary: 250 80% 65%;
-      --primary-foreground: 220 15% 95%; --secondary: 250 80% 65%; --muted: 220 10% 30%;
-      --muted-foreground: 220 10% 50%; --accent: 240 5% 20%; --accent-foreground: 220 15% 90%;
-      --border: 240 5% 20%; --input: 240 5% 15%; --ring: 250 80% 65%; --destructive: 0 84% 60%;
-    }
-    html[data-theme="ocean"] {
-      --background: 215 50% 10%; --foreground: 215 5% 90%; --card: 215 40% 15%; --primary: 215 80% 65%;
-      --primary-foreground: 215 80% 10%; --secondary: 190 80% 50%; --muted: 215 30% 25%;
-      --muted-foreground: 215 5% 60%; --accent: 215 30% 30%; --accent-foreground: 215 5% 90%;
-      --border: 215 30% 26%; --input: 215 30% 18%; --ring: 215 80% 65%; --destructive: 0 84% 60%;
-    }
-    html[data-theme="cotton-candy"] {
-      --background: 271 78% 11%; --foreground: 276 50% 95%; --card: 271 64% 17%; --primary: 328 100% 72%;
-      --primary-foreground: 328 100% 10%; --secondary: 260 88% 70%; --muted: 271 50% 30%;
-      --muted-foreground: 276 25% 70%; --accent: 271 40% 40%; --accent-foreground: 276 50% 95%;
-      --border: 271 40% 30%; --input: 271 60% 22%; --ring: 328 100% 72%; --destructive: 0 84% 60%;
-    }
-    html[data-theme="geometry-dash"] {
-      --background: 198 100% 6%; --foreground: 198 15% 90%; --card: 198 100% 9%; --primary: 180 95% 50%;
-      --primary-foreground: 180 95% 10%; --secondary: 50 100% 60%; --muted: 198 50% 20%;
-      --muted-foreground: 198 10% 60%; --accent: 198 40% 30%; --accent-foreground: 198 15% 90%;
-      --border: 198 50% 30%; --input: 198 80% 15%; --ring: 180 95% 50%; --destructive: 0 84% 60%;
-    }
-    html[data-theme="stormy-night"], html[data-theme="galaxy"] {
-      --background: 240 15% 5%; --foreground: 240 10% 90%; --card: 240 10% 12%; --primary: 220 90% 60%;
-      --primary-foreground: 220 90% 10%; --secondary: 240 10% 30%; --muted: 240 10% 20%;
-      --muted-foreground: 240 5% 60%; --accent: 240 10% 25%; --accent-foreground: 240 10% 90%;
-      --border: 240 10% 22%; --input: 240 10% 15%; --ring: 220 90% 60%; --destructive: 0 84% 60%;
-    }
-    html[data-theme="rustic"] {
-      --background: 30 20% 8%; --foreground: 30 10% 90%; --card: 30 25% 14%; --primary: 25 80% 50%;
-      --primary-foreground: 25 80% 10%; --secondary: 35 15% 30%; --muted: 35 15% 25%;
-      --muted-foreground: 30 10% 60%; --accent: 35 10% 35%; --accent-foreground: 30 10% 90%;
-      --border: 35 15% 28%; --input: 30 30% 18%; --ring: 25 80% 50%; --destructive: 0 84% 60%;
-    }
-    html[data-theme="fox"] {
-      --background: 20 100% 6%; --foreground: 20 20% 95%; --card: 15 80% 10%; --primary: 20 100% 55%;
-      --primary-foreground: 20 100% 5%; --secondary: 0 0% 13%; --muted: 0 0% 25%;
-      --muted-foreground: 20 10% 70%; --accent: 0 0% 20%; --accent-foreground: 20 20% 95%;
-      --border: 0 0% 22%; --input: 0 0% 10%; --ring: 20 100% 55%; --destructive: 0 84% 60%;
-    }
-    html[data-theme="amethyst"] {
-      --background: 260 40% 6%; --foreground: 260 10% 92%; --card: 260 30% 12%; --primary: 267 84% 74%;
-      --primary-foreground: 260 40% 10%; --secondary: 260 20% 40%; --muted: 260 20% 25%;
-      --muted-foreground: 260 10% 60%; --accent: 260 30% 35%; --accent-foreground: 260 5% 95%;
-      --border: 260 20% 20%; --input: 260 30% 15%; --ring: 267 84% 74%; --destructive: 0 84% 60%;
-    }
-    html[data-theme="green"] {
-      --background: 142 84% 5%; --foreground: 140 20% 98%; --card: 142 84% 7%; --primary: 142 71% 45%;
-      --primary-foreground: 140 20% 98%; --secondary: 140 30% 18%; --muted: 140 30% 15%;
-      --muted-foreground: 140 20% 65%; --accent: 140 30% 25%; --accent-foreground: 140 20% 98%;
-      --border: 140 30% 20%; --input: 140 30% 18%; --ring: 142 71% 45%; --destructive: 0 84% 60%;
-    }
-    html[data-theme="custom-pastel"] {
-      --custom-hue: 260; --custom-saturation: 80%;
-      --background: var(--custom-hue) 15% 10%; --foreground: var(--custom-hue) 10% 92%; --card: var(--custom-hue) 15% 15%; --primary: var(--custom-hue) var(--custom-saturation) 70%;
-      --primary-foreground: var(--custom-hue) var(--custom-saturation) 10%; --secondary: var(--custom-hue) 10% 40%; --muted: var(--custom-hue) 10% 30%;
-      --muted-foreground: var(--custom-hue) 5% 60%; --accent: var(--custom-hue) 10% 25%; --accent-foreground: var(--custom-hue) 10% 92%;
-      --border: var(--custom-hue) 10% 25%; --input: var(--custom-hue) 10% 20%; --ring: var(--custom-hue) var(--custom-saturation) 70%; --destructive: 0 84% 60%;
-    }
+    html[data-theme="cosmic"] { --background: 240 10% 4%; --foreground: 220 15% 90%; --card: 240 8% 12%; --primary: 250 80% 65%; --primary-foreground: 220 15% 95%; --secondary: 250 80% 65%; --muted: 220 10% 30%; --muted-foreground: 220 10% 50%; --accent: 240 5% 20%; --accent-foreground: 220 15% 90%; --border: 240 5% 20%; --input: 240 5% 15%; --ring: 250 80% 65%; --destructive: 0 84% 60%; }
+    html[data-theme="ocean"] { --background: 215 50% 10%; --foreground: 215 5% 90%; --card: 215 50% 10%; --primary: 215 25% 27%; --primary-foreground: 0 0% 100%; --secondary: 215 30% 20%; --muted: 177 30% 25%; --muted-foreground: 215 5% 60%; --accent: 177 30% 25%; --accent-foreground: 215 5% 90%; --border: 215 30% 26%; --input: 215 30% 26%; --ring: 215 25% 27%; --destructive: 0 84% 60%; }
+    html[data-theme="cotton-candy"] { --background: 271 78% 11%; --foreground: 276 50% 95%; --card: 271 64% 17%; --primary: 328 100% 72%; --primary-foreground: 328 100% 10%; --secondary: 260 88% 70%; --muted: 271 50% 30%; --muted-foreground: 276 25% 70%; --accent: 271 40% 40%; --accent-foreground: 276 50% 95%; --border: 271 40% 30%; --input: 271 60% 22%; --ring: 328 100% 72%; --destructive: 0 84% 60%; }
+    html[data-theme="geometry-dash"] { --background: 198 100% 6%; --foreground: 198 15% 90%; --card: 198 100% 9%; --primary: 180 95% 50%; --primary-foreground: 180 95% 10%; --secondary: 50 100% 60%; --muted: 198 50% 20%; --muted-foreground: 198 10% 60%; --accent: 198 40% 30%; --accent-foreground: 198 15% 90%; --border: 198 50% 30%; --input: 198 80% 15%; --ring: 180 95% 50%; --destructive: 0 84% 60%; }
+    html[data-theme="stormy-night"] { --background: 240 15% 5%; --foreground: 240 10% 90%; --card: 240 10% 12%; --primary: 220 90% 60%; --primary-foreground: 220 90% 10%; --secondary: 240 10% 30%; --muted: 240 10% 20%; --muted-foreground: 240 5% 60%; --accent: 240 10% 25%; --accent-foreground: 240 10% 90%; --border: 240 10% 22%; --input: 240 10% 15%; --ring: 220 90% 60%; --destructive: 0 84% 60%; }
+    html[data-theme="galaxy"] { --background: 240 15% 5%; --foreground: 240 10% 90%; --card: 240 10% 12%; --primary: 220 90% 60%; --primary-foreground: 220 90% 10%; --secondary: 240 10% 30%; --muted: 240 10% 20%; --muted-foreground: 240 5% 60%; --accent: 240 10% 25%; --accent-foreground: 240 10% 90%; --border: 240 10% 22%; --input: 240 10% 15%; --ring: 220 90% 60%; --destructive: 0 84% 60%; }
+    html[data-theme="rustic"] { --background: 30 20% 8%; --foreground: 30 10% 90%; --card: 30 25% 14%; --primary: 25 80% 50%; --primary-foreground: 25 80% 10%; --secondary: 35 15% 30%; --muted: 35 15% 25%; --muted-foreground: 30 10% 60%; --accent: 35 10% 35%; --accent-foreground: 30 10% 90%; --border: 35 15% 28%; --input: 30 30% 18%; --ring: 25 80% 50%; --destructive: 0 84% 60%; }
+    html[data-theme="fox"] { --background: 20 100% 6%; --foreground: 20 20% 95%; --card: 15 80% 10%; --primary: 20 100% 55%; --primary-foreground: 20 100% 5%; --secondary: 0 0% 13%; --muted: 0 0% 25%; --muted-foreground: 20 10% 70%; --accent: 0 0% 20%; --accent-foreground: 20 20% 95%; --border: 0 0% 22%; --input: 0 0% 10%; --ring: 20 100% 55%; --destructive: 0 84% 60%; }
+    html[data-theme="amethyst"] { --background: 270 20% 5%; --foreground: 270 15% 90%; --card: 270 18% 11%; --primary: 270 90% 70%; --primary-foreground: 270 90% 10%; --secondary: 270 25% 40%; --muted: 270 15% 25%; --muted-foreground: 270 10% 60%; --accent: 270 15% 28%; --accent-foreground: 270 15% 90%; --border: 270 15% 25%; --input: 270 20% 15%; --ring: 270 90% 70%; --destructive: 0 84% 60%;}
+    html[data-theme="custom-pastel"] { --background: var(--custom-hue, 260) 15% 10%; --foreground: var(--custom-hue, 260) 10% 92%; --card: var(--custom-hue, 260) 15% 15%; --primary: var(--custom-hue, 260) var(--custom-saturation, 80%) 70%; --primary-foreground: var(--custom-hue, 260) var(--custom-saturation, 80%) 10%; --secondary: var(--custom-hue, 260) 10% 40%; --muted: var(--custom-hue, 260) 10% 30%; --muted-foreground: var(--custom-hue, 260) 5% 60%; --accent: var(--custom-hue, 260) 10% 25%; --accent-foreground: var(--custom-hue, 260) 10% 92%; --border: var(--custom-hue, 260) 10% 25%; --input: var(--custom-hue, 260) 10% 20%; --ring: var(--custom-hue, 260) var(--custom-saturation, 80%) 70%; --destructive: 0 84% 60%;}
     /* ===== BASE STYLES ===== */
     *{box-sizing:border-box}
     html,body{height:100%}
     body{ margin:0; background:hsl(var(--background)); color:hsl(var(--foreground)); font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; overflow: hidden; transition: background 200ms ease, color 200ms ease; }
-    .bg-animation { position: fixed; inset: 0; z-index:-2; transition: background-image 0.5s ease; }
-    html[data-theme="stormy-night"] .bg-animation::after { content:''; position:absolute; inset:0; background:white; opacity:0; animation: thunder 5s ease-in-out infinite; }
-    @keyframes thunder { 0%, 100% { opacity: 0; } 2% { opacity: 0.8; } 5% { opacity: 0; } 20% { opacity: 0; } 22% { opacity: 0.5; } 23% {opacity: 0;} }
-    html[data-theme="galaxy"] .bg-animation { background-image: radial-gradient(circle at center, hsl(var(--card)) 0, transparent 70%), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900'%3E%3Cdefs%3E%3Cpath id='a' d='M470.3 361.3c58.2-12.2 122.9-24.3 126.3-51.2 3.4-26.9-46-44.5-54.3-57.9-8.3-13.4-3.1-34.1 11.2-50.6 14.3-16.5 42.1-23.7 54.3-33.1 12.2-9.4 16.5-25.1 12.8-40.8-3.7-15.6-21.4-29.8-35.8-38.2s-32.9-10-44.5-24.3c-11.6-14.3-13.4-38.2-7.1-57.9s23.7-36.9 44.5-47.3c20.9-10.3 46-9.4 61.7-18.8C750.6 0 781.3.4 797.4 10.8c16.1 10.3 22.4 29.8 35.8 40.8s33 13.4 39.3 29.8c6.2 16.5-1.5 35.8-11.2 50.6s-32.9 23.7-34.1 38.2-4.8 35.8 4.8 51.2c9.6 15.5 35.8 21.4 51.2 35.8 15.5 14.3 29.8 38.2 26.9 57.9-2.9 19.8-23.7 34.1-38.2 46-14.5 11.9-29.8 28.3-33.1 43.8-3.3 15.5-2.9 34.1 7.1 47.3s33 22.4 46 34.1c12.9 11.6 22.4 29.8 20.9 47.3s-13.4 35.8-29.8 46c-16.5 10.2-39.3 13.4-50.6 26.9s-10.3 35.8-25.1 42.1c-14.8 6.2-35.8-.3-50.6-5.7-14.9-5.3-32-15.8-48.4-17.6-16.5-1.8-32 9.6-47.3 18.8s-31.5 19.8-50.6 19.8c-19.1 0-38.2-9.4-54.3-18.8s-32.9-19.8-48.4-23.7c-15.5-3.8-32.9-.3-47.3-8.3-14.3-7.9-26.9-22.4-30.7-38.2s-2.9-32 5.7-44.5c8.6-12.5 28.3-20.9 42.1-30.7 13.8-9.8 26.9-26.9 26.9-44.5s-13.4-34.1-23.7-47.3c-10.3-13.3-26.9-25.1-43.8-26.9-16.8-1.8-32.9-10.3-43.8-23.7s-13.4-29.8-13.4-46c0-16.1 2.9-32.9 10.3-46s22.4-25.1 31.8-38.2c9.4-13 10.3-30.7 7.1-46-3.2-15.3-15.8-29.8-29.8-35.8s-31.8-4.8-46-13.4c-14.3-8.6-28.3-22.4-28.3-38.2s11.6-32 23.7-42.1c12.2-10.1 29.8-14.5 40.8-25.1s13.4-23.7 13.4-38.2c0-14.5-1.5-31.8-10.3-43.8C421.1 92.5 401 84.1 386.6 74.7c-14.3-9.4-25.1-26.9-22.4-42.1 2.7-15.3 18.8-28.3 34.1-30.7 15.3-2.4 31.8.3 47.3 1.5 15.5 1.2 31.8 1.5 46-2.9 14.3-4.4 26.9-15.8 35.8-28.3s10.3-28.3 19.8-38.2c9.4-9.8 22.4-15.8 36.9-16.1 14.5-.3 29.8 4.8 44.5 8.3s30.7 8.3 46 8.3c15.3 0 29.8-2.9 44.5-7.1 14.8-4.2 29.8-11.6 44.5-11.6 14.8 0 29.8 5.7 44.5 11.6s29.8 13.4 46 13.4c16.1 0 32.9-4.2 47.3-10.3 14.3-6.1 26.9-16.5 35.8-26.9 8.8-10.4 13.4-25.1 13.4-39.3s-4.2-28.3-11.6-38.2c-7.4-9.8-19.8-17.6-32.9-19.8s-28.3.8-42.1-5.7c-13.8-6.5-26.9-18.8-38.2-29.8s-22.4-20.9-35.8-25.1c-13.3-4.2-28.3-2.9-40.8-1.5s-23.7-2.9-38.2-2.9c-14.5 0-29.8.3-44.5-2.9s-29.8-8.3-43.8-13.4c-13.9-5.1-28.3-10.3-40.8-14.5s-25.1-8.3-38.2-11.6c-13.1-3.2-26.9-5.7-40.8-5.7s-28.3 3.7-40.8 8.3c-12.5 4.6-23.7 11.1-32 18.8-8.5 7.9-12.9 18.8-12.9 29.8s4.4 20.9 12.9 29.8c8.5 8.9 20.9 15.8 33 20.9s25.1 10.3 36.9 16.1c11.9 5.8 22.4 13.4 29.8 22.4s12.9 19.8 12.9 31.8c0 11.9-5.3 23.7-12.9 32.9s-17.6 18.8-28.3 26.9c-10.7 8.2-20.9 16.1-28.3 26.9-7.5 10.7-11.6 23.7-11.6 36.9s4.1 26.9 11.6 36.9c7.5 10.1 17.6 18.8 28.3 26.9 10.7 8.1 22.4 14.3 34.1 18.8 11.6 4.5 25.1 7.4 38.2 8.3 13.1.9 26.9-2.4 39.3-8.3 12.5-5.8 23.7-14.5 32.9-24.3s16.1-20.9 20.9-32.9c4.8-11.9 7.1-25.1 7.1-38.2z'/%3E%3C/defs%3E%3Cuse href='%23a' fill='hsl(220,90%,70%)'/%3E%3Cuse href='%23a' fill='hsl(250,80%,65%)' transform='rotate(15)'/%3E%3Cuse href='%23a' fill='hsl(270,100%,72%)' transform='rotate(30)'/%3E%3Cuse href='%23a' fill='hsl(240,15%,5%)' transform='rotate(45)'/%3E%3Cuse href='%23a' fill='hsl(260,88%,70%)' transform='rotate(60)'/%3E%3Cuse href='%23a' fill='hsl(220,90%,60%)' transform='rotate(75)'/%3E%3Cuse href='%23a' fill='hsl(250,80%,65%)' transform='rotate(90)'/%3E%3C/g%3E%3C/svg%3E"); background-size: cover; animation: spin 50s linear infinite; }
-    html[data-theme="fox"] .bg-animation { background-image: url('image/fox.gif'); background-position: center; background-size: cover; filter: brightness(0.6); }
+    .bg-animation { position: fixed; inset: 0; z-index:-2; overflow:hidden; }
+    html:not([data-theme="stormy-night"]):not([data-theme="galaxy"]):not([data-theme="fox"]) .bg-animation { background: radial-gradient(40vmax 40vmax at 15% 20%, hsl(var(--primary)/.2), transparent 60%), radial-gradient(50vmax 50vmax at 85% 30%, hsl(var(--secondary)/.1), transparent 60%), linear-gradient(120deg, hsl(var(--background)) 0%, hsl(var(--background)/.8) 100%); filter: blur(40px) saturate(120%); animation: float 25s ease-in-out infinite alternate; }
+    @keyframes float { 0% { transform: translate(0,0); } 100%{ transform: translate(4vmax,-2vmax); } }
+    /* --- Stormy Night --- */
+    html[data-theme="stormy-night"] .bg-animation::before, html[data-theme="stormy-night"] .bg-animation::after { content: ''; position: absolute; top: -50%; left: 10%; width: 200px; height: 100%; transform: skewX(-20deg); opacity: 0; background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%); filter: drop-shadow(0 0 15px white); animation: lightning 8s linear infinite; }
+    html[data-theme="stormy-night"] .bg-animation::after { left: 70%; animation-delay: 4.2s; animation-duration: 6s; }
+    @keyframes lightning { 0% { opacity: 0; top: -50%; } 1% { opacity: 1; top: 0; } 3% { opacity: 0; top: 50%; } 100% { opacity: 0; } }
+    /* --- Galaxy --- */
+    html[data-theme="galaxy"] .bg-animation { background: radial-gradient(ellipse at center, hsla(240,15%,5%,1) 0%, hsla(240,15%,15%,1) 100%); }
+    html[data-theme="galaxy"] .bg-animation::before, html[data-theme="galaxy"] .bg-animation::after { content: ''; position: absolute; inset: 0; background-image: radial-gradient(1px 1px at 25px 25px, white, transparent), radial-gradient(1px 1px at 75px 75px, white, transparent), radial-gradient(2px 2px at 150px 150px, white, transparent); background-repeat: repeat; background-size: 200px 200px; animation: parallax 100s linear infinite; }
+    html[data-theme="galaxy"] .bg-animation::after { background-size: 150px 150px; animation-duration: 50s; }
+    @keyframes parallax { from { transform: translateY(0); } to { transform: translateY(-200px); } }
+    /* --- Fox --- */
+    html[data-theme="fox"] .bg-animation { background-image: url('https://i.imgur.com/b28dZ4S.gif'); background-position: center; background-size: cover; filter: brightness(0.6); }
     .app { position: relative; display:flex; height:100vh; }
     .sidebar { width: var(--sidebar-width); min-width: 260px; max-width: 340px; padding: 18px 10px; backdrop-filter: blur(12px); background: hsl(var(--card) / .6); border-right: 1px solid hsl(var(--border)); box-shadow: 20px 0 60px rgba(0,0,0,.25); display:flex; flex-direction:column; z-index: 20; position:fixed; top:0; left:0; height:100%; transition: transform .3s ease-in-out; }
     .sidebar.hide { transform: translateX(calc(var(--sidebar-width) * -1)); }
@@ -116,7 +73,7 @@
     .btn:active { transform: translateY(1px); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; filter: brightness(0.8); }
     .output-box { min-height: 70px; display: flex; align-items: center; text-wrapping:wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 1rem; background: hsl(var(--input)); border: 1px solid hsl(var(--border)); border-radius: var(--radius); padding: 16px; margin-top: 24px; white-space: pre-wrap; word-break: break-all; text-align: left;}
-    .toast{ position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: hsl(var(--foreground)); color: hsl(var(--background)); padding: 10px 14px; border-radius: 999px; border: 1px solid hsl(var(--border)); box-shadow: 0 10px 20px rgba(0,0,0,.4); opacity: 0; transition: opacity .2s ease, transform .2s ease; z-index: 50; }
+    .toast{ position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: hsl(var(--foreground)); color: hsl(var(--background)); padding: 10px 14px; border-radius: 999px; border: 1px solid hsl(var(--border)); box-shadow: 0 10px 20px rgba(0,0,0,.4); opacity: 0; transition: opacity .2s ease, transform .2s ease; z-index: 5; }
     .toast.show{ opacity:1; transform: translateX(-50%) translateY(-6px); }
     .slot { display: inline-block; } .slot.spin { animation: pop 0.2s ease; }
     @keyframes pop { 0% { transform: scale(0.8); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
@@ -130,22 +87,18 @@
     .theme-swatch .theme-name { font-size: 14px; font-weight: 600; margin-top: auto; }
     #pastel-picker-container input[type="color"] { -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 100%; height: 45px; padding: 0; border: none; border-radius: var(--radius); cursor: pointer; }
     #pastel-picker-container input[type="color"]::-webkit-color-swatch, #pastel-picker-container input[type="color"]::-moz-color-swatch { border-radius: var(--radius); border: 1px solid hsl(var(--border)); }
+    /* Game-specific styles */
     #codebreaker-results { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 24px; }
     .digit-box { width: 100%; aspect-ratio: 1; display: grid; place-items: center; font-size: 2rem; font-weight: bold; background: hsl(var(--input)); border: 1px solid hsl(var(--border)); border-radius: var(--radius); transition: all .3s ease; transform: scale(0); opacity:0; }
     .digit-box.reveal { transform: scale(1); opacity: 1; }
     .digit-box.correct { background: hsl(142 71% 25%); border-color: hsl(142 71% 35%); color: white; }
     .digit-box.present { background: hsl(48 84% 35%); border-color: hsl(48 84% 45%); color: white; }
     .digit-box.absent { background: hsl(var(--muted)); color: hsl(var(--muted-foreground)); }
-    @media (max-width: 900px){ body{ overflow:auto; } .app{ display:block; } .sidebar{ position: fixed; top:0; left:0; bottom:0; z-index:20; transform:translateX(-100%);} .sidebar.hide { transform:translateX(-100%); } .hamburger {left: 20px;} .sidebar:not(.hide) { transform: translateX(0); } .sidebar:not(.hide) ~ .hamburger { left: calc(var(--sidebar-width) + 20px);} .main-wrapper, .sidebar.hide ~ .main-wrapper {margin-left:0; width:100%;}}
-    .nav-category .category-toggle { font-size: 11px; width:100%; text-align:left; background:transparent; border:none; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: hsl(var(--muted-foreground)); padding: 12px; margin-top: 8px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; }
-    .nav-category .category-toggle::after { content: '›'; font-size: 1.5rem; transform: rotate(90deg); transition: transform 0.2s ease;}
-    .nav-category .category-toggle.collapsed::after { transform: rotate(0deg); }
-    .nav-category .category-content { display:grid; grid-template-rows: 1fr; transition: grid-template-rows 0.3s ease; }
-    .nav-category .category-toggle.collapsed + .category-content { grid-template-rows: 0fr; }
-    .nav-category .category-content > div { overflow:hidden; }
+    #game-status { text-align:center; font-size: 1.2rem; font-weight: bold; margin-top: 16px;}
+    .game-canvas { background: hsl(var(--input)); border-radius: var(--radius); margin-top: 16px; max-width:100%; border: 1px solid hsl(var(--border)); }
     #wordle-grid { display: grid; grid-template-rows: repeat(6, 1fr); gap: 5px; max-width: 350px; height:420px; margin: 24px auto 0; }
     .wordle-row { display:grid; grid-template-columns:repeat(5,1fr); gap:5px;}
-    .wordle-tile { width: 100%; height: 100%; border: 2px solid hsl(var(--border)); display: grid; place-items: center; font-size: 2rem; font-weight: bold; text-transform: uppercase; transition: transform 0.6s, background-color 0.6s, border-color 0.6s; transform-style: preserve-3d; position:relative;}
+    .wordle-tile { width: 100%; height: 100%; border: 2px solid hsl(var(--border)); display: grid; place-items: center; font-size: 2rem; font-weight: bold; text-transform: uppercase; transition: transform 0.6s, background-color 0.6s, border-color 0.6s; transform-style: preserve-3d; }
     .wordle-tile.filled { border-color: hsl(var(--muted)); animation: pop 0.2s; }
     .wordle-tile.reveal { transform: rotateX(180deg); }
     .wordle-tile .front, .wordle-tile .back { backface-visibility: hidden; position: absolute; }
@@ -153,9 +106,84 @@
     .wordle-tile.correct { background: hsl(142 71% 25%); border-color: hsl(142 71% 35%); color: white; }
     .wordle-tile.present { background: hsl(48 84% 35%); border-color: hsl(48 84% 45%); color: white; }
     .wordle-tile.absent { background: hsl(var(--muted)); border-color: hsl(var(--muted)); color: hsl(var(--muted-foreground));}
-    #game-status { text-align:center; font-size: 1.2rem; font-weight: bold; margin-top: 16px;}
+    @media (max-width: 900px){ body{ overflow:auto; } .app{ display:block; } .sidebar{ position: fixed; top:0; left:0; bottom:0; z-index:20; transform:translateX(-100%);} .sidebar.hide { transform:translateX(-100%); } .hamburger {left: 20px;} .sidebar:not(.hide) { transform: translateX(0); } .sidebar:not(.hide) ~ .hamburger { left: calc(var(--sidebar-width) + 20px);} .main-wrapper, .sidebar.hide ~ .main-wrapper {margin-left:0; width:100%;}}
   </style>
 </head>
 <body>
-  <!-- All HTML is created by JavaScript -->
+  <div class="bg-animation"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+        <div class="brand"><div class="dot"></div><h1>Developer Hub</h1></div>
+        <div class="sidebar-inner">
+            <div class="nav" id="nav">
+                <div class="tab active" data-target="panel-home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Home</div>
+                <div class="nav-category"><div class="title">Productivity & Generators</div>
+                    <div class="tab" data-target="panel-password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Password Generator</div>
+                    <div class="tab" data-target="panel-code"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg> Code Generator</div>
+                    <div class="tab" data-target="panel-uuid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg> UUID Generator</div>
+                    <div class="tab" data-target="panel-hash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="7"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg> Hash Generator</div>
+                </div>
+                <div class="nav-category"><div class="title">Games</div>
+                    <div class="tab" data-target="panel-codebreaker"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 16h.01"/><path d="M12 12h.01"/><path d="M12 8h.01"/><path d="M12 4h.01"/><path d="M17 4h.01"/><path d="M7 8h.01"/><path d="M12 20a8 8 0 0 0 8-8"/></svg> Code Breaker</div>
+                    <div class="tab" data-target="panel-wordle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg> Wordle</div>
+                    <div class="tab" data-target="panel-snake"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8.5 10.5c-1 0-1.5-1-1.5-1.5s.5-1.5 1.5-1.5S10 8 10 8.5 9.5 10.5 8.5 10.5z"/><path d="M15.5 10.5c-1 0-1.5-1-1.5-1.5s.5-1.5 1.5-1.5S17 8 17 8.5s-.5 2-1.5 2z"/><path d="M5.5 6.5C3 6.5 1 4.5 1 2V1.5c0-1 .5-1.5 1-1.5h20c.5 0 1 .5 1 1.5V2c0 2.5-2 4.5-4.5 4.5"/><path d="M5.5 6.5c0 2 1.5 3.5 3.5 3.5s3.5-1.5 3.5-3.5"/><path d="M12 6.5c0 2 1.5 3.5 3.5 3.5s3.5-1.5 3.5-3.5"/><path d="M2.5 11.5c-1 0-1.5 1-1.5 2v4c0 1 .5 1.5 1.5 1.5h19c1 0 1.5-.5 1.5-1.5v-4c0-1-.5-2-1.5-2"/></svg> Snake</div>
+                    <div class="tab" data-target="panel-pong"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18.5 4.5H19"/><path d="M6 12H5"/><path d="M4.5 19.5H5"/><path d="M19.5 19.5H19"/><circle cx="12" cy="12" r="1"/><path d="M15.5 15.5.5.5"/></svg> Pong</div>
+                </div>
+                <div class="nav-category"><div class="title">Settings</div>
+                    <div class="tab" data-target="panel-settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> Appearance</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <button class="hamburger" id="hamburger" title="Toggle menu">☰</button>
+    
+    <div class="main-wrapper">
+        <header class="top-header">
+            <!-- STEP 1: Replace this SVG with your own <img src="image/logo.png"> tag -->
+            <svg id="header-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+            <h1>Development Hub</h1>
+        </header>
+        <main class="content"></main>
+    </div>
+  </div>
+  <div class="toast" id="toast">Copied!</div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // --- CORE HELPERS ---
+      const $ = (id) => document.getElementById(id);
+      const mainContent = document.querySelector('.content');
+      let isMobile = window.innerWidth <= 900;
+      const readInt=(id,def)=>parseInt($(id)?.value)||def, readStr=(id,def)=>$(id)?.value||'', checked=id=>$(id)?.checked;
+      const randomOf = arr => arr[Math.floor(Math.random()*arr.length)];
+
+      const showToast = (msg = "Copied!") => { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._timer); t._timer = setTimeout(() => t.classList.remove('show'), 1500); };
+      const copyToClipboard = (element) => { const text = element?.dataset.copytext || element?.textContent || element?.value; if (text) navigator.clipboard.writeText(text).then(() => showToast(), () => showToast("Failed to copy!")); };
+      
+      const slotReveal = (el, finalText, opts = {}) => { el.dataset.copytext = finalText; const chars = opts.chars || 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; el.innerHTML = ''; const spans = [...finalText].map(char => { const s = document.createElement('span'); s.className = 'slot'; if(char === ' ' || (opts.staticChars && opts.staticChars.includes(char))) { s.innerHTML = char === ' ' ? '&nbsp;' : char; } el.appendChild(s); return s; }); let animationFrame; const animate = () => { spans.forEach((span, i) => { if(span.textContent === finalText[i] || (opts.staticChars && opts.staticChars.includes(finalText[i]))) return; if (Math.random() > 0.92) { span.textContent = finalText[i]; span.classList.add('spin'); } else { span.textContent = randomOf(chars); } }); if (spans.some((s,i) => s.textContent !== finalText[i] && !(opts.staticChars && opts.staticChars.includes(finalText[i])))) { animationFrame = requestAnimationFrame(animate); } }; cancelAnimationFrame(animationFrame); animate(); };
+      
+      const addPanel = (id, title, content, setupLogic) => { const panel = document.createElement('section'); panel.id = `panel-${id}`; panel.className = 'panel'; panel.style.display = 'none'; panel.innerHTML = `<h2>${title}</h2>` + content; mainContent.appendChild(panel); if (setupLogic) setupLogic(panel); };
+      
+      const setupUI = () => { const sidebar = $('sidebar'), hamburger = $('hamburger'), nav = $('nav'); if (isMobile) sidebar.classList.add('hide'); hamburger.addEventListener('click', () => {sidebar.classList.toggle('hide'); sidebar.classList.toggle('user-opened', !sidebar.classList.contains('hide'))}); window.addEventListener('resize', () => { isMobile = window.innerWidth <= 900; if(isMobile && !sidebar.classList.contains('user-opened')) sidebar.classList.add('hide'); else if(!isMobile) sidebar.classList.remove('hide', 'user-opened'); }); nav.addEventListener('click', (e) => { const tab = e.target.closest('.tab'); if (!tab) return; nav.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); tab.classList.add('active'); document.querySelectorAll('.panel').forEach(p => p.style.display = 'none'); const targetPanel = $(tab.dataset.target); if (targetPanel) targetPanel.style.display = 'block'; if (isMobile) { sidebar.classList.add('hide'); sidebar.classList.remove('user-opened'); } }); (nav.querySelector('.tab.active') || nav.querySelector('.tab')).click(); };
+      const animateTitleAndFavicon = () => { const frames=['{Dev Hub}', '[Dev Hub]', '<Dev Hub/>']; const emojis=['💻','⚡️','🚀','⚙️']; const faviconEl=$('favicon'); let i=0; setInterval(()=>{document.title=frames[i%frames.length]; faviconEl.href = `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>${emojis[i%emojis.length]}</text></svg>`; i++},1500); };
+      
+      // --- ALL GENERATOR PANELS ---
+      addPanel('home', 'Developer Hub', `<p class="muted">A collection of essential tools for developers. Use the sidebar to navigate or the search below to filter tools.</p><div class="field"><input type="search" id="search-tools" placeholder="Search for a tool..."></div>`, p => {const searchInput=$('search-tools'),tabs=[...document.querySelectorAll('.tab:not([data-target=panel-home])')],categories=[...document.querySelectorAll('.nav-category')];searchInput.addEventListener('input',e=>{const term=e.target.value.toLowerCase();tabs.forEach(tab=>{const text=tab.textContent.toLowerCase();tab.style.display=text.includes(term)?'flex':'none'});categories.forEach(cat=>{const visibleTabs=[...cat.querySelectorAll('.tab')].some(t=>t.style.display!=='none');cat.style.display=visibleTabs?'block':'none'})})});
+      addPanel('settings', 'Appearance', `<p class="muted">Customize the look and feel of the app. All themes are dark-only.</p><div class="field"><label>Theme</label><div id="theme-selector" class="theme-grid"></div></div><div class="field" id="pastel-picker-container" style="display:none; margin-top: 16px;"><label>Custom Pastel Base Color</label><input type="color" id="pastel-picker"></div>`,p=>{const html=document.documentElement, pickerContainer=$('pastel-picker-container'), picker=$('pastel-picker'), grid=$('theme-selector'); const themes = [ {id:'cosmic',name:'Cosmic',colors:['#B490FF','#42429A']}, {id:'amethyst',name:'Amethyst',colors:['#9d55f7','#6d28d9']}, {id:'ocean',name:'Ocean',colors:['#3b82f6','#1e3a8a']}, {id:'cotton-candy',name:'Cotton Candy',colors:['#f472b6','#9333ea']}, {id:'geometry-dash',name:'Geometry',colors:['#32DBCB','#F9FF55']}, {id:'stormy-night',name:'Stormy',colors:['#A7B3E3','#556199']}, {id:'galaxy',name:'Galaxy',colors:['#3B3B9A','#A745A7']}, {id:'rustic',name:'Rustic',colors:['#d97706','#78350f']}, {id:'fox',name:'Fox',colors:['#f97316','#000000']}, {id:'custom-pastel',name:'Custom',colors:[]} ]; themes.forEach(t=>{const swatch=document.createElement('div');swatch.className='theme-swatch';swatch.dataset.theme=t.id;swatch.innerHTML=`<div class="color-dots">${t.colors.map(c=>`<div class="color-dot" style="background:${c}"></div>`).join('')}${t.id==='custom-pastel'?'<input type="color" id="pastel-picker" value="#a855f7" style="width:100%; height:100%; opacity:0; position:absolute; cursor:pointer;">':''}</div><span class="theme-name">${t.name}</span>`;grid.appendChild(swatch)}); const apply=(t)=>{html.dataset.theme=t;localStorage.setItem('appTheme',t);document.querySelectorAll('.theme-swatch').forEach(s=>s.classList.toggle('active',s.dataset.theme===t));pickerContainer.style.display=t==='custom-pastel'?'flex':'none'}; grid.addEventListener('click',e=>{const swatch=e.target.closest('.theme-swatch');if(swatch)apply(swatch.dataset.theme)}); const hexToHsl=(H)=>{let r=0,g=0,b=0;if(H.length==4){r="0x"+H[1]+H[1];g="0x"+H[2]+H[2];b="0x"+H[3]+H[3]}else if(H.length==7){r="0x"+H[1]+H[2];g="0x"+H[3]+H[4];b="0x"+H[5]+H[6]}r/=255;g/=255;b/=255;let cmin=Math.min(r,g,b),cmax=Math.max(r,g,b),delta=cmax-cmin,h=0,s=0;if(delta==0)h=0;else if(cmax==r)h=((g-b)/delta)%6;else if(cmax==g)h=(b-r)/delta+2;else h=(r-g)/delta+4;h=Math.round(h*60);if(h<0)h+=360;s=delta==0?0:delta/(1-Math.abs(2*(cmax+cmin)/2-1));s=+(s*100).toFixed(1);return {h,s}};const updatePastel=(color)=>{const{h,s}=hexToHsl(color);html.style.setProperty('--custom-hue',h);html.style.setProperty('--custom-saturation',`${s}%`)};document.body.addEventListener('input',e=>{if(e.target.id==='pastel-picker')updatePastel(e.target.value)});const savedTheme=localStorage.getItem('appTheme')||'cosmic';apply(savedTheme);updatePastel(localStorage.getItem('pastelColor')||'#a855f7')});
+      addPanel('password','Password Generator',`<p class="muted">Create strong, secure passwords.</p><div class="field"><label>Length</label><input id="pass-len" type="number" value="24" max="2048"></div><div id="pass-options" class="options-grid"></div><div class="row"><button id="pass-gen" class="btn">Generate</button><button id="pass-copy" class="btn">Copy</button></div><div id="pass-output" class="output-box" style="white-space:nowrap; overflow-x:auto; justify-content:flex-start"></div>`,p=>{const parent=$('pass-options');['Uppercase','Lowercase','Numbers','Symbols'].forEach(opt=>{const id=`pass-${opt.toLowerCase()}`;const label=document.createElement('label');label.className='custom-checkbox';label.innerHTML=`<input type="checkbox" id="${id}" ${opt!=='Symbols'?'checked':''}><div class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></div><span>${opt}</span>`;parent.appendChild(label)});const gen=()=>{let c='',res='';const l=Math.min(2048, readInt('pass-len', 24));if(checked('pass-upper'))c+='ABCDEFGHIJKLMNPQRSTUVWXYZ';if(checked('pass-lower'))c+='abcdefghijklmnopqrstuvwxyz';if(checked('pass-nums'))c+='123456789';if(checked('pass-spec'))c+='!@#$%^&*()_+';if(c==='')c='...';for(let i=0;i<l;i++)res+=randomOf(c);slotReveal($('pass-output'),res,{chars:c})};$('pass-gen').onclick=gen;$('pass-copy').onclick=()=>copyToClipboard($('pass-output'));gen();});
+      addPanel('uuid', 'UUID Generator', `<p class="muted">Generate universally unique identifiers (v4).</p><div class="row"><button id="uuid-gen" class="btn">Generate</button><button id="uuid-copy" class="btn">Copy</button></div><div id="uuid-output" class="output-box"></div>`,p=>{const gen=()=>slotReveal($('uuid-output'),crypto.randomUUID(), {staticChars:'-'});$('uuid-gen').onclick=gen;$('uuid-copy').onclick=()=>copyToClipboard($('uuid-output'));gen()});
+      addPanel('hash', 'Hash Generator', `<p class="muted">Compute a cryptographic hash of any text.</p><div class="field"><label>Input Text</label><textarea id="hash-text" rows="4">hello world</textarea></div><div class="row"><button id="hash-btn" class="btn">Generate</button><button onclick="copyToClipboard($('hash-out'))" class="btn">Copy</button></div><div id="hash-out" class="output-box" style="font-size:0.9rem;"></div>`, p => {const gen = async() => { const txt = readStr('hash-text'); const data = new TextEncoder().encode(txt); let out = ''; for (const alg of ['SHA-1', 'SHA-256', 'SHA-512']) {let hashHex;const hashBuffer=await crypto.subtle.digest(alg,data);hashHex=Array.from(new Uint8Array(hashBuffer)).map(b=>b.toString(16).padStart(2,'0')).join('');out += `${alg}:\n${hashHex}\n\n`;} $('hash-out').textContent = out.trim();}; $('hash-btn').onclick = gen; gen()});
+      addPanel('codebreaker', 'Code Breaker', `<p class="muted">Educational game: Guess the secret 6-digit code in 10 tries.</p><div id="codebreaker-results"></div><div id="game-status"></div><div class="grid" style="grid-template-columns:1fr 1fr; margin-top: 16px"><div class="field"><label>Your Guess</label><input id="cb-guess-input" type="text" maxlength="6" pattern="[0-9]*"></div><div class="field"><label>Guesses Left</label><div id="cb-guesses-left" class="output-box" style="margin-top:0; justify-content:center;">10</div></div></div><div class="row"><button id="cb-guess-btn" class="btn">Guess</button><button id="cb-newgame-btn" class="btn">New Game</button></div>`, p => {let secret, guessesLeft, gameOver;const resultsDiv=$('codebreaker-results'),statusDiv=$('game-status'),guessInput=$('cb-guess-input'),guessBtn=$('cb-guess-btn'),guessesLeftDiv=$('cb-guesses-left');const newGame=()=>{secret=Array.from({length:6},()=>Math.floor(Math.random()*10)).join('');guessesLeft=10;gameOver=false;resultsDiv.innerHTML=Array.from({length:6},()=>`<div class="digit-box">?</div>`).join('');statusDiv.textContent='';guessInput.value='';guessBtn.disabled=false;guessesLeftDiv.textContent=guessesLeft};const checkGuess=()=>{if(gameOver||guessBtn.disabled)return;const guess=guessInput.value;if(guess.length!==6||!/^\d+$/.test(guess)){showToast('Enter a 6-digit number!');return}guessBtn.disabled=true;guessesLeft--;guessesLeftDiv.textContent=guessesLeft;resultsDiv.innerHTML='';let correctCount=0;const boxes=[];for(let i=0;i<6;i++){const box=document.createElement('div');box.className='digit-box';resultsDiv.appendChild(box);boxes.push(box)}const revealLoop=async()=>{for(let i=0;i<6;i++){const box=boxes[i];let status='absent';if(guess[i]===secret[i]){status='correct';correctCount++}else if(secret.includes(guess[i]))status='present';await new Promise(res=>setTimeout(res,200));box.style.animationDelay=`${i*0.1}s`;box.textContent=guess[i];box.classList.add(status,'reveal')}if(correctCount===6){gameOver=true;statusDiv.textContent='You won!';statusDiv.style.color='hsl(142, 80%, 60%)';}else if(guessesLeft<=0){gameOver=true;statusDiv.textContent=`You lost! The code was: ${secret}`;statusDiv.style.color='hsl(var(--destructive))';} else {guessBtn.disabled=false;}};revealLoop()};$('cb-guess-btn').onclick=checkGuess;$('cb-newgame-btn').onclick=newGame;guessInput.addEventListener('keydown',e=>{if(e.key==='Enter')checkGuess()});newGame()});
+      addPanel('wordle','Wordle',`<p class="muted">Guess the 5-letter word in 6 tries.</p><div id="wordle-grid"></div><div class="row" style="justify-content:center;"><button id="wordle-new" class="btn">New Game</button></div>`,p=>{ p.innerHTML+='<p class="muted" style="text-align:center; margin-top:24px;">Game is a work in progress. Coming soon!</p>'});
+      addPanel('snake','Snake',`<p class="muted">Use arrow keys to move. Don't hit the walls or yourself!</p><canvas id="snake-canvas" width="400" height="400" class="game-canvas"></canvas>`,p=>{ p.innerHTML+='<p class="muted" style="text-align:center; margin-top:24px;">Game is a work in progress. Coming soon!</p>'});
+      addPanel('pong','Pong',`<p class="muted">Use your mouse to move the paddle. First to 5 points wins.</p><canvas id="pong-canvas" width="500" height="300" class="game-canvas"></canvas>`,p=>{p.innerHTML+='<p class="muted" style="text-align:center; margin-top:24px;">Game is a work in progress. Coming soon!</p>'});
+
+      setupUI();
+      animateTitleAndFavicon();
+    });
+  </script>
 </body>
+</html>
